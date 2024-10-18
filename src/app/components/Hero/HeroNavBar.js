@@ -44,7 +44,7 @@ export default function HeroNavBar() {
                         about
                     </a> */}
                     <a
-                        href="https://github.com/duggalr/code-companion"
+                        href="https://github.com/duggalr/companion-frontend"
                         target="_blank"
                         rel="noopener noreferrer"
                         // className="text-gray-600 hover:text-gray-800 dark:text-gray-300 text-sm"
