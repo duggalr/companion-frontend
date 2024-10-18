@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { ResizableBox } from "react-resizable";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowsAltH } from "@fortawesome/free-solid-svg-icons";
 import CodeEditor from '../MainLeftSide/CodeEditor';
 import ConsoleChatTabs from "../MainRightSide/ConsoleChatTabs";
 

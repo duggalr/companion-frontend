@@ -1,12 +1,11 @@
 "use client"; // Add this at the top
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 
 
 const ConsoleOutput = ({ codeState, output, setOutput }) => {
-  const [taskId, setTaskId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_FASTAPI_URL;
@@ -23,9 +22,7 @@ const ConsoleOutput = ({ codeState, output, setOutput }) => {
 
       // Get the task ID from the response
       const { task_id } = response.data;
-      console.log("task_id:", task_id);
 
-      setTaskId(task_id);
       pollForTaskStatus(task_id);
     } catch (error) {
       console.log("Error:", error);

@@ -1,7 +1,3 @@
-import Image from 'next/image';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCode } from "@fortawesome/free-solid-svg-icons";
-
 import ThemeToggle from "../Utils/ThemeToggle";
 import { Pacifico } from 'next/font/google';
 

@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBrain, faCircleInfo, faCode, faInfo, faLaptopCode } from '@fortawesome/free-solid-svg-icons';
+import { useEffect } from 'react';
 import ThemeToggle from './ThemeToggle';
 import { Pacifico } from 'next/font/google';
 

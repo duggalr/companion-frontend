@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPaperPlane, faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faPaperPlane, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 
 const ChatInterface = ({ messages, setMessages, generatedMessage, setGeneratedMessage, isGenerating, setIsGenerating, codeState }) => {
@@ -12,7 +12,7 @@ const ChatInterface = ({ messages, setMessages, generatedMessage, setGeneratedMe
   const [isLoading, setIsLoading] = useState(false);
   const [sendBtnEnabled, setSendBtnEnabled] = useState(false);
 
-  const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_FASTAPI_URL;
+  // const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_FASTAPI_URL;
   const FASTAPI_WEBSOCKET_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
   // const [ws, setWs] = useState(null);
   const wsRef = useRef(null);
