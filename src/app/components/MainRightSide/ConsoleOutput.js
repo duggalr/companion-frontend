@@ -1,11 +1,11 @@
 "use client"; // Add this at the top
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay, faSpinner, faCirclePlay, faHandshake } from "@fortawesome/free-solid-svg-icons";
+import { faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 
 
-const ConsoleOutput = ({ codeState, setCodeState, output, setOutput, setGeneratedMessage }) => {
+const ConsoleOutput = ({ codeState, setCodeState, output, setOutput }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_FASTAPI_URL;

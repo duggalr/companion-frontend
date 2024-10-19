@@ -49,7 +49,7 @@ const ConsoleChatTabs = ({ codeState, setCodeState, chatMessages, setChatMessage
 
       {/* Content */}
       <div className="flex-grow overflow-y-scroll no-scrollbar">
-        {activeTab === "console" && <ConsoleOutput codeState={codeState} setCodeState={setCodeState} output={consoleOutput} setOutput={setConsoleOutput} setGeneratedMessage={setGeneratedMessage} />}
+        {activeTab === "console" && <ConsoleOutput codeState={codeState} setCodeState={setCodeState} output={consoleOutput} setOutput={setConsoleOutput} />}
         {activeTab === "chat" && <ChatInterface messages={chatMessages}
                 setMessages={setChatMessages}
                 generatedMessage={generatedMessage}

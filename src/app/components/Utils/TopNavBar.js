@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import ThemeToggle from './ThemeToggle';
 import { Pacifico } from 'next/font/google';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCirclePlay } from "@fortawesome/free-solid-svg-icons";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faCirclePlay } from "@fortawesome/free-solid-svg-icons";
 
 const pacifico_font = Pacifico({
     subsets: ['latin'],
