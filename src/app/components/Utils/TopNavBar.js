@@ -32,7 +32,7 @@ export default function TopNavBar () {
             </li>
             <div className="ml-auto flex items-center space-x-6">
                 <a
-                    href="https://github.com/duggalr/code-companion"
+                    href="https://www.youtube.com/watch?v=4Plt_sh_cIg&ab_channel=Rahul"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-2"
