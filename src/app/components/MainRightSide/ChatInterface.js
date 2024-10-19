@@ -128,6 +128,7 @@ const ChatInterface = ({ messages, setMessages, generatedMessage, setGeneratedMe
     }
   }, [messages, isGenerating]);
 
+
   // // TODO: Handle Enter key press to send messages
   // useEffect(() => {
 
@@ -152,7 +153,7 @@ const ChatInterface = ({ messages, setMessages, generatedMessage, setGeneratedMe
     <div className="flex flex-col h-4/5 dark:bg-gray-900 p-4">
 
       <span className="text-gray-500 dark:text-gray-400 text-xs pt-1 pl-1 pb-4 tracking-normal">
-        <span className="font-bold">Note:</span> Get help in guiding your thinking through programming problems, with Companion, an AI Tutor.
+        Get help in guiding your thinking through programming problems, with Companion, an AI Tutor.
       </span>
 
       {/* Messages Area */}

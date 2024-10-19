@@ -6,6 +6,7 @@ import SparklesText from "@/components/ui/sparkles-text";
 // import RetroGrid from "@/components/ui/retro-grid";
 // import { WavyBackground } from "../ui/wavy-background";
 // import { BackgroundLines } from "../ui/background-lines";
+import AnimatedShinyText from '@/components/ui/animated-shiny-text';
 
 
 export default function HeroPrimary() {
@@ -33,6 +34,24 @@ export default function HeroPrimary() {
 
             <div className="max-w-5xl mx-auto text-center mt-0 "> {/* Added margin to avoid overlap with Navbar */}
                 
+                {/* <div
+                className="w-1/6 group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                >
+                    <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400">
+                        <span>✨ 100% Free ✨</span>
+                    </AnimatedShinyText>
+                </div> */}
+
+                {/* Adjusted the width and centering */}
+                <div
+                    className="mb-4 w-1/3 mx-auto flex justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                >
+                    <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400 text-[15px]">
+                    <span>✨ 100% Free and Open Source ✨</span>
+                    </AnimatedShinyText>
+                </div>
+                                
+
                 {/* <h1 className="scroll-m-20 text-[49px] font-bold tracking-tight mt-0">
                     Online REPL with an AI Tutor
                 </h1> */}

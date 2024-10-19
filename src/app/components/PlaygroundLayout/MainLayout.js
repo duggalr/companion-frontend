@@ -77,6 +77,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         >
             <ConsoleChatTabs
                 codeState={editorCode}
+                setCodeState={setEditorCode}
                 chatMessages={chatMessages}
                 setChatMessages={setChatMessages}
                 generatedMessage={generatedMessage}
