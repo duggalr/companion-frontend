@@ -25,7 +25,7 @@ const ChatInterface = ({ messages, setMessages, generatedMessage, setGeneratedMe
     const socket = new WebSocket(FASTAPI_WEBSOCKET_URL);
 
     socket.onopen = () => {
-      console.log("WebSocket connection established");
+      // console.log("WebSocket connection established");
     };
 
     socket.onmessage = (event) => {
@@ -58,7 +58,7 @@ const ChatInterface = ({ messages, setMessages, generatedMessage, setGeneratedMe
     };
   
     socket.onclose = () => {
-      console.log("WebSocket connection closed");
+      // console.log("WebSocket connection closed");
     };
 
     // setWs(socket);
@@ -73,19 +73,19 @@ const ChatInterface = ({ messages, setMessages, generatedMessage, setGeneratedMe
 
   const handleSendMessage = () => {
 
-    console.log('user-message:', inputValueRef.current.value, wsRef);
+    // console.log('user-message:', inputValueRef.current.value, wsRef);
     const userMessage = inputValueRef.current.value;
     const wsCurrent = wsRef.current;
 
     if (userMessage.trim() !== "" && wsCurrent) {
 
-      console.log('user-message-new:', userMessage);
+      // console.log('user-message-new:', userMessage);
 
       let all_chat_messages_str = "";
       for (let i = 0; i < messages.length; i++) {
         all_chat_messages_str += messages[i].text + "\n";
       }
-      console.log('all-messages:', all_chat_messages_str);
+      // console.log('all-messages:', all_chat_messages_str);
 
       const newMessage = {
         text: userMessage,
@@ -95,7 +95,7 @@ const ChatInterface = ({ messages, setMessages, generatedMessage, setGeneratedMe
         type: 'user_message',
         complete: true
       };
-      console.log('message:', newMessage);
+      // console.log('message:', newMessage);
 
       setSendBtnEnabled(false);
       setIsLoading(true);

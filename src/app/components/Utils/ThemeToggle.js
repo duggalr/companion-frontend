@@ -14,7 +14,7 @@ export default function ThemeToggle() {
     } else {
       // Default to system preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      console.log('Theme preference:', prefersDark);
+      // console.log('Theme preference:', prefersDark);
       if (prefersDark) {
         setTheme('dark');
         localStorage.setItem('theme', 'dark');

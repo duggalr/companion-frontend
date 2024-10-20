@@ -18,7 +18,7 @@ const ConsoleOutput = ({ codeState, setCodeState, output, setOutput }) => {
       };
       
       const response = await axios.post(FASTAPI_BASE_URL + '/execute_user_code', payload);
-      console.log("code-response:", response, response.data);
+      // console.log("code-response:", response, response.data);
 
       // Get the task ID from the response
       const { task_id } = response.data;
@@ -33,10 +33,10 @@ const ConsoleOutput = ({ codeState, setCodeState, output, setOutput }) => {
     try {
       const taskResponseURL = FASTAPI_BASE_URL + `/result/${task_id}`;
       const resultResponse = await axios.get(taskResponseURL);
-      console.log("Result Response:", resultResponse);
+      // console.log("Result Response:", resultResponse);
 
       const { result_output_status, result_output_value } = resultResponse.data;
-      console.log("Result Output Status TWO:", result_output_status, result_output_value);
+      // console.log("Result Output Status TWO:", result_output_status, result_output_value);
       setOutput(result_output_value);
     } catch (error) {
       console.error("Error polling for result:", error);
@@ -49,10 +49,10 @@ const ConsoleOutput = ({ codeState, setCodeState, output, setOutput }) => {
 
       const interval = setInterval(async () => {
         const resultResponse = await axios.get(taskStatusURL);
-        console.log("Result Response:", resultResponse);
+        // console.log("Result Response:", resultResponse);
 
         const { status, task_id } = resultResponse.data;
-        console.log("STATUS:", status);
+        // console.log("STATUS:", status);
 
         if (status === "SUCCESS") {
           clearInterval(interval);
@@ -74,8 +74,6 @@ const ConsoleOutput = ({ codeState, setCodeState, output, setOutput }) => {
   };
 
   const handleExerciseButtonClick = (exercise_id) => {
-
-    console.log('Exercise:', exercise_id);
 
     const exercise_code_dict = {
       "exercise_one": `# Exercise 1: Basic Arithmetic Operations (Function-based)

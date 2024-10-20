@@ -59,7 +59,7 @@ const CodeEditor = ({ codeState, setCodeState }) => {
 
         // Set the initial theme based on the localStorage value
         const currentTheme = localStorage.getItem('theme') || 'light';
-        console.log('current theme:', currentTheme)
+        // console.log('current theme:', currentTheme)
         monaco.editor.setTheme(currentTheme === 'dark' ? 'minimalistDark' : 'minimalistLight');
     };
 
