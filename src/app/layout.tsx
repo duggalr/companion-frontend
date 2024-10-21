@@ -12,7 +12,7 @@ const inter = Inter({
 
 export default function RootLayout({children,}: {children: React.ReactNode;}) {
   
-  const isProduction = process.env.NEXT_PUBLIC_CURRENT_ENVIRONMENT === 'production';
+  // const isProduction = process.env.NEXT_PUBLIC_CURRENT_ENVIRONMENT === 'production';
   // const pathname = usePathname();
 
   // useEffect(() => {
