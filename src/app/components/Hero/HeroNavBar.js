@@ -1,7 +1,5 @@
 import ThemeToggle from "../Utils/ThemeToggle";
 import { Pacifico } from 'next/font/google';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBlog, faPencil, faPencilSquare } from "@fortawesome/free-solid-svg-icons";
 
 
 const pacifico_font = Pacifico({
