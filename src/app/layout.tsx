@@ -10,6 +10,11 @@ const inter = Inter({
   // variable: '--font-inter'
 });
 
+export const metadata = {
+  title: 'Companion | Personal AI Tutor',
+};
+
+
 export default function RootLayout({children,}: {children: React.ReactNode;}) {
   
   // const isProduction = process.env.NEXT_PUBLIC_CURRENT_ENVIRONMENT === 'production';
@@ -29,6 +34,7 @@ export default function RootLayout({children,}: {children: React.ReactNode;}) {
   return (
     <html lang="en">
       <head>
+        {/* <title>Companion | Personal AI Tutor</title> */}
       </head>
       <body className={inter.className}>{children}</body>
       <GoogleAnalytics gaId="G-SNNKFK2WYW" />
