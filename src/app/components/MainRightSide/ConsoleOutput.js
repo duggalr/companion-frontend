@@ -35,7 +35,8 @@ const ConsoleOutput = ({ codeState, setCodeState, output, setOutput }) => {
       const resultResponse = await axios.get(taskResponseURL);
       // console.log("Result Response:", resultResponse);
 
-      const { result_output_status, result_output_value } = resultResponse.data;
+      // const { result_output_status, result_output_value } = resultResponse.data;
+      const { result_output_value } = resultResponse.data;
       // console.log("Result Output Status TWO:", result_output_status, result_output_value);
       setOutput(result_output_value);
     } catch (error) {
