@@ -15,8 +15,7 @@ export default function TopNavBar () {
     return (
 
         <ul
-            // className="flex flex-wrap text-sm font-medium text-center border-b-2 border-gray-300 bg-[#F3F4F6] dark:bg-gray-900 dark:text-gray-300"
-            className="flex flex-wrap text-sm font-medium text-center border-b-2 border-gray-300 bg-[#F3F4F6] dark:bg-gray-900 dark:text-gray-300"
+            className="flex text-sm font-medium text-center border-b-2 border-gray-300 bg-[#F3F4F6] dark:bg-gray-900 dark:text-gray-300"
         >
             <li>
                 <a
