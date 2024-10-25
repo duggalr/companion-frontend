@@ -1,11 +1,12 @@
 "use client";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faPlay, faSpinner, faHandshake } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 
 
-const ConsoleOutput = ({ codeState, setCodeState, output, setOutput }) => {
+const ConsoleOutput = ({ codeState, setCodeState, output, setOutput, setCurrentUserInputMessage, 
+  setActiveTab, handleSendUserChatMessage, currentUserInputMessageRef, setSendBtnEnabled }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_FASTAPI_URL;
@@ -68,7 +69,7 @@ const ConsoleOutput = ({ codeState, setCodeState, output, setOutput }) => {
   };
 
   const handleRun = () => {
-    console.log("Current Code:", codeState);
+    // console.log("Current Code:", codeState);
     setOutput("loading..."); // Set the console output to loading while request is made
     setIsLoading(true); // Start the loading state
     _sendCodeExecutionRequest(codeState);
@@ -134,11 +135,15 @@ def find_even_numbers(start, end):
 
   }
 
-  // // TODO: Handle on feedback button click
-  // const handleFeedbackBtn = () => {
-  //   // // TODO: 
-  //   // setGeneratedMessage("Can you provide feedback on my code?");
-  // }
+  const handleFeedbackBtn = () => {
+
+    setCurrentUserInputMessage("Can you provide feedback on my code?");
+    currentUserInputMessageRef.current = "Can you provide feedback on my code?";
+    setSendBtnEnabled(true);
+    handleSendUserChatMessage();
+    setActiveTab("chat");
+
+  }
 
   return (
     <div className="flex flex-col h-full mt-2 ml-4 bg-[#F3F4F6] dark:bg-gray-900">
@@ -147,6 +152,7 @@ def find_even_numbers(start, end):
       <span className="text-gray-500 dark:text-gray-400 text-xs pt-2 pb-2 tracking-normal">
         Work through some sample exercises with the tutor.
       </span>
+
       <div className="flex space-x-4 pb-2 mt-2">
         {/* setCodeState */}
         <button onClick={() => handleExerciseButtonClick("exercise_one")} className="text-blue-500 dark:text-blue-400 hover:underline text-[12.5px] tracking-normal">Exercise 1</button>
@@ -162,7 +168,7 @@ def find_even_numbers(start, end):
       </span>
 
       <span className="text-gray-500 dark:text-gray-400 text-xs pt-0 pl-1 pb-2 tracking-normal text-[10.5px]">
-      <strong>Note:</strong> User Input (input()) can not be captured (as of yet...)
+        <strong>Note:</strong> User Input (input()) can not be captured (as of yet...)
       </span>
 
       <div className="mt-2 pt-1 pl-2 h-1/2 w-[95%] overflow-y-auto rounded-xl border border-gray-300 dark:border-gray-600 bg-[#f4f5f6] dark:bg-gray-800 text-gray-900">
@@ -176,10 +182,6 @@ def find_even_numbers(start, end):
           </p>
         )}
       </div>
-
-      {/* <span className="text-gray-500 dark:text-gray-400 text-xs pt-4 pl-1 pb-2 tracking-normal">
-        <strong>Note:</strong> User Input can not be captured.
-      </span> */}
 
       <div className="flex items-center justify-start space-x-4 mt-4">
 
@@ -197,18 +199,19 @@ def find_even_numbers(start, end):
           {isLoading ? "Running..." : "Run Code"}
         </button>
 
-        {/* <button
+        <button
           onClick={handleFeedbackBtn}
           className={`w-[280px] py-2 px-2 text-[14px] text-white font-medium rounded-xl transition-all bg-gray-500 dark:bg-gray-700 hover:bg-black hover:dark:bg-gray-800`}
         >
           <FontAwesomeIcon icon={faHandshake} className="text-white pr-2" />
           Get Feedback from Companion
-        </button> */}
+        </button>
 
       </div>
 
     </div>
   );
+
 };
 
 export default ConsoleOutput;

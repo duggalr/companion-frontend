@@ -10,14 +10,6 @@ const pacifico_font = Pacifico({
 
 export default function HeroNavBar() {
 
-    // const [theme, setTheme] = useState('light');
-    // useEffect(() => {
-    //   // Check localStorage to get the current theme
-    //   const storedTheme = localStorage.getItem('theme') || 'light';
-    //   setTheme(storedTheme);
-    // }, []);
-    // const imageSrc = theme === 'dark' ? '/code_two.png' : '/light_mode_image.png';
-
     return (
 
         <nav className="p-4 dark:bg-zinc-950">
@@ -25,11 +17,6 @@ export default function HeroNavBar() {
             <div className="container mx-auto flex justify-between items-center">
 
                 <h1 className={`${pacifico_font.className} scroll-m-20 text-[25px] font-normal tracking-widest flex items-center text-zinc-900 dark:text-gray-200`}>
-                    {/* <FontAwesomeIcon
-                        icon={faCode}
-                        className="pr-3 text-[23px] dark:text-gray-200 w-[40px]"
-                    /> */}
-                    {/* <Image src={`/programming_one.png`} width="32" height="32" /> Code Companion */}
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" className="w-8 h-8 pr-2 fill-zinc-900 dark:fill-white">
                         <path d="M392.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6zm80.6 120.1c-12.5 12.5-12.5 32.8 0 45.3L562.7 256l-89.4 89.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-112-112c-12.5-12.5-32.8-12.5-45.3 0zm-306.7 0c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l112 112c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l89.4-89.4c12.5-12.5 12.5-32.8 0-45.3z"/>
                     </svg>
@@ -38,12 +25,6 @@ export default function HeroNavBar() {
 
                 {/* Right - Links */}
                 <div className="flex space-x-10">
-                    {/* <a
-                        href=""
-                        className="text-gray-600 hover:text-gray-800 dark:text-gray-300 text-sm"
-                    >
-                        about
-                    </a> */}
                     
                     {/* <a
                         href="https://github.com/duggalr/companion-frontend"
@@ -60,7 +41,6 @@ export default function HeroNavBar() {
                         href="https://discord.gg/gVf5CdZP"
                         target="_blank"
                         rel="noopener noreferrer"
-                        // className="text-gray-600 hover:text-gray-800 dark:text-gray-300 text-sm"
                         className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-sm space-x-0"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-discord mr-2" viewBox="0 0 16 16">
@@ -73,7 +53,6 @@ export default function HeroNavBar() {
                         href="https://github.com/duggalr/companion-frontend"
                         target="_blank"
                         rel="noopener noreferrer"
-                        // className="text-gray-600 hover:text-gray-800 dark:text-gray-300 text-sm"
                         className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-sm space-x-0"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 30 30" className="mr-1 fill-zinc-900 dark:fill-white">

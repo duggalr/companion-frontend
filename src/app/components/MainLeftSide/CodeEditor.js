@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import Editor from "@monaco-editor/react";
 
 
-const CodeEditor = ({ codeState, setCodeState }) => {
+const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef }) => {
 
     const handleEditorDidMount = (editor, monaco) => {
         // Define the light theme
@@ -11,7 +11,7 @@ const CodeEditor = ({ codeState, setCodeState }) => {
             inherit: true,
             rules: [
                 { token: 'comment', foreground: '6A737D', fontStyle: 'italic' }, 
-                { token: 'keyword', foreground: '007ACC' }, // Lighter blue for keywords
+                { token: 'keyword', foreground: '007ACC' },
                 { token: 'identifier', foreground: 'D4D4D4' }, 
                 { token: 'string', foreground: 'CE9178' }, 
                 { token: 'number', foreground: 'B5CEA8' }, 
@@ -19,11 +19,11 @@ const CodeEditor = ({ codeState, setCodeState }) => {
                 { token: 'type', foreground: '4EC9B0' }, 
             ],
             colors: {
-                'editor.background': '#252526', // Slightly lighter dark background
+                'editor.background': '#252526',
                 'editor.foreground': '#D4D4D4', 
-                'editorLineNumber.foreground': '#A0A0A0', // Lighter line number color
-                'editorCursor.foreground': '#FFFFFF', // White cursor for better visibility
-                'editor.selectionBackground': '#A7C6ED', // Softer selection background
+                'editorLineNumber.foreground': '#A0A0A0',
+                'editorCursor.foreground': '#FFFFFF',
+                'editor.selectionBackground': '#A7C6ED',
                 'editor.inactiveSelectionBackground': '#2C2C2C',
                 'editor.lineHighlightBackground': '#2D2D30', 
                 'editorBracketMatch.background': '#515A6B', 
@@ -45,7 +45,7 @@ const CodeEditor = ({ codeState, setCodeState }) => {
                 { token: 'type', foreground: 'A2D3E0' }, 
             ],
             colors: {
-                'editor.background': '#1C2631', // Dark blue background
+                'editor.background': '#1C2631',
                 'editor.foreground': '#D4D4D4', 
                 'editorLineNumber.foreground': '#4E7A9A', 
                 'editorCursor.foreground': '#AEAFAD', 
@@ -59,7 +59,6 @@ const CodeEditor = ({ codeState, setCodeState }) => {
 
         // Set the initial theme based on the localStorage value
         const currentTheme = localStorage.getItem('theme') || 'light';
-        // console.log('current theme:', currentTheme)
         monaco.editor.setTheme(currentTheme === 'dark' ? 'minimalistDark' : 'minimalistLight');
     };
 
@@ -73,6 +72,12 @@ const CodeEditor = ({ codeState, setCodeState }) => {
 
     }, []);
 
+
+    const _handleCodeStateChange = (value) => {
+        codeStateTmpRef.current = value;
+        setCodeState(value);
+    }
+
     return (
         <div className="h-full w-full border-r-2 border-gray-300">
             <Editor
@@ -85,7 +90,7 @@ const CodeEditor = ({ codeState, setCodeState }) => {
                     scrollBeyondLastLine: false,
                     selectOnLineNumbers: true,
                 }}
-                onChange={(value) => setCodeState(value ?? "")}
+                onChange={(value) => _handleCodeStateChange(value ?? "")}
                 onMount={handleEditorDidMount} // Hook into editor lifecycle
             />
         </div>

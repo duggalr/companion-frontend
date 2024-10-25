@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import ConsoleOutput from "./ConsoleOutput";
 import ChatInterface from "./ChatInterface";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTerminal, faComments } from '@fortawesome/free-solid-svg-icons';
 
 
-const ConsoleChatTabs = ({ codeState, setCodeState, chatMessages, setChatMessages, generatedMessage, setGeneratedMessage, isGeneratingMessage, setIsGeneratingMessage, consoleOutput, setConsoleOutput }) => {
+const ConsoleChatTabs = ({ 
+  codeState, setCodeState, chatMessages, setChatMessages, generatedMessage, setGeneratedMessage, isGeneratingMessage, setIsGeneratingMessage, 
+  consoleOutput, setConsoleOutput, currentUserInputMessage, setCurrentUserInputMessage, wsRef, handleSendUserChatMessage, currentUserInputMessageRef,
+  sendBtnEnabled, setSendBtnEnabled, isLoading, setIsLoading
+}) => {
   const [activeTab, setActiveTab] = useState("console");
 
   return (
@@ -49,14 +53,38 @@ const ConsoleChatTabs = ({ codeState, setCodeState, chatMessages, setChatMessage
 
       {/* Content */}
       <div className="flex-grow overflow-y-scroll no-scrollbar">
-        {activeTab === "console" && <ConsoleOutput codeState={codeState} setCodeState={setCodeState} output={consoleOutput} setOutput={setConsoleOutput} />}
+        {activeTab === "console" && <ConsoleOutput 
+          codeState={codeState}
+          setCodeState={setCodeState}
+          output={consoleOutput}
+          setOutput={setConsoleOutput}
+          setCurrentUserInputMessage={setCurrentUserInputMessage}
+          setActiveTab={setActiveTab}
+          handleSendUserChatMessage={handleSendUserChatMessage}
+          currentUserInputMessageRef={currentUserInputMessageRef}
+          setSendBtnEnabled={setSendBtnEnabled}
+        />}
+
         {activeTab === "chat" && <ChatInterface messages={chatMessages}
-                setMessages={setChatMessages}
-                generatedMessage={generatedMessage}
-                setGeneratedMessage={setGeneratedMessage}
-                isGenerating={isGeneratingMessage}
-                setIsGenerating={setIsGeneratingMessage}
-                codeState={codeState} />}
+          setMessages={setChatMessages}
+          generatedMessage={generatedMessage}
+          setGeneratedMessage={setGeneratedMessage}
+          isGenerating={isGeneratingMessage}
+          setIsGenerating={setIsGeneratingMessage}
+          codeState={codeState}
+          currentUserInputMessage={currentUserInputMessage}
+          setCurrentUserInputMessage={setCurrentUserInputMessage}
+          handleSendUserChatMessage={handleSendUserChatMessage}
+          wsRef={wsRef}          
+          currentUserInputMessageRef={currentUserInputMessageRef}
+          
+          sendBtnEnabled={sendBtnEnabled}
+          setSendBtnEnabled={setSendBtnEnabled}
+
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+        />}
+
       </div>
       
     </div>
