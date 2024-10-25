@@ -53,7 +53,7 @@ const ConsoleChatTabs = ({
 
       {/* Content */}
       <div className="flex-grow overflow-y-scroll no-scrollbar">
-        {activeTab === "console" && <ConsoleOutput 
+        {activeTab === "console" && <ConsoleOutput
           codeState={codeState}
           setCodeState={setCodeState}
           output={consoleOutput}

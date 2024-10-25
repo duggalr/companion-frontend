@@ -28,3 +28,8 @@ export default function RootLayout({children,}: {children: React.ReactNode;}) {
   );
 
 }
+
+// TODO:
+// are the width settings on the layout different on chat vs console since it seems chat has bit wider IDE?
+// the rest of the layout is fine, would recommend hiding button on mobile and just have landing page and video
+// with message in brackets

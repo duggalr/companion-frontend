@@ -27,7 +27,8 @@ export default function TopNavBar () {
                     Companion
                 </a>
             </li>
-            <div className="ml-auto flex items-center space-x-6">
+
+            <div className="ml-auto md:flex items-center space-x-6  sm:block hidden">
                 <a
                     href="https://www.youtube.com/watch?v=4Plt_sh_cIg&ab_channel=Rahul"
                     target="_blank"
@@ -53,6 +54,7 @@ export default function TopNavBar () {
                 </a>
                 <ThemeToggle />
             </div>
+
         </ul>
 
     );
