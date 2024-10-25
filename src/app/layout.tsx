@@ -20,7 +20,7 @@ export default function RootLayout({children,}: {children: React.ReactNode;}) {
         {/* <title>Companion | Personal AI Tutor</title> */}
         {/* Flowbite */}
         {/* <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" /> */}
-        <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js" async></script>
       </head>
       <body className={inter.className}>{children}</body>
       <GoogleAnalytics gaId="G-SNNKFK2WYW" />
