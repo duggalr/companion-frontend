@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import ConsoleOutput from "./ConsoleOutput";
 import ChatInterface from "./ChatInterface";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,9 +6,9 @@ import { faTerminal, faComments } from '@fortawesome/free-solid-svg-icons';
 
 
 const ConsoleChatTabs = ({ 
-  codeState, setCodeState, chatMessages, setChatMessages, generatedMessage, setGeneratedMessage, isGeneratingMessage, setIsGeneratingMessage, 
-  consoleOutput, setConsoleOutput, currentUserInputMessage, setCurrentUserInputMessage, wsRef, handleSendUserChatMessage, currentUserInputMessageRef,
-  sendBtnEnabled, setSendBtnEnabled, isLoading, setIsLoading
+  codeState, setCodeState, chatMessages, generatedMessage, isGeneratingMessage,
+  consoleOutput, setConsoleOutput, currentUserInputMessage, setCurrentUserInputMessage, handleSendUserChatMessage, currentUserInputMessageRef,
+  sendBtnEnabled, setSendBtnEnabled, isLoading
 }) => {
   const [activeTab, setActiveTab] = useState("console");
 
@@ -66,23 +66,15 @@ const ConsoleChatTabs = ({
         />}
 
         {activeTab === "chat" && <ChatInterface messages={chatMessages}
-          setMessages={setChatMessages}
           generatedMessage={generatedMessage}
-          setGeneratedMessage={setGeneratedMessage}
           isGenerating={isGeneratingMessage}
-          setIsGenerating={setIsGeneratingMessage}
-          codeState={codeState}
           currentUserInputMessage={currentUserInputMessage}
           setCurrentUserInputMessage={setCurrentUserInputMessage}
           handleSendUserChatMessage={handleSendUserChatMessage}
-          wsRef={wsRef}          
           currentUserInputMessageRef={currentUserInputMessageRef}
-          
           sendBtnEnabled={sendBtnEnabled}
           setSendBtnEnabled={setSendBtnEnabled}
-
           isLoading={isLoading}
-          setIsLoading={setIsLoading}
         />}
 
       </div>

@@ -194,16 +194,12 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 codeState={editorCode}
                 setCodeState={setEditorCode}
                 chatMessages={chatMessages}
-                setChatMessages={setChatMessages}
                 generatedMessage={generatedMessage}
-                setGeneratedMessage={setGeneratedMessage}
                 isGeneratingMessage={isGeneratingMessage}
-                setIsGeneratingMessage={setIsGeneratingMessage}
                 consoleOutput={consoleOutput}
                 setConsoleOutput={setConsoleOutput}
                 currentUserInputMessage={currentUserInputMessage}
                 setCurrentUserInputMessage={setCurrentUserInputMessage}
-                wsRef={wsRef}
                 handleSendUserChatMessage={handleSendUserChatMessage}
                 currentUserInputMessageRef={currentUserInputMessageRef}
 
@@ -211,11 +207,10 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 setSendBtnEnabled={setSendBtnEnabled}
 
                 isLoading={isLoading}
-                setIsLoading={setIsLoading}                
-
+                
             />
         </div>
-  
+
       </div>
   
     );
