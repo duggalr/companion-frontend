@@ -16,7 +16,7 @@ export default function Home() {
                 <p className="text-sm text-center">
                     Made with ❤️ by <a href="https://lambdalabs.com/" target="_blank" rel="noopener noreferrer"
 className="text-blue-400 hover:text-blue-600 hover:no-underline transition-colors duration-300">
-    Lambda Labs
+    Lambda
 </a>
                 </p>
             </div>

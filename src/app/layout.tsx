@@ -17,20 +17,6 @@ export const metadata = {
 
 export default function RootLayout({children,}: {children: React.ReactNode;}) {
   
-  // const isProduction = process.env.NEXT_PUBLIC_CURRENT_ENVIRONMENT === 'production';
-  // const pathname = usePathname();
-
-  // useEffect(() => {
-  //   const handleRouteChange = (url: string) => {
-  //     window.gtag('config', 'G-SNNKFK2WYW', {
-  //       page_path: url,
-  //     });
-  //   };
-  //   if (window.gtag) {
-  //     handleRouteChange(pathname);
-  //   }
-  // }, [pathname]);
-  
   return (
     <html lang="en">
       <head>

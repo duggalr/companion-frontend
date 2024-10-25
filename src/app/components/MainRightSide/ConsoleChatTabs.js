@@ -5,7 +5,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTerminal, faComments } from '@fortawesome/free-solid-svg-icons';
 
 
-const ConsoleChatTabs = ({ codeState, setCodeState, chatMessages, setChatMessages, generatedMessage, setGeneratedMessage, isGeneratingMessage, setIsGeneratingMessage, consoleOutput, setConsoleOutput }) => {
+const ConsoleChatTabs = ({ 
+  codeState, setCodeState, chatMessages, generatedMessage, isGeneratingMessage,
+  consoleOutput, setConsoleOutput, currentUserInputMessage, setCurrentUserInputMessage, handleSendUserChatMessage, currentUserInputMessageRef,
+  sendBtnEnabled, setSendBtnEnabled, isLoading
+}) => {
   const [activeTab, setActiveTab] = useState("console");
 
   return (
@@ -49,14 +53,30 @@ const ConsoleChatTabs = ({ codeState, setCodeState, chatMessages, setChatMessage
 
       {/* Content */}
       <div className="flex-grow overflow-y-scroll no-scrollbar">
-        {activeTab === "console" && <ConsoleOutput codeState={codeState} setCodeState={setCodeState} output={consoleOutput} setOutput={setConsoleOutput} />}
+        {activeTab === "console" && <ConsoleOutput 
+          codeState={codeState}
+          setCodeState={setCodeState}
+          output={consoleOutput}
+          setOutput={setConsoleOutput}
+          setCurrentUserInputMessage={setCurrentUserInputMessage}
+          setActiveTab={setActiveTab}
+          handleSendUserChatMessage={handleSendUserChatMessage}
+          currentUserInputMessageRef={currentUserInputMessageRef}
+          setSendBtnEnabled={setSendBtnEnabled}
+        />}
+
         {activeTab === "chat" && <ChatInterface messages={chatMessages}
-                setMessages={setChatMessages}
-                generatedMessage={generatedMessage}
-                setGeneratedMessage={setGeneratedMessage}
-                isGenerating={isGeneratingMessage}
-                setIsGenerating={setIsGeneratingMessage}
-                codeState={codeState} />}
+          generatedMessage={generatedMessage}
+          isGenerating={isGeneratingMessage}
+          currentUserInputMessage={currentUserInputMessage}
+          setCurrentUserInputMessage={setCurrentUserInputMessage}
+          handleSendUserChatMessage={handleSendUserChatMessage}
+          currentUserInputMessageRef={currentUserInputMessageRef}
+          sendBtnEnabled={sendBtnEnabled}
+          setSendBtnEnabled={setSendBtnEnabled}
+          isLoading={isLoading}
+        />}
+
       </div>
       
     </div>
