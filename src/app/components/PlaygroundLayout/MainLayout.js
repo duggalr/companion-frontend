@@ -61,15 +61,15 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             setIsLoading(false);
             setChatMessages((prevMessages) => [...prevMessages, { text: accumulatedMessage, sender: "bot" }]);
             setMessageSent(true); // Mark that the message has been sent (triggers useEffect)
-  
+
         } else {
-  
+
           accumulatedMessage += message;
           setGeneratedMessage((prevMessage) => prevMessage + message + "");
           setIsGeneratingMessage(true);
 
         }
-  
+
       };
     
       socket.onclose = () => {
@@ -137,6 +137,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             setSendBtnEnabled(false);
             setIsLoading(true);
             setCurrentUserInputMessage("");
+            currentUserInputMessageRef.current = "";
             setChatMessages((prevMessages) => [...prevMessages, newMessage]);
             setMessageSent(true); // Mark that the message has been sent (triggers useEffect)
     
