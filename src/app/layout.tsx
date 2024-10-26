@@ -1,8 +1,5 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
-// import { useEffect } from 'react';
-// import Script from 'next/script';
-// import { usePathname } from 'next/navigation';
 import { GoogleAnalytics } from '@next/third-parties/google';
 
 const inter = Inter({ 
@@ -21,6 +18,7 @@ export default function RootLayout({children,}: {children: React.ReactNode;}) {
     <html lang="en">
       <head>
         {/* <title>Companion | Personal AI Tutor</title> */}
+        <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js" async></script>
       </head>
       <body className={inter.className}>{children}</body>
       <GoogleAnalytics gaId="G-SNNKFK2WYW" />

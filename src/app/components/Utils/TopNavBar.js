@@ -15,8 +15,7 @@ export default function TopNavBar () {
     return (
 
         <ul
-            // className="flex flex-wrap text-sm font-medium text-center border-b-2 border-gray-300 bg-[#F3F4F6] dark:bg-gray-900 dark:text-gray-300"
-            className="flex flex-wrap text-sm font-medium text-center border-b-2 border-gray-300 bg-[#F3F4F6] dark:bg-gray-900 dark:text-gray-300"
+            className="flex text-sm font-medium text-center border-b-2 border-gray-300 bg-[#F3F4F6] dark:bg-gray-900 dark:text-gray-300"
         >
             <li>
                 <a
@@ -28,7 +27,8 @@ export default function TopNavBar () {
                     Companion
                 </a>
             </li>
-            <div className="ml-auto flex items-center space-x-6">
+
+            <div className="ml-auto lg:flex items-center space-x-6 hidden">
                 <a
                     href="https://www.youtube.com/watch?v=4Plt_sh_cIg&ab_channel=Rahul"
                     target="_blank"
@@ -54,6 +54,7 @@ export default function TopNavBar () {
                 </a>
                 <ThemeToggle />
             </div>
+
         </ul>
 
     );

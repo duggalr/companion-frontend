@@ -3,11 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 
-// const ChatInterface = ({ messages, setMessages, generatedMessage, setGeneratedMessage, isGenerating, setIsGenerating, codeState, 
-//   currentUserInputMessage, setCurrentUserInputMessage, handleSendUserChatMessage, wsRef, currentUserInputMessageRef,
-//   sendBtnEnabled, setSendBtnEnabled, isLoading, setIsLoading
-// }) => {
-
 const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserInputMessage, setCurrentUserInputMessage, 
   handleSendUserChatMessage, currentUserInputMessageRef, sendBtnEnabled, setSendBtnEnabled, isLoading
 }) => {
