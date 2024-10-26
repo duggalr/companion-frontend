@@ -146,15 +146,15 @@ def find_even_numbers(start, end):
   }
 
   return (
-    <div className="flex flex-col h-full mt-2 ml-4 bg-[#F3F4F6] dark:bg-gray-900">
+    // <div className="flex flex-col h-full mt-2 ml-4 bg-[#F3F4F6] dark:bg-gray-900">
 
-      {/* Sample Exercises */}
+    <div className="flex flex-col h-4/5 dark:bg-gray-900 p-4">
+
       <span className="text-gray-500 dark:text-gray-400 text-xs pt-2 pb-2 tracking-normal">
         Work through some sample exercises with the tutor.
       </span>
 
       <div className="flex space-x-4 pb-2 mt-2">
-        {/* setCodeState */}
         <button onClick={() => handleExerciseButtonClick("exercise_one")} className="text-blue-500 dark:text-blue-400 hover:underline text-[12.5px] tracking-normal">Exercise 1</button>
         <button onClick={() => handleExerciseButtonClick("exercise_two")} className="text-blue-500 dark:text-blue-400 hover:underline text-[12.5px] tracking-normal">Exercise 2</button>
         <button onClick={() => handleExerciseButtonClick("exercise_three")} className="text-blue-500 dark:text-blue-400 hover:underline text-[12.5px] tracking-normal">Exercise 3</button>
@@ -162,7 +162,6 @@ def find_even_numbers(start, end):
 
       <hr className="mt-2 mb-1"/>
 
-      {/* Console Output Box */}
       <span className="text-gray-500 dark:text-gray-400 text-xs pt-4 pl-1 pb-2 tracking-normal">
         Run your code and the results will be shown in the console below. More language support coming soon!
       </span>
@@ -187,7 +186,7 @@ def find_even_numbers(start, end):
 
         <button
           onClick={handleRun}
-          disabled={isLoading} // Disable button when loading
+          disabled={isLoading}
           className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all 
             ${isLoading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-700"}`}
         >
