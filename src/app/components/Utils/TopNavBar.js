@@ -28,7 +28,7 @@ export default function TopNavBar () {
                 </a>
             </li>
 
-            <div className="ml-auto md:flex items-center space-x-6 sm:block hidden">
+            <div className="ml-auto lg:flex items-center space-x-6 hidden">
                 <a
                     href="https://www.youtube.com/watch?v=4Plt_sh_cIg&ab_channel=Rahul"
                     target="_blank"
