@@ -146,9 +146,7 @@ def find_even_numbers(start, end):
   }
 
   return (
-    // <div className="flex flex-col h-full mt-2 ml-4 bg-[#F3F4F6] dark:bg-gray-900">
-
-    <div className="flex flex-col h-4/5 dark:bg-gray-900 p-4">
+    <div className="flex flex-col h-full mt-2 ml-4 bg-[#F3F4F6] dark:bg-gray-900">
 
       <span className="text-gray-500 dark:text-gray-400 text-xs pt-2 pb-2 tracking-normal">
         Work through some sample exercises with the tutor.
