@@ -78,6 +78,23 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef }) => {
         setCodeState(value);
     }
 
+
+    // Command/Ctrl+s event-listener to prevent default saving behavior
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if ((event.metaKey || event.ctrlKey) && event.key === 's') {
+                event.preventDefault();
+            }
+        };
+    
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+
+    }, []);
+
+
     return (
         <div className="h-full w-full border-r-2 border-gray-300">
             <Editor
