@@ -89,7 +89,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     useEffect(() => {
         if (messageSent) {
 
-            console.log('State updated, running dependent logic...', chatMessages);
+            // console.log('State updated, running dependent logic...', chatMessages);
             let last_message_dict = chatMessages[chatMessages.length - 1];
             if (last_message_dict['sender'] == 'user'){
 
@@ -112,7 +112,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                     type: 'user_message',
                     complete: true
                 };
-                console.log('messageForBackend:', messageForBackend);
+                // console.log('messageForBackend:', messageForBackend);
                 wsCurrent.send(JSON.stringify(messageForBackend));
 
             }
