@@ -40,7 +40,7 @@ export default function HeroNavBar() {
                     >
                         <li>
                             <a
-                                href="https://discord.gg/gVf5CdZP"
+                                href="https://discord.gg/rApDKnkY"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] font-normal"
