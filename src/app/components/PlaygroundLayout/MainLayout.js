@@ -35,8 +35,11 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     // Websocket State
     const FASTAPI_WEBSOCKET_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
     const wsRef = useRef(null);
-    let accumulatedMessage = "";
+    // let accumulatedMessage = "";
+    const accumulatedMessageRef = useRef("");
     
+    const [messageSent, setMessageSent] = useState(false);  // Flag to track update
+
     // Web Socket
     useEffect(() => {
 
@@ -49,24 +52,31 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
   
       socket.onmessage = (event) => {
         const message = event.data;
-    
+        
         if (message === "MODEL_GEN_COMPLETE") {
       
+            // Add accumulated message to chat and then reset accumulated message
+            setChatMessages((prevMessages) => [
+                ...prevMessages, 
+                { text: accumulatedMessageRef.current, sender: "bot" }
+            ]);
+            
+            // Use setTimeout to reset generatedMessage with a short delay
             setTimeout(() => {
-                accumulatedMessage = "";
-            }, 0);
-    
-            setGeneratedMessage("");
-            setIsGeneratingMessage(false);
-            setIsLoading(false);
-            setChatMessages((prevMessages) => [...prevMessages, { text: accumulatedMessage, sender: "bot" }]);
-            setMessageSent(true); // Mark that the message has been sent (triggers useEffect)
+                setGeneratedMessage("");
+                setIsGeneratingMessage(false);
+                setIsLoading(false);
+                setMessageSent(true); // Mark that the message has been sent (triggers useEffect)
+            }, 50); // Adjust delay as needed
 
         } else {
 
-          accumulatedMessage += message;
-          setGeneratedMessage((prevMessage) => prevMessage + message + "");
-          setIsGeneratingMessage(true);
+            // accumulatedMessage += message;
+            // setGeneratedMessage((prevMessage) => prevMessage + message + "");
+            // setIsGeneratingMessage(true);
+            accumulatedMessageRef.current += message; // Accumulate message
+            setGeneratedMessage((prevMessage) => prevMessage + message); // Update visible message
+            setIsGeneratingMessage(true);
 
         }
 
@@ -85,11 +95,11 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     }, []);
 
   
-    const [messageSent, setMessageSent] = useState(false);  // Flag to track update
     useEffect(() => {
         if (messageSent) {
 
-            // console.log('State updated, running dependent logic...', chatMessages);
+            accumulatedMessageRef.current = "";
+
             let last_message_dict = chatMessages[chatMessages.length - 1];
             if (last_message_dict['sender'] == 'user'){
 
@@ -112,10 +122,9 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                     type: 'user_message',
                     complete: true
                 };
-                // console.log('messageForBackend:', messageForBackend);
                 wsCurrent.send(JSON.stringify(messageForBackend));
 
-            }
+            } 
 
         }
       }, [chatMessages, messageSent]);
@@ -140,7 +149,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             currentUserInputMessageRef.current = "";
             setChatMessages((prevMessages) => [...prevMessages, newMessage]);
             setMessageSent(true); // Mark that the message has been sent (triggers useEffect)
-    
+
         }
 
     };
