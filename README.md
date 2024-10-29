@@ -24,7 +24,7 @@ Companion is structured with a **Next.js frontend** and a **FastAPI backend**, o
 ### Backend ([repo](https://github.com/duggalr/companion-backend))
 
 - **Framework**: FastAPI
-- **Stack**: Using fastapi with celery and redis to manage remote code execution in isolated docker containers. Using Lambda's Inference API (hermes3-405b) for LLM chat completions.
+- **Stack**: Using fastapi with celery and redis to manage remote code execution in isolated docker containers. Using [Lambda's Inference API (hermes3-405b)](https://docs.lambdalabs.com/public-cloud/lambda-chat-api/) for LLM chat completions.
 - **Deployment**: Hosted on AWS Elastic Beanstalk
 
 ---
