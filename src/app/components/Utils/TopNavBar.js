@@ -41,7 +41,7 @@ export default function TopNavBar () {
                     video walkthrough
                 </a>
                 <a
-                    href="https://github.com/duggalr/code-companion"
+                    href="https://github.com/duggalr/companion-frontend"
                     // className="p-2.5 pr-4 text-black font-normal dark:text-gray-300 text-[14px]"
                     target="_blank"
                     rel="noopener noreferrer"
