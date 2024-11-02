@@ -124,7 +124,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 };
                 wsCurrent.send(JSON.stringify(messageForBackend));
 
-            } 
+            }
 
         }
       }, [chatMessages, messageSent]);
