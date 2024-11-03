@@ -83,12 +83,13 @@ const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserIn
           value={currentUserInputMessage}
           onChange={(e) => handleNewInputValue(e)}
           onKeyDown={handleEnterKey}
-          className="text-[14px] flex-grow resize-none p-3 bg-[#F3F4F6] dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 mr-2"
+          className="text-[14px] flex-grow resize-y p-3 bg-[#F3F4F6] dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 mr-2"
           placeholder="type a message..."
           rows={1}
+          style={{ minHeight: '50px', maxHeight: '120px' }}
           disabled={isLoading}
         />
-        
+
         <button
           onClick={_handleMessageSend}
           disabled={isLoading || !sendBtnEnabled} // Disable when loading or when send button is not enabled
