@@ -106,6 +106,7 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef }) => {
                     minimap: { enabled: false },
                     scrollBeyondLastLine: false,
                     selectOnLineNumbers: true,
+                    wordWrap: "on",
                 }}
                 onChange={(value) => _handleCodeStateChange(value ?? "")}
                 onMount={handleEditorDidMount} // Hook into editor lifecycle
