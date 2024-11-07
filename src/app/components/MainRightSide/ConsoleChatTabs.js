@@ -8,7 +8,7 @@ import { faTerminal, faComments } from '@fortawesome/free-solid-svg-icons';
 const ConsoleChatTabs = ({ 
   codeState, setCodeState, chatMessages, generatedMessage, isGeneratingMessage,
   consoleOutput, setConsoleOutput, currentUserInputMessage, setCurrentUserInputMessage, handleSendUserChatMessage, currentUserInputMessageRef,
-  sendBtnEnabled, setSendBtnEnabled, isLoading
+  sendBtnEnabled, setSendBtnEnabled, isLoading, handleClearChatMessage
 }) => {
   const [activeTab, setActiveTab] = useState("console");
 
@@ -75,6 +75,7 @@ const ConsoleChatTabs = ({
           sendBtnEnabled={sendBtnEnabled}
           setSendBtnEnabled={setSendBtnEnabled}
           isLoading={isLoading}
+          handleClearChatMessage={handleClearChatMessage}
         />}
 
       </div>

@@ -75,6 +75,7 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef }) => {
 
     const _handleCodeStateChange = (value) => {
         codeStateTmpRef.current = value;
+        localStorage.setItem("user_generated_code", value);
         setCodeState(value);
     }
 

@@ -68,11 +68,35 @@ const ConsoleOutput = ({ codeState, setCodeState, output, setOutput, setCurrentU
     }
   };
 
+  const _sendCodeSaveRequest = async function () {
+
+    let user_id = localStorage.getItem("user_id");
+    let current_code_state = localStorage.getItem("user_generated_code");
+
+    // console.log(user_id);
+    // console.log(current_code_state);
+
+    const payload = {
+      user_id: user_id,
+      code_state: current_code_state,
+    };
+
+    const response = await axios.post(FASTAPI_BASE_URL + '/save_user_run_code', payload);
+    console.log('api-code-save-response:', response);
+
+  };
+
+
   const handleRun = () => {
     // console.log("Current Code:", codeState);
     setOutput("loading..."); // Set the console output to loading while request is made
     setIsLoading(true); // Start the loading state
-    _sendCodeExecutionRequest(codeState);
+ 
+    // _sendCodeExecutionRequest(codeState);
+
+    // TODO:
+    _sendCodeSaveRequest();
+
   };
 
   const handleExerciseButtonClick = (exercise_id) => {

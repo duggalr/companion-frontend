@@ -5,21 +5,41 @@ import ConsoleChatTabs from "../MainRightSide/ConsoleChatTabs";
 
 
 const MainLayout = () => {
+
     // const [leftWidth, setLeftWidth] = useState(window.innerWidth / 2); // Initial width for editor
     const [leftWidth, setLeftWidth] = useState(720); // Initial width for editor
 
-    // Parent State
-    const [editorCode, setEditorCode] = useState("\ndef hello_world():\n    return 'Hello World'\n\nhello_world()\n");
-    const codeStateTmpRef = useRef("\ndef hello_world():\n    return 'Hello World'\n\nhello_world()\n");
-    const [chatMessages, setChatMessages] = useState([        
-        {
+    // // Parent State
+    // const [editorCode, setEditorCode] = useState("\ndef hello_world():\n    return 'Hello World'\n\nhello_world()\n");
+    // const codeStateTmpRef = useRef("\ndef hello_world():\n    return 'Hello World'\n\nhello_world()\n");
+
+//     const [chatMessages, setChatMessages] = useState([        
+//         {
+//             text: `Welcome! 😄 I'm Companion, your personal programming tutor.
+
+// If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
+//             sender: "bot",
+//             complete: true
+//         }
+//     ]);
+
+    const [editorCode, setEditorCode] = useState("");
+    const codeStateTmpRef = useRef("");
+
+    // const [chatMessages, setChatMessages] = useState([]);
+    const [chatMessages, setChatMessages] = useState(() => {
+        // Load initial state from localStorage if available
+        const storedMessages = localStorage.getItem('user_generated_message_list');
+
+        return storedMessages ? JSON.parse(storedMessages) : [{
             text: `Welcome! 😄 I'm Companion, your personal programming tutor.
 
 If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
             sender: "bot",
             complete: true
-        }
-    ]);
+        }];
+
+    });
 
     const [generatedMessage, setGeneratedMessage] = useState(""); // State to track the streaming message
     const [isGeneratingMessage, setIsGeneratingMessage] = useState(false); // Track whether we're currently generating a response
@@ -97,12 +117,9 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
   
     useEffect(() => {
         if (messageSent) {
-
             accumulatedMessageRef.current = "";
-
             let last_message_dict = chatMessages[chatMessages.length - 1];
             if (last_message_dict['sender'] == 'user'){
-
                 const wsCurrent = wsRef.current;
                 // send to backend via websocket to get response
                 let all_chat_messages_str = "";
@@ -123,11 +140,10 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                     complete: true
                 };
                 wsCurrent.send(JSON.stringify(messageForBackend));
-
             }
-
         }
-      }, [chatMessages, messageSent]);
+    }, [chatMessages, messageSent]);
+
 
     const handleSendUserChatMessage = () => {
         const userMessage = currentUserInputMessageRef.current;
@@ -160,12 +176,66 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     useEffect(() => {
         // Set hydration to true after component mounts (on the client-side)
         setIsHydrated(true);
+
+        let user_id = localStorage.getItem("user_id");
+        if (user_id === null) {
+            let rnd_user_id = Math.floor(Math.random() * 1000000000000000000).toString();
+            localStorage.setItem("user_id", rnd_user_id);
+        } else {
+
+            let user_generated_code = localStorage.getItem("user_generated_code");
+            // let conversation_history_list = localStorage.getItem("conversation_history_list");
+
+            if (user_generated_code === null) {
+
+                let hello_world_code = "\ndef hello_world():\n    return 'Hello World'\n\nhello_world()\n";
+                codeStateTmpRef.current = hello_world_code;
+                setEditorCode(hello_world_code);
+
+                localStorage.setItem("user_generated_code", hello_world_code);
+
+            } else {
+
+                codeStateTmpRef.current = user_generated_code;
+                setEditorCode(user_generated_code);
+
+            }
+
+            // // TODO: 
+            // let user_generated_message_list = localStorage.getItem("user_generated_message_list");
+            // console.log('user_generated_message_list', JSON.parse(user_generated_message_list));
+
+        }
+
     }, []);
+
+    // localstorage chat messages listener
+    useEffect(() => {
+        // Whenever chatMessages changes, update localStorage
+        localStorage.setItem('user_generated_message_list', JSON.stringify(chatMessages));
+        console.log('new-local-storage:', JSON.parse(localStorage.getItem('user_generated_message_list')));
+
+    }, [chatMessages]);
+
 
     // If not hydrated, return nothing (or a loading spinner)
     if (!isHydrated) {
         return null; // or return a loading spinner if desired
     }
+
+
+    const handleClearChatMessage = () => {
+        console.log('clear-chat-messages...');
+        setChatMessages([{
+            text: `Welcome! 😄 I'm Companion, your personal programming tutor.
+
+If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
+            sender: "bot",
+            complete: true
+        }]);
+        
+    }
+
 
     return (
 
@@ -217,7 +287,9 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 setSendBtnEnabled={setSendBtnEnabled}
 
                 isLoading={isLoading}
-                
+
+                handleClearChatMessage={handleClearChatMessage}
+
             />
         </div>
 

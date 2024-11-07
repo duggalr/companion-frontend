@@ -4,7 +4,7 @@ import { faPaperPlane, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 
 const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserInputMessage, setCurrentUserInputMessage, 
-  handleSendUserChatMessage, currentUserInputMessageRef, sendBtnEnabled, setSendBtnEnabled, isLoading
+  handleSendUserChatMessage, currentUserInputMessageRef, sendBtnEnabled, setSendBtnEnabled, isLoading, handleClearChatMessage
 }) => {
 
   const inputValueRef = useRef("");
@@ -42,13 +42,32 @@ const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserIn
     handleSendUserChatMessage();
   }
 
+  const _handleClearMessages = () => {
+    handleClearChatMessage();
+  }
+
   return (
 
     <div className="flex flex-col h-4/5 dark:bg-gray-900 p-4">
 
-      <span className="text-gray-500 dark:text-gray-400 text-xs pt-1 pl-1 pb-4 tracking-normal">
+      {/* <span className="text-gray-500 dark:text-gray-400 text-xs pt-1 pl-1 pb-4 tracking-normal">
         Get help in guiding your thinking through programming problems, with Companion, an AI Tutor.
-      </span>
+      </span> */}
+
+      <div className="flex justify-between items-center">
+        <span className="text-gray-500 dark:text-gray-400 text-xs pt-1 pl-1 pb-4 tracking-normal">
+          Get help in guiding your thinking through programming problems, with Companion, an AI Tutor.
+          <br/>
+        </span>
+        {/* <button className="text-blue-500 text-xs" onClick={_handleClearMessages}>
+          Clear text
+        </button> */}
+        {messages.length > 1 && (
+          <button className="text-blue-500 text-xs" onClick={_handleClearMessages}>
+            Clear text
+          </button>
+        )}
+      </div>
 
       {/* Messages Area */}
       <div className="flex-grow overflow-y-auto p-4 space-y-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-[#F3F4F6] dark:bg-gray-800">
