@@ -1,12 +1,52 @@
 "use client";
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from "react";
+import { useUser } from '@auth0/nextjs-auth0/client';
 import HeroNavBar from './components/Hero/HeroNavBar';
 import HeroPrimary from './components/Hero/HeroPrimary';
 
+import { validAuthenticatedUser } from '../lib/checkAuthenticatedUser';
+
 
 export default function Home() {
+    
+    const { user } = useUser();
+    const [userAccessToken, setUserAccessToken] = useState(null);
+    const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {}, []);
+    const handleFetchUserData = async () => {
+
+        console.log('current-USER:', user);
+
+        try {
+            const res = await fetch('/api/get-access-token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const { accessToken } = await res.json();
+            if (accessToken !== undefined) {
+                setUserAccessToken(accessToken);
+                setUserIsAuthenticated(true);
+                setLoading(true);
+
+                // TODO: what if success is false?
+                let validated_user_response = await validAuthenticatedUser(accessToken);
+                console.log('validated user response', validated_user_response);
+
+            };
+        } catch (error) {
+            // console.error("Error fetching access token or data:", error);
+        }
+    };
+
+    useEffect(() => {
+
+        handleFetchUserData();
+
+    }, []);
+
 
     return (
        
@@ -21,8 +61,9 @@ className="text-blue-400 hover:text-blue-600 hover:no-underline transition-color
                 </p>
             </div>
 
-            <HeroNavBar />
+            <HeroNavBar accessToken={userAccessToken} userAuthenticated={userIsAuthenticated} pageLoading={loading} />
             <HeroPrimary />
+
         </main>
 
     );

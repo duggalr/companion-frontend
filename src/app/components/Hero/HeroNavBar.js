@@ -1,5 +1,7 @@
 import ThemeToggle from "../Utils/ThemeToggle";
 import { Pacifico } from 'next/font/google';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRightFromBracket, faSquareCaretRight } from "@fortawesome/free-solid-svg-icons";
 
 
 const pacifico_font = Pacifico({
@@ -8,7 +10,7 @@ const pacifico_font = Pacifico({
 });
 
 
-export default function HeroNavBar() {
+export default function HeroNavBar({ accessToken, userAuthenticated, pageLoading }) {
 
     return (
 
@@ -65,6 +67,49 @@ export default function HeroNavBar() {
                                 Github
                             </a>
                         </li>
+
+                        {/* Dashboard */}
+                        {(userAuthenticated && pageLoading) && (
+
+                            <li>
+                                <a
+                                    href="#"
+                                    className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] hover mr-2 font-normal"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <FontAwesomeIcon icon={faSquareCaretRight} className="text-black pr-2 dark:text-white w-4 h-4" />
+                                    Dashboard
+                                </a>
+                            </li>
+
+                        )}
+
+                        {/* Login */}
+                        {(!userAuthenticated && pageLoading) ? (
+                            <li>
+                                <a
+                                    href="/api/auth/login"
+                                    className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] hover mr-2 font-normal"
+                                >
+                                    <FontAwesomeIcon icon={faArrowRightFromBracket} className="text-black pr-2 dark:text-white w-4 h-4" />
+                                    Signup or Login
+                                </a>
+                            </li>
+                        ) : (
+
+                            <li>
+                                <a
+                                    href="/api/auth/logout"
+                                    className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] hover mr-2 font-normal"
+                                >
+                                    <FontAwesomeIcon icon={faArrowRightFromBracket} className="text-black pr-2 dark:text-white w-4 h-4" />
+                                    Logout
+                                </a>
+                            </li>
+
+                        )}
+
                         <li className="md:flex items-center text-[17px] sm:block hidden">
                             <ThemeToggle />
                         </li>

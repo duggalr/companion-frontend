@@ -73,28 +73,46 @@ const ConsoleOutput = ({ codeState, setCodeState, output, setOutput, setCurrentU
     let user_id = localStorage.getItem("user_id");
     let current_code_state = localStorage.getItem("user_generated_code");
 
-    // console.log(user_id);
-    // console.log(current_code_state);
+    let current_parent_playground_object_id = localStorage.getItem("parent_playground_object_id");
+    let payload;
+    if (current_parent_playground_object_id !== null){
 
-    const payload = {
-      user_id: user_id,
-      code_state: current_code_state,
-    };
+      payload = {
+        user_id: user_id,
+        code_state: current_code_state,
+        parent_playground_object_id: current_parent_playground_object_id
+      };
 
+    } else {
+
+      payload = {
+        user_id: user_id,
+        code_state: current_code_state,
+      };
+
+    }
+  
     const response = await axios.post(FASTAPI_BASE_URL + '/save_user_run_code', payload);
     console.log('api-code-save-response:', response);
+    
+    const response_data = response['data'];
+    console.log('response-data:', response_data);
+
+    if (response_data['status_code'] === 200) {
+      let parent_playground_object_id = response_data['parent_playground_object_id'];
+      localStorage.setItem('parent_playground_object_id', parent_playground_object_id);
+    }
 
   };
-
 
   const handleRun = () => {
     // console.log("Current Code:", codeState);
     setOutput("loading..."); // Set the console output to loading while request is made
     setIsLoading(true); // Start the loading state
  
-    // _sendCodeExecutionRequest(codeState);
+    _sendCodeExecutionRequest(codeState);
+    // TODO: auth case
 
-    // TODO:
     _sendCodeSaveRequest();
 
   };

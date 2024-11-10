@@ -1,8 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
+import axios from "axios";
 
 
 const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef }) => {
+
+    const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_FASTAPI_URL;
 
     const handleEditorDidMount = (editor, monaco) => {
         // Define the light theme
@@ -79,12 +82,62 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef }) => {
         setCodeState(value);
     }
 
+    
+    const [showAlert, setShowAlert] = useState(false);
+    const showTemporaryAlert = () => {
+        setShowAlert(true);
+        setTimeout(() => {
+            setShowAlert(false);
+        }, 1000);
+    };
+
+    const _sendCodeSaveRequest = async function () {
+
+        let user_id = localStorage.getItem("user_id");
+        let current_code_state = localStorage.getItem("user_generated_code");
+
+        let current_parent_playground_object_id = localStorage.getItem("parent_playground_object_id");
+        let payload;
+        if (current_parent_playground_object_id !== null){
+
+            payload = {
+                user_id: user_id,
+                code_state: current_code_state,
+                parent_playground_object_id: current_parent_playground_object_id
+            };
+
+        } else {
+
+            payload = {
+                user_id: user_id,
+                code_state: current_code_state,
+            };
+
+        }
+        
+        const response = await axios.post(FASTAPI_BASE_URL + '/save_user_run_code', payload);
+        console.log('api-code-save-response:', response);
+        
+        const response_data = response['data'];
+        console.log('response-data:', response_data);
+
+        if (response_data['status_code'] === 200) {
+            let parent_playground_object_id = response_data['parent_playground_object_id'];
+            localStorage.setItem('parent_playground_object_id', parent_playground_object_id);
+
+            showTemporaryAlert();
+        }
+    
+    };
+
 
     // Command/Ctrl+s event-listener to prevent default saving behavior
     useEffect(() => {
         const handleKeyDown = (event) => {
             if ((event.metaKey || event.ctrlKey) && event.key === 's') {
                 event.preventDefault();
+                _sendCodeSaveRequest();
+
             }
         };
     
@@ -98,6 +151,13 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef }) => {
 
     return (
         <div className="h-full w-full border-r-2 border-gray-300">
+            
+            {showAlert && (
+                <div className="fixed top-1 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-1 rounded-md shadow-lg transition-opacity duration-300 text-[13px]">
+                    Code saved successfully! 🎉
+                </div>
+            )}
+
             <Editor
                 height="100%"
                 width="100%"
