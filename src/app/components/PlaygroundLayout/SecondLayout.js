@@ -53,7 +53,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         console.log('playground data', data);
 
         if (data['status_code'] == 404){
-      
+
             router.push('/404');
 
         } else {
@@ -61,6 +61,21 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             // TODO: set the code and chat messages in the state
             if (data['success'] === true){
 
+                let chat_messages_list = data['chat_messages'];
+
+                if (chat_messages_list.length > 0){
+                    setChatMessages(chat_messages_list);
+                } else {
+                    // default
+                    setChatMessages([{
+                        text: `Welcome! 😄 I'm Companion, your personal programming tutor.
+
+If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
+                        sender: "bot",
+                        complete: true
+                    }]);
+                }
+                
                 setEditorCode(data['code']);
 
             }
@@ -129,6 +144,8 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 // setCurrentAuthenticatedPID(current_pid);
                 currentAuthenticatedPIDRef.current = current_pid;
 
+                return saveCodeRes;
+
             } else {
                 // TODO: handle the error
             }
@@ -182,7 +199,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     };
 
-    // TODO: user loading
+    // Handling User Loading
     useEffect(() => {
 
         if (pageLoading === false) {
@@ -196,6 +213,10 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 let pg_obj_id = searchParams['pid'];
 
                 if (pg_obj_id !== undefined) {
+
+                    // TODO: implement fetching existing chat messages first for conversation if PID present
+                    // If no PID present, then, default chat messages
+                    // Then, proceed from there to testing/finalizing the new chat sending with auth (ensure in DB is good)
 
                     _handleGetPlaygroundData(pg_obj_id);
                     currentAuthenticatedPIDRef.current = pg_obj_id;
@@ -269,22 +290,51 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     }, [accessToken, userAuthenticated, pageLoading]);
 
 
-    const handleAnonSaveAndChatMsgSend = async function(msg_for_backend) {
+    const handleSaveAndChatMsgSend = async function(msg_for_backend) {
 
-        let code_save_response = await _sendCodeSaveRequest();
-        console.log('code-save-response:', code_save_response);
+        // // TODO: add authentication logic here
+        
+        // let current_pid = saveCodeRes['parent_playground_object_id'];
+        // addPidParam(current_pid);  // update url GET parameters
+        // // setCurrentAuthenticatedPID(current_pid);
+        // currentAuthenticatedPIDRef.current = current_pid;
 
+        // return saveCodeRes;
 
-        let current_parent_playground_object_id = code_save_response['parent_playground_object_id'];
-        msg_for_backend['parent_playground_object_id'] = current_parent_playground_object_id;
-        localStorage.setItem('parent_playground_object_id', current_parent_playground_object_id);
+        if (userAuthenticated) {
 
-        console.log('message-backend-new:', JSON.stringify(msg_for_backend));
+            let code_save_response = await _sendCodeSaveRequest();
+            console.log('code-save-response:', code_save_response);
+    
+            let current_parent_playground_object_id = code_save_response['parent_playground_object_id'];
+            msg_for_backend['parent_playground_object_id'] = current_parent_playground_object_id;
+            currentAuthenticatedPIDRef.current = current_parent_playground_object_id;
 
-        let wsCurrent = wsRef.current;
-        wsCurrent.send(JSON.stringify(msg_for_backend));
+            let wsCurrent = wsRef.current;
+            wsCurrent.send(JSON.stringify(msg_for_backend));
+
+        }
+        else {
+
+            let code_save_response = await _sendCodeSaveRequest();
+            console.log('code-save-response:', code_save_response);
+    
+            let current_parent_playground_object_id = code_save_response['parent_playground_object_id'];
+            msg_for_backend['parent_playground_object_id'] = current_parent_playground_object_id;
+            localStorage.setItem('parent_playground_object_id', current_parent_playground_object_id);
+    
+            console.log('message-backend-new:', JSON.stringify(msg_for_backend));
+    
+            let wsCurrent = wsRef.current;
+            wsCurrent.send(JSON.stringify(msg_for_backend));
+
+        }
 
     };
+
+
+
+
 
 
     // Handle Message Sending
@@ -295,6 +345,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             accumulatedMessageRef.current = "";
             let last_message_dict = chatMessages[chatMessages.length - 1];
             if (last_message_dict['sender'] == 'user'){
+
                 const wsCurrent = wsRef.current;
                 // send to backend via websocket to get response
                 let all_chat_messages_str = "";
@@ -307,7 +358,35 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 }
 
                 if (userAuthenticated){
-                    // TODO: implement
+
+                    if (currentAuthenticatedPIDRef.current === null){
+
+                        let messageForBackend = {
+                            text: last_message_dict['text'],
+                            user_code: codeStateTmpRef.current,
+                            all_user_messages_str: all_chat_messages_str,
+                            sender: 'user',
+                            type: 'user_message',
+                            complete: true
+                        };
+                        
+                        handleSaveAndChatMsgSend(messageForBackend);
+
+                    } else {
+
+                        let messageForBackend = {
+                            parent_playground_object_id: currentAuthenticatedPIDRef.current,
+                            text: last_message_dict['text'],
+                            user_code: codeStateTmpRef.current,
+                            all_user_messages_str: all_chat_messages_str,
+                            sender: 'user',
+                            type: 'user_message',
+                            complete: true
+                        };
+
+                        wsCurrent.send(JSON.stringify(messageForBackend));
+
+                    }
 
                 } 
                 else {
@@ -324,10 +403,10 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                             complete: true
                         };
 
-                        handleAnonSaveAndChatMsgSend(
+                        handleSaveAndChatMsgSend(
                             messageForBackend
-                        )
-                   
+                        );
+
                     } else {
 
                         let current_parent_playground_object_id = localStorage.getItem("parent_playground_object_id");                        
@@ -390,7 +469,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     }, [chatMessages]);
 
 
-    // // TODO: websocket
+    // Establishing and Handling Websocket Connection
     useEffect(() => {
 
         const socket = new WebSocket(FASTAPI_WEBSOCKET_URL);
