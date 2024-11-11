@@ -5,15 +5,32 @@ export async function saveUserRunCode(accessToken, payload) {
 
     let endPointUrl = API_BACKEND_URL + '/save_user_run_code';
 
-    const apiResponse = await fetch(endPointUrl, {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-    });
-    const data = await apiResponse.json();
-    return data;
+    if (accessToken === null) {
+
+        const apiResponse = await fetch(endPointUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+        const data = await apiResponse.json();
+        return data;
+
+    }
+    else {
+
+        const apiResponse = await fetch(endPointUrl, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+        const data = await apiResponse.json();
+        return data;
+
+    }
 
 }

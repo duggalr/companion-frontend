@@ -71,8 +71,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     const handleSendUserChatMessage = () => {
 
-        // TODO: add saving here
-
         const userMessage = currentUserInputMessageRef.current;
         const wsCurrent = wsRef.current;
         if (userMessage.trim() !== "" && wsCurrent) {
@@ -98,9 +96,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
 
     const addPidParam = (current_pid) => {
-
         window.history.pushState({}, '', `/playground?pid=${current_pid}`);
-
     };
 
     const _sendCodeSaveRequest = async function () {
@@ -137,7 +133,8 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 // TODO: handle the error
             }
 
-        } else {
+        }
+        else {
 
             let user_id = localStorage.getItem("user_id");
             let current_code_state = localStorage.getItem("user_generated_code");
@@ -159,19 +156,27 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                     user_id: user_id,
                     code_state: current_code_state,
                 };
-    
+
             }
-        
-            const response = await axios.post(FASTAPI_BASE_URL + '/save_user_run_code', payload);
-            console.log('api-code-save-response:', response);
+
+            let saveCodeRes = await saveUserRunCode(
+                null,
+                payload
+            );
+            console.log('save-code-response:', saveCodeRes);
+
+            return saveCodeRes;
+
+            // const response = await axios.post(FASTAPI_BASE_URL + '/save_user_run_code', payload);
+            // console.log('api-code-save-response:', response);
             
-            const response_data = response['data'];
-            console.log('response-data:', response_data);
+            // const response_data = response['data'];
+            // console.log('response-data:', response_data);
     
-            if (response_data['status_code'] === 200) {
-                let parent_playground_object_id = response_data['parent_playground_object_id'];
-                localStorage.setItem('parent_playground_object_id', parent_playground_object_id);
-            }
+            // if (response_data['status_code'] === 200) {
+            //     let parent_playground_object_id = response_data['parent_playground_object_id'];
+            //     localStorage.setItem('parent_playground_object_id', parent_playground_object_id);
+            // }
             
         }
 
@@ -239,13 +244,23 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
                 // Fetching any existing messages from localstorage
                 const storedMessages = localStorage.getItem('user_generated_message_list');
-                setChatMessages(storedMessages? JSON.parse(storedMessages) : [{
-                    text: `Welcome! 😄 I'm Companion, your personal programming tutor.
+                console.log('stored-messages:', storedMessages);
 
+                if (storedMessages === null || storedMessages.length === 0) {
+
+                    setChatMessages([{
+                        text: `Welcome! 😄 I'm Companion, your personal programming tutor.
+    
 If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
-                    sender: "bot",
-                    complete: true
-                }]);
+                        sender: "bot",
+                        complete: true
+                    }]);
+
+                } else {
+
+                    setChatMessages(JSON.parse(storedMessages));
+
+                }
 
             }
 
@@ -253,89 +268,173 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     }, [accessToken, userAuthenticated, pageLoading]);
 
-    
 
-    // // Handle Message Sending
-    // useEffect(() => {
-    //     if (messageSent) {
-    //         console.log('sent message:', messageSent);
+    const handleAnonSaveAndChatMsgSend = async function(msg_for_backend) {
 
-    //         accumulatedMessageRef.current = "";
-    //         let last_message_dict = chatMessages[chatMessages.length - 1];
-    //         if (last_message_dict['sender'] == 'user'){
-    //             const wsCurrent = wsRef.current;
-    //             // send to backend via websocket to get response
-    //             let all_chat_messages_str = "";
-    //             for (let i = 0; i < chatMessages.length-1; i++) {
-    //                 if (chatMessages[i].sender == 'user'){
-    //                     all_chat_messages_str += "USER: " + chatMessages[i].text + "\n";
-    //                 } else {
-    //                     all_chat_messages_str += "AI: " + chatMessages[i].text + "\n";
-    //                 }
-    //             }
+        let code_save_response = await _sendCodeSaveRequest();
+        console.log('code-save-response:', code_save_response);
 
-    //             const messageForBackend = {
-    //                 text: last_message_dict['text'],
-    //                 user_code: codeStateTmpRef.current,
-    //                 all_user_messages_str: all_chat_messages_str,
-    //                 sender: 'user',
-    //                 type: 'user_message',
-    //                 complete: true
-    //             };
-    //             wsCurrent.send(JSON.stringify(messageForBackend));
-    //         }
-    //     }
-    // }, [chatMessages, messageSent]);
+
+        let current_parent_playground_object_id = code_save_response['parent_playground_object_id'];
+        msg_for_backend['parent_playground_object_id'] = current_parent_playground_object_id;
+        localStorage.setItem('parent_playground_object_id', current_parent_playground_object_id);
+
+        console.log('message-backend-new:', JSON.stringify(msg_for_backend));
+
+        let wsCurrent = wsRef.current;
+        wsCurrent.send(JSON.stringify(msg_for_backend));
+
+    };
+
+
+    // Handle Message Sending
+    useEffect(() => {
+        if (messageSent) {
+            console.log('sent message:', messageSent);
+
+            accumulatedMessageRef.current = "";
+            let last_message_dict = chatMessages[chatMessages.length - 1];
+            if (last_message_dict['sender'] == 'user'){
+                const wsCurrent = wsRef.current;
+                // send to backend via websocket to get response
+                let all_chat_messages_str = "";
+                for (let i = 0; i < chatMessages.length-1; i++) {
+                    if (chatMessages[i].sender == 'user'){
+                        all_chat_messages_str += "USER: " + chatMessages[i].text + "\n";
+                    } else {
+                        all_chat_messages_str += "AI: " + chatMessages[i].text + "\n";
+                    }
+                }
+
+                if (userAuthenticated){
+                    // TODO: implement
+
+                } 
+                else {
+
+                    let current_parent_playground_object_id = localStorage.getItem("parent_playground_object_id");
+                    if (current_parent_playground_object_id === null){
+             
+                        let messageForBackend = {
+                            text: last_message_dict['text'],
+                            user_code: codeStateTmpRef.current,
+                            all_user_messages_str: all_chat_messages_str,
+                            sender: 'user',
+                            type: 'user_message',
+                            complete: true
+                        };
+
+                        handleAnonSaveAndChatMsgSend(
+                            messageForBackend
+                        )
+                   
+                    } else {
+
+                        let current_parent_playground_object_id = localStorage.getItem("parent_playground_object_id");                        
+                        let messageForBackend = {
+                            parent_playground_object_id: current_parent_playground_object_id,
+                            text: last_message_dict['text'],
+                            user_code: codeStateTmpRef.current,
+                            all_user_messages_str: all_chat_messages_str,
+                            sender: 'user',
+                            type: 'user_message',
+                            complete: true
+                        };
+                        
+                        wsCurrent.send(JSON.stringify(messageForBackend));
+
+                    }
+
+                    // let messageForBackend;
+                    // if (current_parent_playground_object_id === null){
+
+                    //     messageForBackend = {
+                    //         text: last_message_dict['text'],
+                    //         user_code: codeStateTmpRef.current,
+                    //         all_user_messages_str: all_chat_messages_str,
+                    //         sender: 'user',
+                    //         type: 'user_message',
+                    //         complete: true
+                    //     };
+
+                    // } else {
+
+                    //     messageForBackend = {
+                    //         parent_playground_object_id: current_parent_playground_object_id,
+                    //         text: last_message_dict['text'],
+                    //         user_code: codeStateTmpRef.current,
+                    //         all_user_messages_str: all_chat_messages_str,
+                    //         sender: 'user',
+                    //         type: 'user_message',
+                    //         complete: true
+                    //     };
+
+                    // }
+                   
+                    // wsCurrent.send(JSON.stringify(messageForBackend));
+
+                }
+
+                
+            }
+        }
+    }, [chatMessages, messageSent]);
+
+
+    // Chat Messages Event Listener for Local Storage
+    useEffect(() => {
+        if (chatMessages.length > 0) {
+            localStorage.setItem('user_generated_message_list', JSON.stringify(chatMessages));
+        }
+
+    }, [chatMessages]);
 
 
     // // TODO: websocket
-    // useEffect(() => {
+    useEffect(() => {
 
-    //     const socket = new WebSocket(FASTAPI_WEBSOCKET_URL);
-    //     socket.onopen = () => {
-    //         console.log("WebSocket connection established");
-    //     };
+        const socket = new WebSocket(FASTAPI_WEBSOCKET_URL);
+        socket.onopen = () => {
+            console.log("WebSocket connection established");
+        };
 
-    //     socket.onmessage = (event) => {
+        socket.onmessage = (event) => {
 
-    //         const message = event.data;
-    //         if (message === "MODEL_GEN_COMPLETE") {
-    //             // Add accumulated message to chat and then reset accumulated message
-    //             setChatMessages((prevMessages) => [
-    //                 ...prevMessages, 
-    //                 { text: accumulatedMessageRef.current, sender: "bot" }
-    //             ]);
+            const message = event.data;
+            if (message === "MODEL_GEN_COMPLETE") {
+                // Add accumulated message to chat and then reset accumulated message
+                setChatMessages((prevMessages) => [
+                    ...prevMessages, 
+                    { text: accumulatedMessageRef.current, sender: "bot" }
+                ]);
                 
-    //             // Use setTimeout to reset generatedMessage with a short delay
-    //             setTimeout(() => {
-    //                 setGeneratedMessage("");
-    //                 setIsGeneratingMessage(false);
-    //                 setIsLoading(false);
-    //                 setMessageSent(true); // Mark that the message has been sent (triggers useEffect)
-    //             }, 50); // Adjust delay as needed
+                // Use setTimeout to reset generatedMessage with a short delay
+                setTimeout(() => {
+                    setGeneratedMessage("");
+                    setIsGeneratingMessage(false);
+                    setIsLoading(false);
+                    setMessageSent(true); // Mark that the message has been sent (triggers useEffect)
+                }, 50); // Adjust delay as needed
+                
 
-    //         } else {
-    //             // accumulatedMessage += message;
-    //             // setGeneratedMessage((prevMessage) => prevMessage + message + "");
-    //             // setIsGeneratingMessage(true);
-    //             accumulatedMessageRef.current += message; // Accumulate message
-    //             setGeneratedMessage((prevMessage) => prevMessage + message); // Update visible message
-    //             setIsGeneratingMessage(true);
-    //         }
+            } else {
+                accumulatedMessageRef.current += message; // Accumulate message
+                setGeneratedMessage((prevMessage) => prevMessage + message); // Update visible message
+                setIsGeneratingMessage(true);
+            }
 
-    //     };
+        };
 
-    //     socket.onclose = () => {
-    //        // console.log("WebSocket connection closed");
-    //     };
+        socket.onclose = () => {
+           // console.log("WebSocket connection closed");
+        };
 
-    //     wsRef.current = socket;
-    //     return () => {
-    //         socket.close();
-    //     };
+        wsRef.current = socket;
+        return () => {
+            socket.close();
+        };
 
-    // }, []);
-
+    }, []);
 
 
     return (
@@ -369,7 +468,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                             </div>
                         }
                     >
-                        <CodeEditor codeState={editorCode} setCodeState={setEditorCode} codeStateTmpRef={codeStateTmpRef} />
+                        <CodeEditor codeState={editorCode} setCodeState={setEditorCode} codeStateTmpRef={codeStateTmpRef} _sendCodeSaveRequest={_sendCodeSaveRequest} />
                     </ResizableBox>
 
                     {/* Right Side */}
