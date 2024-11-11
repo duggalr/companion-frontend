@@ -34,6 +34,9 @@ const SecondLayout = ({ accessToken, userAuthenticated, pageLoading, searchParam
     const accumulatedMessageRef = useRef("");
     const [messageSent, setMessageSent] = useState(false);  // Flag to track update
 
+    // const [currentAuthenticatedPID, setCurrentAuthenticatedPID] = useState(null);
+    const currentAuthenticatedPIDRef = useRef(null);
+
 
     const handleClearChatMessage = () => {
         setChatMessages([{
@@ -95,65 +98,44 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
 
     const addPidParam = (current_pid) => {
-        const query = { ...router.query, pid: current_pid };
-        router.replace(
-            {
-                pathname: router.pathname,
-                query: query,
-            },
-            undefined,
-            { shallow: true }
-        );
+
+        window.history.pushState({}, '', `/playground?pid=${current_pid}`);
+
     };
 
     const _sendCodeSaveRequest = async function () {
 
-        // TODO: add authenticated case
         if (userAuthenticated === true){
 
-            let payload = {
-                code_state: codeStateTmpRef.current,
+            let payload;
+            if (currentAuthenticatedPIDRef.current !== null){
+
+                payload = {
+                    code_state: codeStateTmpRef.current,
+                    parent_playground_object_id: currentAuthenticatedPIDRef.current
+                }
+
+            } else {
+
+                payload = {
+                    code_state: codeStateTmpRef.current,
+                }
+
             }
 
             let saveCodeRes = await saveUserRunCode(accessToken, payload);
             console.log('save-code-response:', saveCodeRes);
 
-            if (savedCodeRes['status_code'] == 200){
+            if (saveCodeRes['status_code'] == 200){
 
-                let current_pid = savedCodeRes['parent_playground_object_id'];
+                let current_pid = saveCodeRes['parent_playground_object_id'];
                 addPidParam(current_pid);  // update url GET parameters
+                // setCurrentAuthenticatedPID(current_pid);
+                currentAuthenticatedPIDRef.current = current_pid;
 
             } else {
                 // TODO: handle the error
             }
-
-
-            // let saved_user_code_response = await saveUserRunCode(accessToken, payload);
-            // console.log('saved_user_code_response:', saved_user_code_response);
-
-            // const response_data = response['data'];
-            // console.log('response-data:', response_data);
-    
-            // if (response_data['status_code'] === 200) {
-            //     let parent_playground_object_id = response_data['parent_playground_object_id'];
-            //     localStorage.setItem('parent_playground_object_id', parent_playground_object_id);
-            // }
-
-
-            // // // TODO:
-            // //     // pass access token to endpoint and save
-
-            // // const response = await axios.post(FASTAPI_BASE_URL + '/save_user_run_code', payload);
-            // // console.log('api-code-save-response:', response);
-            
-            // // const response_data = response['data'];
-            // // console.log('response-data:', response_data);
-    
-            // // if (response_data['status_code'] === 200) {
-            // //     let parent_playground_object_id = response_data['parent_playground_object_id'];
-            // //     localStorage.setItem('parent_playground_object_id', parent_playground_object_id);
-            // // }
-
 
         } else {
 
@@ -211,6 +193,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 if (pg_obj_id !== undefined) {
 
                     _handleGetPlaygroundData(pg_obj_id);
+                    currentAuthenticatedPIDRef.current = pg_obj_id;
 
                 } else {
 
@@ -222,6 +205,11 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                         sender: "bot",
                         complete: true
                     }]);
+
+                    // let hello_world_code = "\ndef hello_world():\n    return 'Hello World'\n\nhello_world()\n";
+                    let hello_world_code = "# Write a hello world program\n\ndef hello_world():\n    return 'Hello World'\n\nhello_world()\n";
+                    codeStateTmpRef.current = hello_world_code;
+                    setEditorCode(hello_world_code);
 
                 }
             

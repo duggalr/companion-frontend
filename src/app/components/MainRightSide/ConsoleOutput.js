@@ -113,9 +113,9 @@ const ConsoleOutput = ({ codeState, setCodeState, output, setOutput, setCurrentU
   // };
 
   const handleRun = () => {
-    // console.log("Current Code:", codeState);
-    setOutput("loading..."); // Set the console output to loading while request is made
-    setIsLoading(true); // Start the loading state
+    // // console.log("Current Code:", codeState);
+    // setOutput("loading..."); // Set the console output to loading while request is made
+    // setIsLoading(true); // Start the loading state
  
     // _sendCodeExecutionRequest(codeState);
     // // TODO: auth case
