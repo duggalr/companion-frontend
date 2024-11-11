@@ -1,12 +1,15 @@
 import { useEffect, useState, useRef } from "react";
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { ResizableBox } from "react-resizable";
 import CodeEditor from '../MainLeftSide/CodeEditor';
 import ConsoleChatTabs from "../MainRightSide/ConsoleChatTabs";
-import fetchPlaygroundData from "../../../lib/fetchPlaygroundData";
+import { fetchPlaygroundData }  from "../../../lib/fetchPlaygroundData";
+import { saveUserRunCode }  from "../../../lib/saveUserRunCode";
 
 
-const SecondLayout = ({ accessToken, userAuthenticated, pageLoading }) => {
+const SecondLayout = ({ accessToken, userAuthenticated, pageLoading, searchParams }) => {
+
+    const router = useRouter();
 
     const [leftWidth, setLeftWidth] = useState(720); // Initial width for editor
     const [editorCode, setEditorCode] = useState("");
@@ -45,10 +48,24 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     const _handleGetPlaygroundData = async (pid) => {
         const data = await fetchPlaygroundData(accessToken, pid);
         console.log('playground data', data);
+
+        if (data['status_code'] == 404){
+      
+            router.push('/404');
+
+        } else {
+
+            // TODO: set the code and chat messages in the state
+            if (data['success'] === true){
+
+                setEditorCode(data['code']);
+
+            }
+
+        }
+
     };
 
-
-    
     const handleSendUserChatMessage = () => {
 
         // TODO: add saving here
@@ -77,20 +94,123 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     }
 
 
+    const addPidParam = (current_pid) => {
+        const query = { ...router.query, pid: current_pid };
+        router.replace(
+            {
+                pathname: router.pathname,
+                query: query,
+            },
+            undefined,
+            { shallow: true }
+        );
+    };
+
+    const _sendCodeSaveRequest = async function () {
+
+        // TODO: add authenticated case
+        if (userAuthenticated === true){
+
+            let payload = {
+                code_state: codeStateTmpRef.current,
+            }
+
+            let saveCodeRes = await saveUserRunCode(accessToken, payload);
+            console.log('save-code-response:', saveCodeRes);
+
+            if (savedCodeRes['status_code'] == 200){
+
+                let current_pid = savedCodeRes['parent_playground_object_id'];
+                addPidParam(current_pid);  // update url GET parameters
+
+            } else {
+                // TODO: handle the error
+            }
+
+
+            // let saved_user_code_response = await saveUserRunCode(accessToken, payload);
+            // console.log('saved_user_code_response:', saved_user_code_response);
+
+            // const response_data = response['data'];
+            // console.log('response-data:', response_data);
+    
+            // if (response_data['status_code'] === 200) {
+            //     let parent_playground_object_id = response_data['parent_playground_object_id'];
+            //     localStorage.setItem('parent_playground_object_id', parent_playground_object_id);
+            // }
+
+
+            // // // TODO:
+            // //     // pass access token to endpoint and save
+
+            // // const response = await axios.post(FASTAPI_BASE_URL + '/save_user_run_code', payload);
+            // // console.log('api-code-save-response:', response);
+            
+            // // const response_data = response['data'];
+            // // console.log('response-data:', response_data);
+    
+            // // if (response_data['status_code'] === 200) {
+            // //     let parent_playground_object_id = response_data['parent_playground_object_id'];
+            // //     localStorage.setItem('parent_playground_object_id', parent_playground_object_id);
+            // // }
+
+
+        } else {
+
+            let user_id = localStorage.getItem("user_id");
+            let current_code_state = localStorage.getItem("user_generated_code");
+    
+            let current_parent_playground_object_id = localStorage.getItem("parent_playground_object_id");
+            let payload;
+    
+            if (current_parent_playground_object_id !== null){
+    
+                payload = {
+                    user_id: user_id,
+                    code_state: current_code_state,
+                    parent_playground_object_id: current_parent_playground_object_id
+                };
+    
+            } else {
+    
+                payload = {
+                    user_id: user_id,
+                    code_state: current_code_state,
+                };
+    
+            }
+        
+            const response = await axios.post(FASTAPI_BASE_URL + '/save_user_run_code', payload);
+            console.log('api-code-save-response:', response);
+            
+            const response_data = response['data'];
+            console.log('response-data:', response_data);
+    
+            if (response_data['status_code'] === 200) {
+                let parent_playground_object_id = response_data['parent_playground_object_id'];
+                localStorage.setItem('parent_playground_object_id', parent_playground_object_id);
+            }
+            
+        }
+
+    };
+
     // TODO: user loading
     useEffect(() => {
 
         if (pageLoading === false) {
             console.log("User Authenticated:", userAuthenticated);
 
+            // Authenticated User Case
             if (userAuthenticated) {
-                const searchParams = useSearchParams();
-                const pid = searchParams.get('pid');
 
-                if (pid !== undefined) {
+                console.log('SEARCH PARAMS:', searchParams);
 
-                    // TODO: handle this case
-                    _handleGetPlaygroundData(pid);
+                let pg_obj_id = searchParams['pid'];
+
+                if (pg_obj_id !== undefined) {
+
+                    _handleGetPlaygroundData(pg_obj_id);
 
                 } else {
 
@@ -104,10 +224,10 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                     }]);
 
                 }
-
             
             } 
             
+            // Anon User Case
             else {
 
                 // Fetch or initialize Anon User ID
@@ -147,86 +267,86 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     
 
-    // Handle Message Sending
-    useEffect(() => {
-        if (messageSent) {
-            console.log('sent message:', messageSent);
+    // // Handle Message Sending
+    // useEffect(() => {
+    //     if (messageSent) {
+    //         console.log('sent message:', messageSent);
 
-            accumulatedMessageRef.current = "";
-            let last_message_dict = chatMessages[chatMessages.length - 1];
-            if (last_message_dict['sender'] == 'user'){
-                const wsCurrent = wsRef.current;
-                // send to backend via websocket to get response
-                let all_chat_messages_str = "";
-                for (let i = 0; i < chatMessages.length-1; i++) {
-                    if (chatMessages[i].sender == 'user'){
-                        all_chat_messages_str += "USER: " + chatMessages[i].text + "\n";
-                    } else {
-                        all_chat_messages_str += "AI: " + chatMessages[i].text + "\n";
-                    }
-                }
+    //         accumulatedMessageRef.current = "";
+    //         let last_message_dict = chatMessages[chatMessages.length - 1];
+    //         if (last_message_dict['sender'] == 'user'){
+    //             const wsCurrent = wsRef.current;
+    //             // send to backend via websocket to get response
+    //             let all_chat_messages_str = "";
+    //             for (let i = 0; i < chatMessages.length-1; i++) {
+    //                 if (chatMessages[i].sender == 'user'){
+    //                     all_chat_messages_str += "USER: " + chatMessages[i].text + "\n";
+    //                 } else {
+    //                     all_chat_messages_str += "AI: " + chatMessages[i].text + "\n";
+    //                 }
+    //             }
 
-                const messageForBackend = {
-                    text: last_message_dict['text'],
-                    user_code: codeStateTmpRef.current,
-                    all_user_messages_str: all_chat_messages_str,
-                    sender: 'user',
-                    type: 'user_message',
-                    complete: true
-                };
-                wsCurrent.send(JSON.stringify(messageForBackend));
-            }
-        }
-    }, [chatMessages, messageSent]);
+    //             const messageForBackend = {
+    //                 text: last_message_dict['text'],
+    //                 user_code: codeStateTmpRef.current,
+    //                 all_user_messages_str: all_chat_messages_str,
+    //                 sender: 'user',
+    //                 type: 'user_message',
+    //                 complete: true
+    //             };
+    //             wsCurrent.send(JSON.stringify(messageForBackend));
+    //         }
+    //     }
+    // }, [chatMessages, messageSent]);
 
 
-    // TODO: websocket
-    useEffect(() => {
+    // // TODO: websocket
+    // useEffect(() => {
 
-        const socket = new WebSocket(FASTAPI_WEBSOCKET_URL);
-        socket.onopen = () => {
-            console.log("WebSocket connection established");
-        };
+    //     const socket = new WebSocket(FASTAPI_WEBSOCKET_URL);
+    //     socket.onopen = () => {
+    //         console.log("WebSocket connection established");
+    //     };
 
-        socket.onmessage = (event) => {
+    //     socket.onmessage = (event) => {
 
-            const message = event.data;
-            if (message === "MODEL_GEN_COMPLETE") {
-                // Add accumulated message to chat and then reset accumulated message
-                setChatMessages((prevMessages) => [
-                    ...prevMessages, 
-                    { text: accumulatedMessageRef.current, sender: "bot" }
-                ]);
+    //         const message = event.data;
+    //         if (message === "MODEL_GEN_COMPLETE") {
+    //             // Add accumulated message to chat and then reset accumulated message
+    //             setChatMessages((prevMessages) => [
+    //                 ...prevMessages, 
+    //                 { text: accumulatedMessageRef.current, sender: "bot" }
+    //             ]);
                 
-                // Use setTimeout to reset generatedMessage with a short delay
-                setTimeout(() => {
-                    setGeneratedMessage("");
-                    setIsGeneratingMessage(false);
-                    setIsLoading(false);
-                    setMessageSent(true); // Mark that the message has been sent (triggers useEffect)
-                }, 50); // Adjust delay as needed
+    //             // Use setTimeout to reset generatedMessage with a short delay
+    //             setTimeout(() => {
+    //                 setGeneratedMessage("");
+    //                 setIsGeneratingMessage(false);
+    //                 setIsLoading(false);
+    //                 setMessageSent(true); // Mark that the message has been sent (triggers useEffect)
+    //             }, 50); // Adjust delay as needed
 
-            } else {
-                // accumulatedMessage += message;
-                // setGeneratedMessage((prevMessage) => prevMessage + message + "");
-                // setIsGeneratingMessage(true);
-                accumulatedMessageRef.current += message; // Accumulate message
-                setGeneratedMessage((prevMessage) => prevMessage + message); // Update visible message
-                setIsGeneratingMessage(true);
-            }
+    //         } else {
+    //             // accumulatedMessage += message;
+    //             // setGeneratedMessage((prevMessage) => prevMessage + message + "");
+    //             // setIsGeneratingMessage(true);
+    //             accumulatedMessageRef.current += message; // Accumulate message
+    //             setGeneratedMessage((prevMessage) => prevMessage + message); // Update visible message
+    //             setIsGeneratingMessage(true);
+    //         }
 
-        };
+    //     };
 
-        socket.onclose = () => {
-           // console.log("WebSocket connection closed");
-        };
+    //     socket.onclose = () => {
+    //        // console.log("WebSocket connection closed");
+    //     };
 
-        wsRef.current = socket;
-        return () => {
-            socket.close();
-        };
+    //     wsRef.current = socket;
+    //     return () => {
+    //         socket.close();
+    //     };
 
-    }, []);
+    // }, []);
 
 
 
@@ -287,6 +407,8 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                             isLoading={isLoading}
 
                             handleClearChatMessage={handleClearChatMessage}
+
+                            _sendCodeSaveRequest={_sendCodeSaveRequest}
 
                         />
                     </div>

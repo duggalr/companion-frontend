@@ -6,7 +6,9 @@ import axios from "axios";
 
 
 const ConsoleOutput = ({ codeState, setCodeState, output, setOutput, setCurrentUserInputMessage, 
-  setActiveTab, handleSendUserChatMessage, currentUserInputMessageRef, setSendBtnEnabled }) => {
+  setActiveTab, handleSendUserChatMessage, currentUserInputMessageRef, setSendBtnEnabled, _sendCodeSaveRequest
+}) => {
+
   const [isLoading, setIsLoading] = useState(false);
 
   const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_FASTAPI_URL;
@@ -68,50 +70,55 @@ const ConsoleOutput = ({ codeState, setCodeState, output, setOutput, setCurrentU
     }
   };
 
-  const _sendCodeSaveRequest = async function () {
 
-    let user_id = localStorage.getItem("user_id");
-    let current_code_state = localStorage.getItem("user_generated_code");
+  // TODO: abstracting this out to parent component as it's used in multiple areas
 
-    let current_parent_playground_object_id = localStorage.getItem("parent_playground_object_id");
-    let payload;
-    if (current_parent_playground_object_id !== null){
+  // const _sendCodeSaveRequest = async function () {
 
-      payload = {
-        user_id: user_id,
-        code_state: current_code_state,
-        parent_playground_object_id: current_parent_playground_object_id
-      };
+  //   // TODO: add authenticated case
 
-    } else {
+  //   let user_id = localStorage.getItem("user_id");
+  //   let current_code_state = localStorage.getItem("user_generated_code");
 
-      payload = {
-        user_id: user_id,
-        code_state: current_code_state,
-      };
+  //   let current_parent_playground_object_id = localStorage.getItem("parent_playground_object_id");
+  //   let payload;
+  //   if (current_parent_playground_object_id !== null){
 
-    }
+  //     payload = {
+  //       user_id: user_id,
+  //       code_state: current_code_state,
+  //       parent_playground_object_id: current_parent_playground_object_id
+  //     };
+
+  //   } else {
+
+  //     payload = {
+  //       user_id: user_id,
+  //       code_state: current_code_state,
+  //     };
+
+  //   }
   
-    const response = await axios.post(FASTAPI_BASE_URL + '/save_user_run_code', payload);
-    console.log('api-code-save-response:', response);
+  //   const response = await axios.post(FASTAPI_BASE_URL + '/save_user_run_code', payload);
+  //   console.log('api-code-save-response:', response);
     
-    const response_data = response['data'];
-    console.log('response-data:', response_data);
+  //   const response_data = response['data'];
+  //   console.log('response-data:', response_data);
 
-    if (response_data['status_code'] === 200) {
-      let parent_playground_object_id = response_data['parent_playground_object_id'];
-      localStorage.setItem('parent_playground_object_id', parent_playground_object_id);
-    }
+  //   if (response_data['status_code'] === 200) {
+  //     let parent_playground_object_id = response_data['parent_playground_object_id'];
+  //     localStorage.setItem('parent_playground_object_id', parent_playground_object_id);
+  //   }
 
-  };
+  // };
 
   const handleRun = () => {
     // console.log("Current Code:", codeState);
     setOutput("loading..."); // Set the console output to loading while request is made
     setIsLoading(true); // Start the loading state
  
-    _sendCodeExecutionRequest(codeState);
-    // TODO: auth case
+    // _sendCodeExecutionRequest(codeState);
+    // // TODO: auth case
 
     _sendCodeSaveRequest();
 

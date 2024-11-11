@@ -8,7 +8,7 @@ import Head from 'next/head';
 import { getUserAccessToken } from '../../lib/getUserAccessToken';
 
 
-export default function Home() {
+export default function Home({ searchParams }) {
 
     const [userAccessToken, setUserAccessToken] = useState(null);
     const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
@@ -84,6 +84,7 @@ export default function Home() {
                             accessToken={userAccessToken}
                             userAuthenticated={userIsAuthenticated}
                             pageLoading={loading}
+                            searchParams={searchParams}
                         />
                     </>
                 )}

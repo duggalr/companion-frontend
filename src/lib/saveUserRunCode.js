@@ -1,10 +1,9 @@
 
 const API_BACKEND_URL = process.env.NEXT_PUBLIC_API_BACKEND_URL;
 
-export async function fetchPlaygroundData(accessToken, pid) {
+export async function saveUserRunCode(accessToken, payload) {
 
-    let endPointUrl = API_BACKEND_URL + '/fetch-playground-data';
-    let d = {'pid': pid};
+    let endPointUrl = API_BACKEND_URL + '/save_user_run_code';
 
     const apiResponse = await fetch(endPointUrl, {
         method: "POST",
@@ -12,7 +11,7 @@ export async function fetchPlaygroundData(accessToken, pid) {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(d)
+        body: JSON.stringify(payload)
     });
     const data = await apiResponse.json();
     return data;
