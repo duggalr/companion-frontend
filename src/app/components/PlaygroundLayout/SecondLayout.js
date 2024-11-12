@@ -214,10 +214,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
                 if (pg_obj_id !== undefined) {
 
-                    // TODO: implement fetching existing chat messages first for conversation if PID present
-                    // If no PID present, then, default chat messages
-                    // Then, proceed from there to testing/finalizing the new chat sending with auth (ensure in DB is good)
-
                     _handleGetPlaygroundData(pg_obj_id);
                     currentAuthenticatedPIDRef.current = pg_obj_id;
 

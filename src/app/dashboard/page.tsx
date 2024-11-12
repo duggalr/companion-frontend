@@ -9,7 +9,9 @@ import Head from 'next/head';
 export default function Dashboard() {
 
     // TODO:
-        // Fetch the user's saved code
+        // Design the UI
+        // Ensure this page is only accessible if user is authenticated (else, redirect to landing)
+        // Display user fetched parent code objects
 
     return (
        
