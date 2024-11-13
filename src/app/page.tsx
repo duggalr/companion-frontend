@@ -42,11 +42,15 @@ export default function Home() {
     };
 
     useEffect(() => {
-
         handleFetchUserData();
-
     }, []);
 
+
+    // Update page title
+    useEffect(() => {
+        document.title = "Playground";
+    }, []);
+    
 
     return (
        

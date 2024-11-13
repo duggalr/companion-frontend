@@ -1,36 +1,77 @@
 "use client";
 import { useEffect, useState } from 'react';
-import { useUser } from '@auth0/nextjs-auth0/client';
 import TopNavBar from '../components/Utils/TopNavBar';
-import MainLayout from '../components/PlaygroundLayout/MainLayout';
-import Head from 'next/head';
+import { getUserAccessToken } from '@/lib/getUserAccessToken';
+import DashboardLayout from '../components/Dashboard/DashboardLayout';
 
 
 export default function Dashboard() {
 
-    // TODO:
-        // Design the UI
-        // Ensure this page is only accessible if user is authenticated (else, redirect to landing)
-        // Display user fetched parent code objects
+    const [userAccessToken, setUserAccessToken] = useState(null);
+    const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    // Fetch access token on component mount
+    const handleFetchUserData = async () => {
+        try {
+
+            let user_access_token = await getUserAccessToken();
+            console.log('user_access_token_response:', user_access_token);
+
+            if (user_access_token !== undefined) {
+                                
+                setUserAccessToken(user_access_token);
+                setUserIsAuthenticated(true);
+                setLoading(false);
+
+            } else {
+
+                setUserIsAuthenticated(false);
+                setLoading(false);
+
+            }
+
+        } catch (error) {
+            console.error("Error fetching access token:", error);
+            setUserIsAuthenticated(false);
+        }
+    };
+
+    // Initial fetch of user data on mount
+    useEffect(() => {
+        handleFetchUserData();
+    }, []);
+
+    // Update page title
+    useEffect(() => {
+        document.title = "Dashboard";
+    }, []);
+
 
     return (
-       
-        <>
-            <Head>
-                <title>Dashboard</title>
-            </Head>
-            <main>
-                
-                <ul>
-                    <li>
-                        Test One
-                    </li>
-                    <li>
-                        Test Two
-                    </li>
-                </ul>
 
+        <>
+            <main>
+                {loading ? (
+                    // Loading indicator while page is loading
+                    <div>Loading...</div>
+                ) : (
+                    // Render components only after loading completes
+                    <>
+                        <TopNavBar
+                            accessToken={userAccessToken}
+                            userAuthenticated={userIsAuthenticated}
+                            pageLoading={loading}
+                        />
+                        <DashboardLayout 
+                            accessToken={userAccessToken}
+                            userAuthenticated={userIsAuthenticated}
+                            pageLoading={loading}
+                        />
+                    </>
+                )}
             </main>
+
         </>
 
     );
