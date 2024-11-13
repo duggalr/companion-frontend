@@ -1,49 +1,65 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 // import { useUser } from '@auth0/nextjs-auth0/client';
 import TopNavBar from '../components/Utils/TopNavBar';
 // import MainLayout from '../components/PlaygroundLayout/MainLayout';
 import SecondLayout from '../components/PlaygroundLayout/SecondLayout';
 import Head from 'next/head';
-import { getUserAccessToken } from '../../lib/getUserAccessToken';
+// import { getUserAccessToken } from '../../lib/internal/getUserAccessToken';
+import { UserContext } from '../../context/UserContext';
+
 
 
 export default function Home({ searchParams }) {
 
     const [userAccessToken, setUserAccessToken] = useState(null);
     const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);  // by default false
 
-    // Fetch access token on component mount
-    const handleFetchUserData = async () => {
-        try {
+    const userContext = useContext(UserContext);
+    console.log('user-context-data:', userContext);
 
-            let user_access_token = await getUserAccessToken();
-            console.log('user_access_token_response:', user_access_token);
-
-            if (user_access_token !== undefined) {
-                                
-                setUserAccessToken(user_access_token);
-                setUserIsAuthenticated(true);
-                setLoading(false);
-
-            } else {
-
-                setUserIsAuthenticated(false);
-                setLoading(false);
-
-            }
-
-        } catch (error) {
-            console.error("Error fetching access token:", error);
-            setUserIsAuthenticated(false);
-        }
+    const _handleInitialLoad = () => {
+        setLoading(false);
     };
 
-    // Initial fetch of user data on mount
     useEffect(() => {
-        handleFetchUserData();
+        _handleInitialLoad();
     }, []);
+
+    // TODO: 
+        // start here by continuning refactor and finalization
+
+    // // Fetch access token on component mount
+    // const handleFetchUserData = async () => {
+    //     try {
+
+    //         let user_access_token = await getUserAccessToken();
+    //         console.log('user_access_token_response:', user_access_token);
+
+    //         if (user_access_token !== undefined) {
+                                
+    //             setUserAccessToken(user_access_token);
+    //             setUserIsAuthenticated(true);
+    //             setLoading(false);
+
+    //         } else {
+
+    //             setUserIsAuthenticated(false);
+    //             setLoading(false);
+
+    //         }
+
+    //     } catch (error) {
+    //         console.error("Error fetching access token:", error);
+    //         setUserIsAuthenticated(false);
+    //     }
+    // };
+
+    // // Initial fetch of user data on mount
+    // useEffect(() => {
+    //     handleFetchUserData();
+    // }, []);
 
     // Update page title
     useEffect(() => {
@@ -52,9 +68,9 @@ export default function Home({ searchParams }) {
 
     return (
         <>
-            <Head>
+            {/* <Head>
                 <title>Playground</title>
-            </Head>
+            </Head> */}
             {/* <main>
                 <TopNavBar
                     accessToken={userAccessToken}
