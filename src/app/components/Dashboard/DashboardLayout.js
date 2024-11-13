@@ -3,7 +3,7 @@ import { useRouter, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faClock } from "@fortawesome/free-solid-svg-icons";
-import { fetchDashboardData } from "../../../lib/fetchDashboardData";
+import { fetchDashboardData } from "../../../lib/api/fetchDashboardData";
 
 
 const DashboardLayout = ({ 

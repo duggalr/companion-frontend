@@ -70,56 +70,14 @@ const ConsoleOutput = ({ codeState, setCodeState, output, setOutput, setCurrentU
     }
   };
 
-
-  // TODO: abstracting this out to parent component as it's used in multiple areas
-
-  // const _sendCodeSaveRequest = async function () {
-
-  //   // TODO: add authenticated case
-
-  //   let user_id = localStorage.getItem("user_id");
-  //   let current_code_state = localStorage.getItem("user_generated_code");
-
-  //   let current_parent_playground_object_id = localStorage.getItem("parent_playground_object_id");
-  //   let payload;
-  //   if (current_parent_playground_object_id !== null){
-
-  //     payload = {
-  //       user_id: user_id,
-  //       code_state: current_code_state,
-  //       parent_playground_object_id: current_parent_playground_object_id
-  //     };
-
-  //   } else {
-
-  //     payload = {
-  //       user_id: user_id,
-  //       code_state: current_code_state,
-  //     };
-
-  //   }
-  
-  //   const response = await axios.post(FASTAPI_BASE_URL + '/save_user_run_code', payload);
-  //   console.log('api-code-save-response:', response);
-    
-  //   const response_data = response['data'];
-  //   console.log('response-data:', response_data);
-
-  //   if (response_data['status_code'] === 200) {
-  //     let parent_playground_object_id = response_data['parent_playground_object_id'];
-  //     localStorage.setItem('parent_playground_object_id', parent_playground_object_id);
-  //   }
-
-  // };
-
   const handleRun = () => {
-    // // console.log("Current Code:", codeState);
-    // setOutput("loading..."); // Set the console output to loading while request is made
-    // setIsLoading(true); // Start the loading state
- 
-    // _sendCodeExecutionRequest(codeState);
-    // // TODO: auth case
+    setOutput("loading..."); // Set the console output to loading while request is made
+    setIsLoading(true); // Start the loading state
+    
+    // send request to run code
+    _sendCodeExecutionRequest(codeState);
 
+    // save user code
     _sendCodeSaveRequest();
 
   };
@@ -196,6 +154,10 @@ def find_even_numbers(start, end):
 
   return (
     <div className="flex flex-col h-full mt-2 ml-4 bg-[#F3F4F6] dark:bg-gray-900">
+
+      <span className="text-gray-500 dark:text-gray-400 text-xs pt-2 pb-2 tracking-normal">
+        (Ctrl or Cmd)+S to save your code.
+      </span>
 
       <span className="text-gray-500 dark:text-gray-400 text-xs pt-2 pb-2 tracking-normal">
         Work through some sample exercises with the tutor.

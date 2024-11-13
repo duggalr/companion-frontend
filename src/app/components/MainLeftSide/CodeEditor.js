@@ -5,8 +5,6 @@ import axios from "axios";
 
 const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef, _sendCodeSaveRequest }) => {
 
-    const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_FASTAPI_URL;
-
     const handleEditorDidMount = (editor, monaco) => {
         // Define the light theme
         monaco.editor.defineTheme('minimalistLight', {
@@ -67,14 +65,13 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef, _sendCodeSaveReq
 
     useEffect(() => {
 
-      const listenStorageChange = () => {
-          const currentTheme = localStorage.getItem('theme') || 'light';
-          monaco.editor.setTheme(currentTheme === 'dark' ? 'minimalistDark' : 'minimalistLight');
-      };
-      window.addEventListener("themeChange", listenStorageChange);
+        const listenStorageChange = () => {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            monaco.editor.setTheme(currentTheme === 'dark' ? 'minimalistDark' : 'minimalistLight');
+        };
+        window.addEventListener("themeChange", listenStorageChange);
 
     }, []);
-
 
     const _handleCodeStateChange = (value) => {
         codeStateTmpRef.current = value;
@@ -82,7 +79,6 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef, _sendCodeSaveReq
         setCodeState(value);
     }
 
-    
     const [showAlert, setShowAlert] = useState(false);
     const showTemporaryAlert = () => {
         setShowAlert(true);
@@ -90,47 +86,6 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef, _sendCodeSaveReq
             setShowAlert(false);
         }, 1000);
     };
-
-    // // TODO: need to handle authenticated case
-    // const _sendCodeSaveRequest = async function () {
-
-    //     let user_id = localStorage.getItem("user_id");
-    //     let current_code_state = localStorage.getItem("user_generated_code");
-
-    //     let current_parent_playground_object_id = localStorage.getItem("parent_playground_object_id");
-    //     let payload;
-    //     if (current_parent_playground_object_id !== null){
-
-    //         payload = {
-    //             user_id: user_id,
-    //             code_state: current_code_state,
-    //             parent_playground_object_id: current_parent_playground_object_id
-    //         };
-
-    //     } else {
-
-    //         payload = {
-    //             user_id: user_id,
-    //             code_state: current_code_state,
-    //         };
-
-    //     }
-
-    //     const response = await axios.post(FASTAPI_BASE_URL + '/save_user_run_code', payload);
-    //     console.log('api-code-save-response:', response);
-        
-    //     const response_data = response['data'];
-    //     console.log('response-data:', response_data);
-
-    //     if (response_data['status_code'] === 200) {
-    //         let parent_playground_object_id = response_data['parent_playground_object_id'];
-    //         localStorage.setItem('parent_playground_object_id', parent_playground_object_id);
-
-    //         showTemporaryAlert();
-    //     }
-    
-    // };
-
 
     // Command/Ctrl+s event-listener to prevent default saving behavior
     useEffect(() => {
@@ -141,7 +96,7 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef, _sendCodeSaveReq
                 showTemporaryAlert();
             }
         };
-    
+
         window.addEventListener('keydown', handleKeyDown);
         return () => {
             window.removeEventListener('keydown', handleKeyDown);

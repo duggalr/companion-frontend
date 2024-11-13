@@ -12,7 +12,7 @@ const pacifico_font = Pacifico({
 });
 
 
-export default function TopNavBar ({ accessToken, userAuthenticated, pageLoading }) {
+export default function TopNavBar ({ userAuthenticated }) {
 
     useEffect(() => {}, []);
 
@@ -59,7 +59,7 @@ export default function TopNavBar ({ accessToken, userAuthenticated, pageLoading
                     </li>
                 )}
 
-                {/* <a
+                <a
                     href="https://www.youtube.com/watch?v=4Plt_sh_cIg&ab_channel=Rahul"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -69,7 +69,7 @@ export default function TopNavBar ({ accessToken, userAuthenticated, pageLoading
                         <polygon points="40,30 70,50 40,70" fill="currentColor" />
                     </svg>
                     video walkthrough
-                </a> */}
+                </a>
 
                 <a
                     href="https://github.com/duggalr/companion-frontend"
