@@ -29,7 +29,7 @@ export default function Home() {
     const _handleUserValidation = async() => {
 
         const user_access_token = userContext?.userAccessToken;
-        const validated_user_data = await validAuthenticatedUser(user_access_token);
+        await validAuthenticatedUser(user_access_token);
         // console.log('validated-user-data-response:', validated_user_data);
 
     }
