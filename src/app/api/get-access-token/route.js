@@ -15,7 +15,7 @@ export async function POST(req) {
         return new Response(JSON.stringify({ accessToken }), { status: 200 });
     } catch (error) {
         // console.error("Error fetching access token:", error);
-        return new Response(JSON.stringify({ error: 'Failed to retrieve access token' }), { status: 500 });
+        return new Response(JSON.stringify({ error: 'Failed to retrieve access token', error_message: error }), { status: 500 });
     }
 
 }

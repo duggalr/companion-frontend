@@ -34,10 +34,8 @@ export default async function handleAPIFetch(endpoint_url, method, access_token,
         const response_data = await apiResponse.json();
         return response_data;
 
-    }
-    catch (error) {
-        // console.error("Fetch error:", error);
-        return null; // Return null in case of a network or parsing error
+    } catch {
+        return null;
     }
 
 }

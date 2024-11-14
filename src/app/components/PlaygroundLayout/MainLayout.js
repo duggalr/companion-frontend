@@ -49,6 +49,8 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     const _handleGetPlaygroundData = async (pid) => {
         const data = await fetchPlaygroundData(accessToken, pid);
+        console.log('fetch-playground-data-response:', data);
+        
         if (data['status_code'] == 404){
             router.push('/404');
         } else {
@@ -126,6 +128,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             }
 
             let saveCodeRes = await saveUserRunCode(accessToken, payload);
+            console.log('saveCodeRes', saveCodeRes);
 
             if (saveCodeRes['status_code'] == 200){
 
@@ -181,14 +184,15 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     useEffect(() => {
 
         if (pageLoading === false) {
-            console.log("User Authenticated:", userAuthenticated);
 
             // Authenticated User Case
             if (userAuthenticated) {
 
-                console.log('SEARCH PARAMS:', searchParams);
+                console.log('search-params:', searchParams);
 
+                // TODO: seems pid is undefined on npm start? <-- fix this and go from there
                 let pg_obj_id = searchParams['pid'];
+                console.log('PG_OBJECT_ID:', pg_obj_id);
 
                 if (pg_obj_id !== undefined) {
 
@@ -239,9 +243,8 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
                 // Fetching any existing messages from localstorage
                 const storedMessages = localStorage.getItem('user_generated_message_list');
-                console.log('stored-messages:', storedMessages);
 
-                if (storedMessages === null || storedMessages.length === 0) {
+                if (storedMessages === null || storedMessages.length === 0 || storedMessages === undefined) {
 
                     setChatMessages([{
                         text: `Welcome! 😄 I'm Companion, your personal programming tutor.
@@ -269,7 +272,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         if (userAuthenticated) {
 
             let code_save_response = await _sendCodeSaveRequest();
-            console.log('code-save-response:', code_save_response);
     
             let current_parent_playground_object_id = code_save_response['parent_playground_object_id'];
             msg_for_backend['parent_playground_object_id'] = current_parent_playground_object_id;
@@ -282,13 +284,10 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         else {
 
             let code_save_response = await _sendCodeSaveRequest();
-            console.log('code-save-response:', code_save_response);
     
             let current_parent_playground_object_id = code_save_response['parent_playground_object_id'];
             msg_for_backend['parent_playground_object_id'] = current_parent_playground_object_id;
             localStorage.setItem('parent_playground_object_id', current_parent_playground_object_id);
-    
-            console.log('message-backend-new:', JSON.stringify(msg_for_backend));
     
             let wsCurrent = wsRef.current;
             wsCurrent.send(JSON.stringify(msg_for_backend));

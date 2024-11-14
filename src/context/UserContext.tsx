@@ -1,14 +1,14 @@
 "use client";
-
 import { createContext, useState, ReactNode } from 'react';
 import { getUserAccessToken } from '@/lib/internal/getUserAccessToken';
 
 
 interface UserContextType {
     isAuthenticated: boolean;
-    userAccessToken: string;
-    login: (name: string) => void;
-    logout: () => void;
+    userAccessToken: string | null;
+    loading: boolean;
+    // login: (name: string) => void;
+    // logout: () => void;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -18,23 +18,39 @@ export const InternalUserProvider = ({ children }: { children: ReactNode }) => {
     
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userAccessToken, setUserAccessToken] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     const _handleUserAccessTokenFetch = async() => {
 
-        let user_access_token = await getUserAccessToken();
+        // const user_access_token = await getUserAccessToken();
+        // console.log('current-user-access-token-CONTEXT:', user_access_token)
 
-        if (user_access_token !== undefined && user_access_token !== null) { 
-            setIsAuthenticated(true);
-            setUserAccessToken(user_access_token);
+        // if (user_access_token !== undefined && user_access_token !== null) { 
+        //     setIsAuthenticated(true);
+        //     setUserAccessToken(user_access_token);
+        // }
+
+        try {
+            const user_access_token = await getUserAccessToken();
+            if (user_access_token) {
+                setIsAuthenticated(true);
+                setUserAccessToken(user_access_token);                
+
+            }
+        }
+        catch (error) {
+            console.error("Error fetching user access token:", error);
+        }
+        finally {
+            setLoading(false); // Set loading to false after the fetch completes
         }
 
     }
 
     _handleUserAccessTokenFetch();
 
-
     return (
-        <UserContext.Provider value={{ isAuthenticated, userAccessToken }}>
+        <UserContext.Provider value={{ isAuthenticated, userAccessToken, loading }}>
             {children}
         </UserContext.Provider>
     );

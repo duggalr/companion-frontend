@@ -1,51 +1,45 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState, useContext } from 'react';
 import TopNavBar from '../components/Utils/TopNavBar';
-import { getUserAccessToken } from '@/lib/getUserAccessToken';
 import DashboardLayout from '../components/Dashboard/DashboardLayout';
+import { UserContext } from '../../context/UserContext';
+// import { validAuthenticatedUser } from '@/lib/api/checkAuthenticatedUser';
 
 
 export default function Dashboard() {
 
-    const [userAccessToken, setUserAccessToken] = useState(null);
-    const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
+    const router = useRouter();
     const [loading, setLoading] = useState(true);
 
-    // Fetch access token on component mount
-    const handleFetchUserData = async () => {
-        try {
-
-            let user_access_token = await getUserAccessToken();
-            console.log('user_access_token_response:', user_access_token);
-
-            if (user_access_token !== undefined) {
-                                
-                setUserAccessToken(user_access_token);
-                setUserIsAuthenticated(true);
-                setLoading(false);
-
-            } else {
-
-                setUserIsAuthenticated(false);
-                setLoading(false);
-
-            }
-
-        } catch (error) {
-            console.error("Error fetching access token:", error);
-            setUserIsAuthenticated(false);
-        }
-    };
-
-    // Initial fetch of user data on mount
-    useEffect(() => {
-        handleFetchUserData();
-    }, []);
+    const userContext = useContext(UserContext);
 
     // Update page title
     useEffect(() => {
         document.title = "Dashboard";
     }, []);
+
+    // const _handleUserValidation = async() => {
+    //     let user_access_token = userContext?.userAccessToken;
+    //     let validated_user_data = await validAuthenticatedUser(user_access_token);
+    //     console.log('validated-user-data-response-playground:', validated_user_data);
+    // }
+
+    // Updatiing user context
+    useEffect(() => {
+
+        if (userContext && userContext.loading === false){
+
+            if (userContext.isAuthenticated === false){
+                router.push('/');
+            } else {
+                setLoading(false);
+                // _handleUserValidation();
+            }
+
+        }
+
+    }, [userContext, router]);
 
 
     return (
@@ -59,14 +53,11 @@ export default function Dashboard() {
                     // Render components only after loading completes
                     <>
                         <TopNavBar
-                            accessToken={userAccessToken}
-                            userAuthenticated={userIsAuthenticated}
-                            pageLoading={loading}
+                            userAuthenticated={userContext?.isAuthenticated}
                         />
                         <DashboardLayout 
-                            accessToken={userAccessToken}
-                            userAuthenticated={userIsAuthenticated}
-                            pageLoading={loading}
+                            accessToken={userContext?.userAccessToken}
+                            userAuthenticated={userContext?.isAuthenticated}
                         />
                     </>
                 )}

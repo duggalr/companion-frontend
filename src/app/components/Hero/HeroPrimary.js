@@ -3,14 +3,20 @@ import ShimmerButton from "@/components/ui/shimmer-button";
 import HeroVideoDialog from "@/components/ui/hero-video-dialog";
 import SparklesText from "@/components/ui/sparkles-text";
 import AnimatedShinyText from '@/components/ui/animated-shiny-text';
+// import { RainbowButton } from "@/components/ui/rainbow-button";
+import ShinyButton from "@/components/ui/shiny-button";
 
 
-export default function HeroPrimary() {
+export default function HeroPrimary({ userAuthenticated }) {
 
     const router = useRouter();
     const handleVisitIDEClick = () => {
         router.push('/playground');
     };
+
+    const handleVisitDashboardClick = () => {
+        router.push('/dashboard');
+    }
 
     return (
 
@@ -28,16 +34,7 @@ export default function HeroPrimary() {
                 </svg>
             </div>
 
-            <div className="max-w-5xl mx-auto text-center mt-0 "> {/* Added margin to avoid overlap with Navbar */}
-
-                {/* Adjusted the width and centering */}
-                {/* <div
-                    className="mb-4 w-1/3 mx-auto flex justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
-                >
-                    <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400 text-[15px]">
-                    <span>✨ 100% Free and Open Source ✨</span>
-                    </AnimatedShinyText>
-                </div> */}
+            <div className="max-w-5xl mx-auto text-center mt-0 ">
                 
                 <div
                 className="mb-4 w-full lg:w-1/3 mx-auto flex justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
@@ -61,7 +58,20 @@ export default function HeroPrimary() {
                             Visit IDE &nbsp; &#8594;
                         </span>
                     </ShimmerButton>
-                </div>                
+
+                    {/* <RainbowButton className="shadow-2xl ml-4">
+                        <span
+                            className='text-white'
+                        >
+                            My Dashboard &nbsp; &#8594;
+                        </span>
+                    </RainbowButton> */}
+
+                    {userAuthenticated && <ShinyButton className="ml-4" onClick={handleVisitDashboardClick}>
+                        My Dashboard
+                    </ShinyButton>}
+                    
+                </div>
 
                 <p className="text-[13px] text-gray-700 text-muted-foreground pt-2 tracking-normal md:hidden">
                     (The application works best on a computer...)

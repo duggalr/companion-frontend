@@ -15,8 +15,6 @@ export const metadata = {
 
 export default function RootLayout({children,}: {children: React.ReactNode;}) {
   
-  const AUTH0_AUDIENCE_URL = process.env.NEXT_PUBLIC_AUTH0_AUDIENCE_URL;
-
   return (
     <html lang="en">
       <head>
@@ -24,31 +22,12 @@ export default function RootLayout({children,}: {children: React.ReactNode;}) {
         <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js" async></script>
       </head>
 
-      <Auth0UserProvider
-        loginOptions={{
-          authorizationParams: {
-            audience: AUTH0_AUDIENCE_URL,
-            scope: 'openid profile email',
-          },
-        }}
-      >
+      <Auth0UserProvider>
         <InternalUserProvider>
           <body className={inter.className}>{children}</body>
           <GoogleAnalytics gaId="G-SNNKFK2WYW" />
         </InternalUserProvider>
       </Auth0UserProvider>
-
-      {/* <UserProvider
-        loginOptions={{
-          authorizationParams: {
-            audience: AUTH0_AUDIENCE_URL,
-            scope: 'openid profile email',
-          },
-        }}
-      >
-        <body className={inter.className}>{children}</body>
-        <GoogleAnalytics gaId="G-SNNKFK2WYW" />
-      </UserProvider> */}
     </html>
   );
 

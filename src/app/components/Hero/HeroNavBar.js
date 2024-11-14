@@ -10,7 +10,7 @@ const pacifico_font = Pacifico({
 });
 
 
-export default function HeroNavBar({ accessToken, userAuthenticated, pageLoading }) {
+export default function HeroNavBar({ userAuthenticated, pageLoading }) {
 
     return (
 
@@ -73,10 +73,8 @@ export default function HeroNavBar({ accessToken, userAuthenticated, pageLoading
 
                             <li>
                                 <a
-                                    href="#"
+                                    href="/dashboard"
                                     className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] hover mr-2 font-normal"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
                                 >
                                     <FontAwesomeIcon icon={faSquareCaretRight} className="text-black pr-2 dark:text-white w-4 h-4" />
                                     Dashboard
