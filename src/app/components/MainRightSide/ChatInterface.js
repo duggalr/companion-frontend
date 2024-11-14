@@ -8,7 +8,7 @@ const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserIn
 }) => {
 
   const inputValueRef = useRef("");
-  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
   const handleNewInputValue = (e) => {
 
@@ -24,12 +24,21 @@ const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserIn
 
   };
 
-  // Automatically scroll to the latest message
   useEffect(() => {
     if (messages.length > 1) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      messagesContainerRef.current?.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
     }
   }, [messages, isGenerating]);
+
+  // // Automatically scroll to the latest message
+  // useEffect(() => {
+  //   if (messages.length > 1) {
+  //     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  //   }
+  // }, [messages, isGenerating]);
 
   const handleEnterKey = (event) => {
     if ((event.code === "Enter" || event.code === "NumpadEnter") && !event.shiftKey){
@@ -63,7 +72,9 @@ const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserIn
       </div>
 
       {/* Messages Area */}
-      <div className="flex-grow overflow-y-auto p-4 space-y-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-[#F3F4F6] dark:bg-gray-800">
+      <div
+        ref={messagesContainerRef}
+        className="flex-grow overflow-y-auto p-4 space-y-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-[#F3F4F6] dark:bg-gray-800">
         {messages.map((msg, idx) => (
           <div
             key={idx}
@@ -83,8 +94,6 @@ const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserIn
             {generatedMessage}
           </div>
         )}
-
-        <div ref={messagesEndRef} />
       </div>
 
       {/* Input area - textarea */}

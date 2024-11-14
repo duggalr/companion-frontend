@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import ThemeToggle from './ThemeToggle';
 import { Pacifico } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRightFromBracket, faSquareCaretRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightFromBracket, faSquareCaretRight, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 
 
 const pacifico_font = Pacifico({
@@ -34,7 +34,7 @@ export default function TopNavBar ({ userAuthenticated }) {
             <div className="ml-auto lg:flex items-center space-x-6 hidden">
 
                 {/* Authenticated Links */}
-                {userAuthenticated && (
+                {/* {userAuthenticated && (
                     <li>
                         <a
                             href="/dashboard"
@@ -56,6 +56,43 @@ export default function TopNavBar ({ userAuthenticated }) {
                             logout
                         </a>
                     </li>
+                )} */}
+
+                 {/* If user is authenticated, show Dashboard and Logout */}
+                {userAuthenticated ? (
+                    <>
+                        <li>
+                            <a
+                            href="/dashboard"
+                            className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-2"
+                            >
+                                <FontAwesomeIcon icon={faSquareCaretRight} className="text-black pr-2 dark:text-white w-4 h-4" />
+                                Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                            href="/api/auth/logout"
+                            className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-0"
+                            >
+                                <FontAwesomeIcon icon={faArrowRightFromBracket} className="text-black pr-2 dark:text-white w-4 h-4" />
+                                Logout
+                            </a>
+                        </li>
+                    </>
+                ) : (
+                    // If user is not authenticated, show Sign Up and Login
+                    <>
+                        <li>
+                            <a
+                            href="/api/auth/login"
+                            className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-0"
+                            >
+                                <FontAwesomeIcon icon={faUserPlus} className="text-gray-700 pr-2 dark:text-white w-4 h-4" />
+                                Signup or Login
+                            </a>
+                        </li>
+                    </>
                 )}
 
                 <a

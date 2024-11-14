@@ -6,10 +6,10 @@ import { UserContext } from '../../context/UserContext';
 // import { validAuthenticatedUser } from '@/lib/api/checkAuthenticatedUser';
 
 
-export default function Home({ searchParams }: { searchParams: Record<string, string | string[]> }) {
+// export default function Home({ searchParams }: { searchParams: Record<string, string | string[]> }) {
+export default function Home() {
 
     const [loading, setLoading] = useState(true);
-
     const userContext = useContext(UserContext);
 
     // const _handleInitialLoad = () => {
@@ -45,7 +45,7 @@ export default function Home({ searchParams }: { searchParams: Record<string, st
 
     return (
         <>
-            <main>
+            <main >
                 {loading ? (
                     // Loading indicator while page is loading
                     <div>Loading...</div>
@@ -58,8 +58,7 @@ export default function Home({ searchParams }: { searchParams: Record<string, st
                         <PlaygroundLayout
                             accessToken={userContext?.userAccessToken}
                             userAuthenticated={userContext?.isAuthenticated}
-                            pageLoading={loading}
-                            searchParams={searchParams}
+                            pageLoading={loading}                            
                         />
                     </>
                 )}

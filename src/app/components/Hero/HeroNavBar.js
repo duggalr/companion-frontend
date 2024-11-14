@@ -1,7 +1,7 @@
 import ThemeToggle from "../Utils/ThemeToggle";
 import { Pacifico } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRightFromBracket, faSquareCaretRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightFromBracket, faSquareCaretRight, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 
 
 const pacifico_font = Pacifico({
@@ -90,7 +90,7 @@ export default function HeroNavBar({ userAuthenticated, pageLoading }) {
                                     href="/api/auth/login"
                                     className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] hover mr-2 font-normal"
                                 >
-                                    <FontAwesomeIcon icon={faArrowRightFromBracket} className="text-black pr-2 dark:text-white w-4 h-4" />
+                                    <FontAwesomeIcon icon={faUserPlus} className="text-black pr-2 dark:text-white w-4 h-4" />
                                     Signup or Login
                                 </a>
                             </li>

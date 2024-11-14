@@ -7,7 +7,7 @@ import { fetchPlaygroundData }  from "../../../lib/api/fetchPlaygroundData";
 import { saveUserRunCode }  from "../../../lib/api/saveUserRunCode";
 
 
-const PlaygroundLayout = ({ accessToken, userAuthenticated, pageLoading, searchParams }) => {
+const PlaygroundLayout = ({ accessToken, userAuthenticated, pageLoading }) => {
 
     const router = useRouter();
 
@@ -188,13 +188,18 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             // Authenticated User Case
             if (userAuthenticated) {
 
-                console.log('search-params:', searchParams);
+                // console.log('search-params:', searchParams);
 
-                // TODO: seems pid is undefined on npm start? <-- fix this and go from there
-                let pg_obj_id = searchParams['pid'];
-                console.log('PG_OBJECT_ID:', pg_obj_id);
+                // // TODO: seems pid is undefined on npm start? <-- fix this and go from there
+                // let pg_obj_id = searchParams['pid'];
+                // console.log('PG_OBJECT_ID:', pg_obj_id);
 
-                if (pg_obj_id !== undefined) {
+                const url_search_params = new URLSearchParams(window.location.search);
+                const pg_obj_id = url_search_params.get('pid');
+                // console.log('url-params:', url_search_params);
+                // console.log('pg_obj_id-NEW:', pg_obj_id);
+                
+                if (pg_obj_id !== undefined && pg_obj_id !== null) {
 
                     _handleGetPlaygroundData(pg_obj_id);
                     currentAuthenticatedPIDRef.current = pg_obj_id;
@@ -202,6 +207,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 } else {
 
                     // render regular page
+
                     setChatMessages([{
                         text: `Welcome! 😄 I'm Companion, your personal programming tutor.
 
@@ -503,6 +509,8 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                             handleClearChatMessage={handleClearChatMessage}
 
                             _sendCodeSaveRequest={_sendCodeSaveRequest}
+
+                            userAuthenticated={userAuthenticated}
 
                         />
                     </div>

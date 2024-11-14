@@ -108,7 +108,10 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef, _sendCodeSaveReq
         <div className="h-full w-full border-r-2 border-gray-300">
             
             {showAlert && (
-                <div className="fixed top-1 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-1 rounded-md shadow-lg transition-opacity duration-300 text-[13px]">
+                // <div className="fixed top-1 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-1 rounded-md shadow-lg transition-opacity duration-300 text-[13px]">
+                //     Code saved successfully! 🎉
+                // </div>
+                <div className="fixed top-1 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-1 rounded-md shadow-lg transition-opacity duration-300 text-[13px] z-50">
                     Code saved successfully! 🎉
                 </div>
             )}
