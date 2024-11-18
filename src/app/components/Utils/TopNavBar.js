@@ -1,6 +1,9 @@
 import { useEffect } from 'react';
 import ThemeToggle from './ThemeToggle';
 import { Pacifico } from 'next/font/google';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRightFromBracket, faSquareCaretRight, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+
 
 const pacifico_font = Pacifico({
     subsets: ['latin'],
@@ -8,7 +11,7 @@ const pacifico_font = Pacifico({
 });
 
 
-export default function TopNavBar () {
+export default function TopNavBar ({ userAuthenticated }) {
 
     useEffect(() => {}, []);
 
@@ -29,6 +32,69 @@ export default function TopNavBar () {
             </li>
 
             <div className="ml-auto lg:flex items-center space-x-6 hidden">
+
+                {/* Authenticated Links */}
+                {/* {userAuthenticated && (
+                    <li>
+                        <a
+                            href="/dashboard"
+                            className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-2"
+                        >
+                            <FontAwesomeIcon icon={faSquareCaretRight} className="text-black pr-2 dark:text-white w-4 h-4" />
+                            dashboard
+                        </a>
+                    </li>
+                )}
+
+                {userAuthenticated && (
+                    <li>
+                        <a
+                            href="/api/auth/logout"
+                            className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-2"
+                        >
+                            <FontAwesomeIcon icon={faArrowRightFromBracket} className="text-black pr-2 dark:text-white w-4 h-4" />
+                            logout
+                        </a>
+                    </li>
+                )} */}
+
+                 {/* If user is authenticated, show Dashboard and Logout */}
+                {userAuthenticated ? (
+                    <>
+                        <li>
+                            <a
+                            href="/dashboard"
+                            className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-2"
+                            >
+                                <FontAwesomeIcon icon={faSquareCaretRight} className="text-black pr-2 dark:text-white w-4 h-4" />
+                                Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                            href="/api/auth/logout"
+                            className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-0"
+                            >
+                                <FontAwesomeIcon icon={faArrowRightFromBracket} className="text-black pr-2 dark:text-white w-4 h-4" />
+                                Logout
+                            </a>
+                        </li>
+                    </>
+                ) : (
+                    // If user is not authenticated, show Sign Up and Login
+                    <>
+                        <li>
+                            <a
+                            href="/api/auth/login"
+                            className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-0"
+                            >
+                                <FontAwesomeIcon icon={faUserPlus} className="text-gray-700 pr-2 dark:text-white w-4 h-4" />
+                                Signup or Login
+                            </a>
+                        </li>
+                    </>
+                )}
+
                 <a
                     href="https://www.youtube.com/watch?v=4Plt_sh_cIg&ab_channel=Rahul"
                     target="_blank"
@@ -40,6 +106,7 @@ export default function TopNavBar () {
                     </svg>
                     video walkthrough
                 </a>
+
                 <a
                     href="https://github.com/duggalr/companion-frontend"
                     // className="p-2.5 pr-4 text-black font-normal dark:text-gray-300 text-[14px]"
@@ -52,6 +119,7 @@ export default function TopNavBar () {
                     </svg>
                     github
                 </a>
+
                 <ThemeToggle />
             </div>
 

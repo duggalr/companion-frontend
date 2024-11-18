@@ -1,29 +1,22 @@
 "use client";
+import { useRouter } from 'next/navigation';
 import { useEffect, useState, useContext } from 'react';
 import TopNavBar from '../components/Utils/TopNavBar';
-import PlaygroundLayout from '../components/PlaygroundLayout/MainLayout';
+import DashboardLayout from '../components/Dashboard/DashboardLayout';
 import { UserContext } from '../../context/UserContext';
 // import { validAuthenticatedUser } from '@/lib/api/checkAuthenticatedUser';
 
 
-// export default function Home({ searchParams }: { searchParams: Record<string, string | string[]> }) {
-export default function Home() {
+export default function Dashboard() {
 
+    const router = useRouter();
     const [loading, setLoading] = useState(true);
+
     const userContext = useContext(UserContext);
-
-    // const _handleInitialLoad = () => {
-    //     setLoading(false);
-    // };
-
-    // useEffect(() => {
-    //     _handleInitialLoad();
-    // }, []);
-
 
     // Update page title
     useEffect(() => {
-        document.title = "Playground";
+        document.title = "Dashboard";
     }, []);
 
     // const _handleUserValidation = async() => {
@@ -32,20 +25,27 @@ export default function Home() {
     //     console.log('validated-user-data-response-playground:', validated_user_data);
     // }
 
+    // Updatiing user context
     useEffect(() => {
+
         if (userContext && userContext.loading === false){
-            setLoading(false);
-            // if (userContext.isAuthenticated === true){
-            //     _handleUserValidation();
-            // }
+
+            if (userContext.isAuthenticated === false){
+                router.push('/');
+            } else {
+                setLoading(false);
+                // _handleUserValidation();
+            }
 
         }
-    }, [userContext]);
+
+    }, [userContext, router]);
 
 
     return (
+
         <>
-            <main >
+            <main>
                 {loading ? (
                     // Loading indicator while page is loading
                     <div>Loading...</div>
@@ -55,15 +55,16 @@ export default function Home() {
                         <TopNavBar
                             userAuthenticated={userContext?.isAuthenticated}
                         />
-                        <PlaygroundLayout
+                        <DashboardLayout 
                             accessToken={userContext?.userAccessToken}
                             userAuthenticated={userContext?.isAuthenticated}
-                            pageLoading={loading}                            
                         />
                     </>
                 )}
             </main>
 
         </>
+
     );
+
 }

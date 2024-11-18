@@ -6,7 +6,9 @@ import axios from "axios";
 
 
 const ConsoleOutput = ({ codeState, setCodeState, output, setOutput, setCurrentUserInputMessage, 
-  setActiveTab, handleSendUserChatMessage, currentUserInputMessageRef, setSendBtnEnabled }) => {
+  setActiveTab, handleSendUserChatMessage, currentUserInputMessageRef, setSendBtnEnabled, _sendCodeSaveRequest
+}) => {
+
   const [isLoading, setIsLoading] = useState(false);
 
   const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_FASTAPI_URL;
@@ -69,10 +71,15 @@ const ConsoleOutput = ({ codeState, setCodeState, output, setOutput, setCurrentU
   };
 
   const handleRun = () => {
-    // console.log("Current Code:", codeState);
     setOutput("loading..."); // Set the console output to loading while request is made
     setIsLoading(true); // Start the loading state
+    
+    // send request to run code
     _sendCodeExecutionRequest(codeState);
+
+    // save user code
+    _sendCodeSaveRequest();
+
   };
 
   const handleExerciseButtonClick = (exercise_id) => {
@@ -147,6 +154,10 @@ def find_even_numbers(start, end):
 
   return (
     <div className="flex flex-col h-full mt-2 ml-4 bg-[#F3F4F6] dark:bg-gray-900">
+
+      <span className="text-gray-500 dark:text-gray-400 text-xs pt-2 pb-2 tracking-normal">
+        (Ctrl or Cmd)+S to save your code.
+      </span>
 
       <span className="text-gray-500 dark:text-gray-400 text-xs pt-2 pb-2 tracking-normal">
         Work through some sample exercises with the tutor.

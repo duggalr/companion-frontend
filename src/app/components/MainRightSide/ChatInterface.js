@@ -4,11 +4,11 @@ import { faPaperPlane, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 
 const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserInputMessage, setCurrentUserInputMessage, 
-  handleSendUserChatMessage, currentUserInputMessageRef, sendBtnEnabled, setSendBtnEnabled, isLoading
+  handleSendUserChatMessage, currentUserInputMessageRef, sendBtnEnabled, setSendBtnEnabled, isLoading, handleClearChatMessage
 }) => {
 
   const inputValueRef = useRef("");
-  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
   const handleNewInputValue = (e) => {
 
@@ -24,12 +24,21 @@ const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserIn
 
   };
 
-  // Automatically scroll to the latest message
   useEffect(() => {
     if (messages.length > 1) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      messagesContainerRef.current?.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
     }
   }, [messages, isGenerating]);
+
+  // // Automatically scroll to the latest message
+  // useEffect(() => {
+  //   if (messages.length > 1) {
+  //     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  //   }
+  // }, [messages, isGenerating]);
 
   const handleEnterKey = (event) => {
     if ((event.code === "Enter" || event.code === "NumpadEnter") && !event.shiftKey){
@@ -42,16 +51,30 @@ const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserIn
     handleSendUserChatMessage();
   }
 
+  const _handleClearMessages = () => {
+    handleClearChatMessage();
+  }
+
   return (
 
     <div className="flex flex-col h-4/5 dark:bg-gray-900 p-4">
 
-      <span className="text-gray-500 dark:text-gray-400 text-xs pt-1 pl-1 pb-4 tracking-normal">
-        Get help in guiding your thinking through programming problems, with Companion, an AI Tutor.
-      </span>
+      <div className="flex justify-between items-center">
+        <span className="text-gray-500 dark:text-gray-400 text-xs pt-1 pl-1 pb-4 tracking-normal">
+          Get help in guiding your thinking through programming problems, with Companion, an AI Tutor.
+          <br/>
+        </span>
+        {messages.length > 1 && (
+          <button className="text-blue-500 text-xs" onClick={_handleClearMessages}>
+            Clear text
+          </button>
+        )}
+      </div>
 
       {/* Messages Area */}
-      <div className="flex-grow overflow-y-auto p-4 space-y-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-[#F3F4F6] dark:bg-gray-800">
+      <div
+        ref={messagesContainerRef}
+        className="flex-grow overflow-y-auto p-4 space-y-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-[#F3F4F6] dark:bg-gray-800">
         {messages.map((msg, idx) => (
           <div
             key={idx}
@@ -71,8 +94,6 @@ const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserIn
             {generatedMessage}
           </div>
         )}
-
-        <div ref={messagesEndRef} />
       </div>
 
       {/* Input area - textarea */}

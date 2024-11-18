@@ -1,8 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
 
 
-const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef }) => {
+const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef, _sendCodeSaveRequest }) => {
 
     const handleEditorDidMount = (editor, monaco) => {
         // Define the light theme
@@ -64,29 +64,38 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef }) => {
 
     useEffect(() => {
 
-      const listenStorageChange = () => {
-          const currentTheme = localStorage.getItem('theme') || 'light';
-          monaco.editor.setTheme(currentTheme === 'dark' ? 'minimalistDark' : 'minimalistLight');
-      };
-      window.addEventListener("themeChange", listenStorageChange);
+        const listenStorageChange = () => {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            monaco.editor.setTheme(currentTheme === 'dark' ? 'minimalistDark' : 'minimalistLight');
+        };
+        window.addEventListener("themeChange", listenStorageChange);
 
     }, []);
 
-
     const _handleCodeStateChange = (value) => {
         codeStateTmpRef.current = value;
+        localStorage.setItem("user_generated_code", value);
         setCodeState(value);
     }
 
+    const [showAlert, setShowAlert] = useState(false);
+    const showTemporaryAlert = () => {
+        setShowAlert(true);
+        setTimeout(() => {
+            setShowAlert(false);
+        }, 1000);
+    };
 
     // Command/Ctrl+s event-listener to prevent default saving behavior
     useEffect(() => {
         const handleKeyDown = (event) => {
             if ((event.metaKey || event.ctrlKey) && event.key === 's') {
                 event.preventDefault();
+                _sendCodeSaveRequest();
+                showTemporaryAlert();
             }
         };
-    
+
         window.addEventListener('keydown', handleKeyDown);
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
@@ -97,6 +106,16 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef }) => {
 
     return (
         <div className="h-full w-full border-r-2 border-gray-300">
+            
+            {showAlert && (
+                // <div className="fixed top-1 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-1 rounded-md shadow-lg transition-opacity duration-300 text-[13px]">
+                //     Code saved successfully! 🎉
+                // </div>
+                <div className="fixed top-1 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-1 rounded-md shadow-lg transition-opacity duration-300 text-[13px] z-50">
+                    Code saved successfully! 🎉
+                </div>
+            )}
+
             <Editor
                 height="100%"
                 width="100%"
