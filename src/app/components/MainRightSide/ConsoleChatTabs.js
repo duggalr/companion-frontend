@@ -1,5 +1,4 @@
 import { useState } from "react";
-// import { useRouter } from 'next/navigation';
 import ConsoleOutput from "./ConsoleOutput";
 import ChatInterface from "./ChatInterface";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
