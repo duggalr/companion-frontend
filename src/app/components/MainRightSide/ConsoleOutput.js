@@ -11,7 +11,6 @@ const ConsoleOutput = ({ codeState, setCodeState, output, setOutput, setCurrentU
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_FASTAPI_URL;
   const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_API_BACKEND_URL;
 
   const _sendCodeExecutionRequest = async function (code) {
