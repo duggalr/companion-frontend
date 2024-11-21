@@ -65,7 +65,7 @@ const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserIn
           Get help in guiding your thinking through programming problems, with Companion, an AI Tutor.
           <br/>
         </span>
-        {(messages.length > 1 && userAuthenticated) && (
+        {(messages.length > 1 && !userAuthenticated) && (
           <button className="text-blue-500 text-xs" onClick={_handleClearMessages}>
             Clear text
           </button>
