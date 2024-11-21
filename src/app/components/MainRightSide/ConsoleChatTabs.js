@@ -127,6 +127,7 @@ const ConsoleChatTabs = ({
           setSendBtnEnabled={setSendBtnEnabled}
           isLoading={isLoading}
           handleClearChatMessage={handleClearChatMessage}
+          userAuthenticated={userAuthenticated}
         />}
 
       </div>
