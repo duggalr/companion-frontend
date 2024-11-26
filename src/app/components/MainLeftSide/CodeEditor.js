@@ -1,10 +1,31 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Editor from "@monaco-editor/react";
 
 
-const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef, _sendCodeSaveRequest }) => {
+const CodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLanguage, _handlePgLangChange, _handleCodeEditorValueChange }) => {
+
+    const monacoRef = useRef(null);
+    const editorRef = useRef(null);
+    const modelRef = useRef(null);
+    const [isEditorReady, setIsEditorReady] = useState(false);
+
 
     const handleEditorDidMount = (editor, monaco) => {
+
+        // editorRef.current = editor;
+        editorRef.current = editor; // Store the editor instance
+        monacoRef.current = monaco; // Store the monaco instance
+
+        setIsEditorReady(true);
+
+        // Create the model
+        modelRef.current = monaco.editor.createModel(
+            codeState ?? "",
+            selectedProgrammingLanguage ?? "python"
+        );
+
+        // editor.setModel(modelRef.current);
+
         // Define the light theme
         monaco.editor.defineTheme('minimalistLight', {
             base: 'vs-dark', // inherit from vs-dark (dark theme)
@@ -62,6 +83,8 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef, _sendCodeSaveReq
         monaco.editor.setTheme(currentTheme === 'dark' ? 'minimalistDark' : 'minimalistLight');
     };
 
+
+
     useEffect(() => {
 
         const listenStorageChange = () => {
@@ -72,10 +95,15 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef, _sendCodeSaveReq
 
     }, []);
 
+
     const _handleCodeStateChange = (value) => {
-        codeStateTmpRef.current = value;
-        localStorage.setItem("user_generated_code", value);
-        setCodeState(value);
+ 
+        // localStorage.setItem("codeState", JSON.stringify(codeStateTmpRef));l
+        // localStorage.setItem("user_generated_code", value);
+        // setCodeState(value);
+
+        _handleCodeEditorValueChange(value);
+
     }
 
     const [showAlert, setShowAlert] = useState(false);
@@ -88,6 +116,7 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef, _sendCodeSaveReq
 
     // Command/Ctrl+s event-listener to prevent default saving behavior
     useEffect(() => {
+
         const handleKeyDown = (event) => {
             if ((event.metaKey || event.ctrlKey) && event.key === 's') {
                 event.preventDefault();
@@ -104,8 +133,31 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef, _sendCodeSaveReq
     }, []);
 
 
+    const handleLangSelectionChange = (event) => {
+
+        let pg_lang = event.target.value;
+        monacoRef.current.editor.setModelLanguage(modelRef.current, pg_lang);
+        _handlePgLangChange(pg_lang);
+
+    }
+
+
+    // Create Model for Monaco Editor
+    useEffect(() => {
+        if (isEditorReady && codeState){
+            // Create the model
+            modelRef.current = monacoRef.current.editor.createModel(
+                codeState ?? "",
+                selectedProgrammingLanguage ?? "python"
+            );
+            editorRef.current.setModel(modelRef.current);
+        }
+    }, [codeState, selectedProgrammingLanguage, isEditorReady]);
+
+
     return (
         <div className="h-full w-full border-r-2 border-gray-300">
+            {/* dark:bg-gray-800 */}
             
             {showAlert && (
                 // <div className="fixed top-1 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-1 rounded-md shadow-lg transition-opacity duration-300 text-[13px]">
@@ -116,11 +168,30 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef, _sendCodeSaveReq
                 </div>
             )}
 
+            <div className="border-b-2 dark:border-gray-500 max-w dark:bg-gray-900">
+
+                <form class="max-w-[200px]">
+                    {/* <select id="programming_languages" class="bg-gray-50 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
+                    dark:focus:ring-blue-500 dark:focus:border-blue-500"> */}
+                    <select
+                        id="programming_languages"
+                        class="dark:bg-gray-900 text-gray-900 text-[13.5px] focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500 pl-2"
+                        value={selectedProgrammingLanguage}
+                        onChange={handleLangSelectionChange}
+                    >
+                        <option value="python">Python3</option>
+                        <option value="javascript">Javascript</option>
+                        {/* <option value="haskell">Haskell</option>
+                        <option value="rust">Rust</option> */}
+                    </select>
+                </form>
+
+            </div>
+            
+
             <Editor
                 height="100%"
                 width="100%"
-                defaultLanguage="python"
-                value={codeState}
                 options={{
                     minimap: { enabled: false },
                     scrollBeyondLastLine: false,
@@ -128,7 +199,7 @@ const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef, _sendCodeSaveReq
                     wordWrap: "on",
                 }}
                 onChange={(value) => _handleCodeStateChange(value ?? "")}
-                onMount={handleEditorDidMount} // Hook into editor lifecycle
+                onMount={handleEditorDidMount}
             />
         </div>
     );

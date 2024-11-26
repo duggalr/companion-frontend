@@ -5,7 +5,6 @@ import HeroPrimary from './components/Hero/HeroPrimary';
 import { UserContext } from '../context/UserContext';
 import { validAuthenticatedUser } from '@/lib/api/checkAuthenticatedUser';
 
-
 export default function Home() {
     
     const [initialPageLoad, setInitialPageLoad] = useState(true);
@@ -17,20 +16,11 @@ export default function Home() {
     useEffect(() => {
         document.title = "Playground";
     }, []);
-    
-    // useEffect(() => {
-
-    //     if (userContext && userContext.loading === false){
-    //         loadingRef
-    //     }
-
-    // }, [userContext]);
 
     const _handleUserValidation = async() => {
 
         const user_access_token = userContext?.userAccessToken;
         await validAuthenticatedUser(user_access_token);
-        // console.log('validated-user-data-response:', validated_user_data);
 
     }
 

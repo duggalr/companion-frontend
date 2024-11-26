@@ -5,8 +5,9 @@ import { faPlay, faSpinner, faHandshake } from "@fortawesome/free-solid-svg-icon
 import axios from "axios";
 
 
-const ConsoleOutput = ({ codeState, setCodeState, output, setOutput, setCurrentUserInputMessage, 
-  setActiveTab, handleSendUserChatMessage, currentUserInputMessageRef, setSendBtnEnabled, _sendCodeSaveRequest
+const ConsoleOutput = ({ setCodeState, output, setOutput, setCurrentUserInputMessage, 
+  setActiveTab, handleSendUserChatMessage, currentUserInputMessageRef, setSendBtnEnabled, _sendCodeSaveRequest, selectedProgrammingLanguage,
+  codeStateTmpRef
 }) => {
 
   const [isLoading, setIsLoading] = useState(false);
@@ -14,14 +15,14 @@ const ConsoleOutput = ({ codeState, setCodeState, output, setOutput, setCurrentU
   const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_API_BACKEND_URL;
 
   const _sendCodeExecutionRequest = async function (code) {
+    
     try {
       const payload = {
-        language: "python",
+        language: selectedProgrammingLanguage.current,
         code: code,
       };
       
       const response = await axios.post(FASTAPI_BASE_URL + '/execute_user_code', payload);
-      // console.log("code-response:", response, response.data);
 
       // Get the task ID from the response
       const { task_id } = response.data;
@@ -36,11 +37,7 @@ const ConsoleOutput = ({ codeState, setCodeState, output, setOutput, setCurrentU
     try {
       const taskResponseURL = FASTAPI_BASE_URL + `/result/${task_id}`;
       const resultResponse = await axios.get(taskResponseURL);
-      // console.log("Result Response:", resultResponse);
-
-      // const { result_output_status, result_output_value } = resultResponse.data;
       const { result_output_value } = resultResponse.data;
-      // console.log("Result Output Status TWO:", result_output_status, result_output_value);
       setOutput(result_output_value);
     } catch (error) {
       console.error("Error polling for result:", error);
@@ -53,10 +50,8 @@ const ConsoleOutput = ({ codeState, setCodeState, output, setOutput, setCurrentU
 
       const interval = setInterval(async () => {
         const resultResponse = await axios.get(taskStatusURL);
-        // console.log("Result Response:", resultResponse);
 
         const { status, task_id } = resultResponse.data;
-        // console.log("STATUS:", status);
 
         if (status === "SUCCESS") {
           clearInterval(interval);
@@ -74,8 +69,10 @@ const ConsoleOutput = ({ codeState, setCodeState, output, setOutput, setCurrentU
     setOutput("loading..."); // Set the console output to loading while request is made
     setIsLoading(true); // Start the loading state
     
+    let current_user_code = codeStateTmpRef.current;
+
     // send request to run code
-    _sendCodeExecutionRequest(codeState);
+    _sendCodeExecutionRequest(current_user_code);
 
     // save user code
     _sendCodeSaveRequest();

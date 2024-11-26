@@ -12,6 +12,10 @@ const PlaygroundLayout = ({ accessToken, userAuthenticated, pageLoading }) => {
     const router = useRouter();
 
     const [leftWidth, setLeftWidth] = useState(720); // Initial width for editor
+    // const [editorCode, setEditorCode] = useState("");
+    
+    // 1st containing the user code dict
+    const [userEditorCodeDict, setUserEditorCodeDict] = useState({});
     const [editorCode, setEditorCode] = useState("");
     const codeStateTmpRef = useRef("");
 
@@ -36,6 +40,132 @@ const PlaygroundLayout = ({ accessToken, userAuthenticated, pageLoading }) => {
     // Playground PID Reference
     const currentAuthenticatedPIDRef = useRef(null);
 
+    // Default Code Dictionary
+    const defaultLanguageCodeDict = {
+        'python': "# Question: Write a hello world program\n\ndef hello_world():\n    return 'Hello World'\n\nhello_world()\n",
+        // 'typescript': '#Question: Write a hello world program\n\nfunction helloWorld(): string {\n    return "Hello World";\n}\nconsole.log(helloWorld());\n',
+
+        // 'haskell': '-- Question: Write a hello world program\n\nhelloWorld :: String\nhelloWorld = "Hello World"\n\nmain :: IO ()\nmain = putStrLn helloWorld\n',
+
+//         'rust': `// Question: Write a hello world program\n\nfn hello_world() -> &'static str {
+//     "Hello World"
+// }
+
+// fn main() {
+//     println!("{}", hello_world());
+// }
+// `,
+        'javascript': `// Question: Write a hello world program\n\nfunction helloWorld() {
+    return "Hello World";
+}
+
+console.log(helloWorld());
+`,
+    };
+
+    // Current Programming Language State
+    const [selectedProgrammingLanguage, setSelectedProgrammingLanguage] = useState(null);
+    const selectedProgrammingLangRef = useRef(null);
+
+
+    const _handleCodeEditorValueChange = (value) => {
+
+        if (userAuthenticated){
+
+            // TODO: 
+                // Set coderef to current value
+                // update code dict
+
+            codeStateTmpRef.current = value;
+            setUserEditorCodeDict((prevState) => ({
+                ...prevState,
+                 [selectedProgrammingLangRef.current]: value
+             }));
+
+        } else {
+
+            codeStateTmpRef.current = value;
+
+            // TODO: do we need to update the editor code state?
+            // // setEditorCode(value);
+            setUserEditorCodeDict((prevState) => ({
+               ...prevState,
+                [selectedProgrammingLanguage]: value
+            }));
+    
+            let current_local_storage_code_dict = JSON.parse(localStorage.getItem("user_generated_code_dict"));
+            current_local_storage_code_dict[selectedProgrammingLanguage] = value;
+            localStorage.setItem("user_generated_code_dict", JSON.stringify(current_local_storage_code_dict));
+
+        }
+
+    }
+
+
+    const _handlePgLangChange = (value) => {
+
+        if (userAuthenticated){
+
+            selectedProgrammingLangRef.current = value;
+            setSelectedProgrammingLanguage(value);
+
+            if (value in userEditorCodeDict){
+
+                let current_code_value = userEditorCodeDict[value];
+                codeStateTmpRef.current = current_code_value;
+                setEditorCode(current_code_value);
+
+            } else {
+
+                let lg_code_value = defaultLanguageCodeDict[value];
+                codeStateTmpRef.current = lg_code_value;
+
+                setUserEditorCodeDict((prevState) => ({
+                    ...prevState,
+                    value: lg_code_value
+                }));
+                setEditorCode(lg_code_value);
+
+            }
+
+        } else {
+
+            localStorage.setItem("user_programming_language", value);
+            setSelectedProgrammingLanguage(value);
+            selectedProgrammingLangRef.current = value;
+    
+            // Anon Case Below
+    
+            let existing_user_generated_code_dict = JSON.parse(localStorage.getItem("user_generated_code_dict"));
+
+            if (value in existing_user_generated_code_dict){
+    
+                let current_code_value = existing_user_generated_code_dict[value];
+                codeStateTmpRef.current = current_code_value;
+                setEditorCode(current_code_value);
+
+            } else {
+    
+                let current_code_value = defaultLanguageCodeDict[value];
+                codeStateTmpRef.current = current_code_value;
+    
+                let current_user_code_dict = JSON.parse(localStorage.getItem('user_generated_code_dict'));
+                current_user_code_dict[value] = current_code_value;
+    
+                localStorage.setItem('user_generated_code_dict', JSON.stringify(current_user_code_dict));
+                
+                setUserEditorCodeDict((prevState) => ({
+                    ...prevState,
+                    value: current_code_value
+                }));
+                setEditorCode(current_code_value);
+    
+            }
+
+        }
+
+    };
+
 
     const handleClearChatMessage = () => {
         setChatMessages([{
@@ -49,7 +179,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     const _handleGetPlaygroundData = async (pid) => {
         const data = await fetchPlaygroundData(accessToken, pid);
-        console.log('fetch-playground-data-response:', data);
         
         if (data['status_code'] == 404){
             router.push('/404');
@@ -71,8 +200,24 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                         complete: true
                     }]);
                 }
-                
+
+                codeStateTmpRef.current = data['code'];
+                setSelectedProgrammingLanguage(data['programming_language']);
+                selectedProgrammingLangRef.current = data['programming_language'];
+                let current_user_code_dict = {[data['programming_language']]: data['code']};
+                setUserEditorCodeDict(current_user_code_dict);
                 setEditorCode(data['code']);
+                
+                // setEditorCode(data['code']);
+                // let language_code = defaultLanguageCodeDict['python'];
+                // codeStateTmpRef.current = language_code;
+                // let current_user_code_dict = {'python': language_code};
+
+                // setSelectedProgrammingLanguage('python');
+                // setUserEditorCodeDict(current_user_code_dict);
+                // setEditorCode(language_code);
+                // // localStorage.setItem("user_generated_code_dict", JSON.stringify(current_user_code_dict));
+
 
             } else {
                 // TODO: error management?
@@ -106,7 +251,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     const addPidParam = (current_pid) => {
         window.history.pushState({}, '', `/playground?pid=${current_pid}`);
     };
-
+    
     const _sendCodeSaveRequest = async function () {
 
         if (userAuthenticated === true){
@@ -116,6 +261,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
                 payload = {
                     code_state: codeStateTmpRef.current,
+                    programming_language: selectedProgrammingLangRef.current,
                     parent_playground_object_id: currentAuthenticatedPIDRef.current
                 }
 
@@ -123,12 +269,12 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
                 payload = {
                     code_state: codeStateTmpRef.current,
+                    programming_language: selectedProgrammingLangRef.current,
                 }
 
             }
 
             let saveCodeRes = await saveUserRunCode(accessToken, payload);
-            console.log('saveCodeRes', saveCodeRes);
 
             if (saveCodeRes['status_code'] == 200){
 
@@ -146,16 +292,20 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         }
         else {
 
+            // TODO: need to update
             let user_id = localStorage.getItem("user_id");
-            let current_code_state = localStorage.getItem("user_generated_code");
+            // let current_code_state = localStorage.getItem("user_generated_code");
+            let user_programming_language = localStorage.getItem("user_programming_language");
+            let current_code_state = JSON.parse(localStorage.getItem("user_generated_code_dict"))[user_programming_language];
     
             let current_parent_playground_object_id = localStorage.getItem("parent_playground_object_id");
             let payload;
-    
+
             if (current_parent_playground_object_id !== null){
     
                 payload = {
                     user_id: user_id,
+                    programming_language: user_programming_language,
                     code_state: current_code_state,
                     parent_playground_object_id: current_parent_playground_object_id
                 };
@@ -164,6 +314,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
                 payload = {
                     user_id: user_id,
+                    programming_language: user_programming_language,
                     code_state: current_code_state,
                 };
 
@@ -188,16 +339,9 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             // Authenticated User Case
             if (userAuthenticated) {
 
-                // console.log('search-params:', searchParams);
-
-                // // TODO: seems pid is undefined on npm start? <-- fix this and go from there
                 // let pg_obj_id = searchParams['pid'];
-                // console.log('PG_OBJECT_ID:', pg_obj_id);
-
                 const url_search_params = new URLSearchParams(window.location.search);
                 const pg_obj_id = url_search_params.get('pid');
-                // console.log('url-params:', url_search_params);
-                // console.log('pg_obj_id-NEW:', pg_obj_id);
                 
                 if (pg_obj_id !== undefined && pg_obj_id !== null) {
 
@@ -216,10 +360,21 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                         complete: true
                     }]);
 
-                    // let hello_world_code = "\ndef hello_world():\n    return 'Hello World'\n\nhello_world()\n";
-                    let hello_world_code = "# Write a hello world program\n\ndef hello_world():\n    return 'Hello World'\n\nhello_world()\n";
-                    codeStateTmpRef.current = hello_world_code;
-                    setEditorCode(hello_world_code);
+                    // // let hello_world_code = "\ndef hello_world():\n    return 'Hello World'\n\nhello_world()\n";
+                    // let hello_world_code = "# Write a hello world program\n\ndef hello_world():\n    return 'Hello World'\n\nhello_world()\n";
+                    // codeStateTmpRef.current = hello_world_code;
+                    // setEditorCode(hello_world_code);
+
+                    let language_code = defaultLanguageCodeDict['python'];
+                    codeStateTmpRef.current = language_code;
+                    let current_user_code_dict = {'python': language_code};
+
+                    selectedProgrammingLangRef.current = 'python';
+
+                    setSelectedProgrammingLanguage('python');
+                    setUserEditorCodeDict(current_user_code_dict);
+                    setEditorCode(language_code);
+                    // localStorage.setItem("user_generated_code_dict", JSON.stringify(current_user_code_dict));
 
                 }
             
@@ -235,21 +390,45 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                     localStorage.setItem("user_id", rnd_user_id);
                 }
 
-                // Fetch generated code
-                let user_generated_code = localStorage.getItem("user_generated_code");
-                if (user_generated_code === null) {
-                    let hello_world_code = "\ndef hello_world():\n    return 'Hello World'\n\nhello_world()\n";
-                    codeStateTmpRef.current = hello_world_code;
-                    setEditorCode(hello_world_code);
-                    localStorage.setItem("user_generated_code", hello_world_code);
+                // Fetch user programming language
+                let user_programming_language = localStorage.getItem("user_programming_language");
+                if (user_programming_language === null) {
+                    localStorage.setItem("user_programming_language", 'python');
+                    selectedProgrammingLangRef.current = 'python';
+                    setSelectedProgrammingLanguage('python');                    
                 } else {
-                    codeStateTmpRef.current = user_generated_code;
-                    setEditorCode(user_generated_code);
+                    // TODO: anything done in this case?
+                    let current_pg_lang = localStorage.getItem("user_programming_language");
+                    selectedProgrammingLangRef.current = current_pg_lang;
+                    setSelectedProgrammingLanguage(current_pg_lang);
+                }
+
+                // Fetch generated code
+                let user_generated_code_dict = localStorage.getItem("user_generated_code_dict");
+                if (user_generated_code_dict === null) {
+                    let current_user_selected_language = localStorage.getItem("user_programming_language");
+
+                    let language_code = defaultLanguageCodeDict[current_user_selected_language];
+                    codeStateTmpRef.current = language_code;
+                    let current_user_code_dict = {[current_user_selected_language]: language_code};
+
+                    setUserEditorCodeDict(current_user_code_dict);
+                    setEditorCode(language_code);
+                    localStorage.setItem("user_generated_code_dict", JSON.stringify(current_user_code_dict));
+
+                } else {
+
+                    let current_user_code_dict = JSON.parse(localStorage.getItem('user_generated_code_dict'));
+                    let current_user_selected_language = localStorage.getItem("user_programming_language");
+                    let current_user_generated_code = current_user_code_dict[current_user_selected_language];
+
+                    codeStateTmpRef.current = current_user_generated_code;
+                    setEditorCode(current_user_generated_code);
+
                 }
 
                 // Fetching any existing messages from localstorage
                 const storedMessages = localStorage.getItem('user_generated_message_list');
-
                 if (storedMessages === null || storedMessages.length === 0 || storedMessages === undefined) {
 
                     setChatMessages([{
@@ -260,7 +439,8 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                         complete: true
                     }]);
 
-                } else {
+                } 
+                else {
 
                     setChatMessages(JSON.parse(storedMessages));
 
@@ -481,7 +661,15 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                             </div>
                         }
                     >
-                        <CodeEditor codeState={editorCode} setCodeState={setEditorCode} codeStateTmpRef={codeStateTmpRef} _sendCodeSaveRequest={_sendCodeSaveRequest} />
+                        <CodeEditor
+                            codeState={editorCode}
+                            // setCodeState={setEditorCode}
+                            // codeStateTmpRef={codeStateTmpRef}
+                            _sendCodeSaveRequest={_sendCodeSaveRequest}
+                            selectedProgrammingLanguage={selectedProgrammingLanguage}
+                            _handlePgLangChange={_handlePgLangChange}
+                            _handleCodeEditorValueChange={_handleCodeEditorValueChange}
+                        />
                     </ResizableBox>
 
                     {/* Right Side */}
@@ -489,7 +677,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                         className="flex flex-col flex-1 h-full bg-[#F3F4F6] dark:bg-gray-900"
                     >
                         <ConsoleChatTabs
-                            codeState={editorCode}
+                            // codeState={editorCode}
                             setCodeState={setEditorCode}
                             chatMessages={chatMessages}
                             generatedMessage={generatedMessage}
@@ -512,6 +700,9 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
                             userAuthenticated={userAuthenticated}
 
+                            selectedProgrammingLanguage={selectedProgrammingLangRef}
+
+                            codeStateTmpRef={codeStateTmpRef}
                         />
                     </div>
 

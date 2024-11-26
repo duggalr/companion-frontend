@@ -22,14 +22,6 @@ export const InternalUserProvider = ({ children }: { children: ReactNode }) => {
 
     const _handleUserAccessTokenFetch = async() => {
 
-        // const user_access_token = await getUserAccessToken();
-        // console.log('current-user-access-token-CONTEXT:', user_access_token)
-
-        // if (user_access_token !== undefined && user_access_token !== null) { 
-        //     setIsAuthenticated(true);
-        //     setUserAccessToken(user_access_token);
-        // }
-
         try {
             const user_access_token = await getUserAccessToken();
             if (user_access_token) {

@@ -17,7 +17,6 @@ const DashboardLayout = ({
         setDashboardDataLoading(true); // Set loading state true before fetch
 
         let dashboard_data = await fetchDashboardData(accessToken);
-        console.log('dashboard_data:', dashboard_data);
         
         if (dashboard_data && dashboard_data.playground_object_list) {
             let playground_object_list = dashboard_data.playground_object_list;
@@ -43,19 +42,6 @@ const DashboardLayout = ({
 
     }, [accessToken, userAuthenticated]);
     
-    // useEffect(() => {
-
-    //     // console.log('user-auth:', accessToken, userAuthenticated)
-
-    //     // if (!userAuthenticated) {
-    //     //     redirect('/');
-    //     // }
-    
-    //     // if (accessToken) {
-    //     //     _handleFetchDashboardData();
-    //     // }
-
-    // }, [accessToken, userAuthenticated]);
 
     return (
 
@@ -94,9 +80,22 @@ const DashboardLayout = ({
                                             <p className="tracking-wide text-[17.5px] font-medium text-gray-900 truncate dark:text-white cursor-pointer hover:text-blue-400 dark:hover:text-blue-400">
                                                 {dashboard_item.code_file_name}
                                             </p>
+                                            {/* <p className="tracking-wide text-[11px] mt-1 text-gray-500 truncate dark:text-gray-400">
+                                                Language: {dashboard_item.programming_language}
+                                            </p>
                                             <p className="tracking-wide text-[11px] mt-1 text-gray-500 truncate dark:text-gray-400">
                                                 Number of Chat Messages: {dashboard_item.number_of_chat_messages}
-                                            </p>
+                                            </p> */}
+                                            <div className="flex items-center space-x-2">
+    <p className="tracking-wide text-[11px] mt-1 text-gray-500 truncate dark:text-gray-400">
+        Language: {dashboard_item.programming_language}
+    </p>
+    <p className="tracking-wide text-[11px] mt-1 text-gray-500 truncate dark:text-gray-400">|</p>
+    <p className="tracking-wide text-[11px] mt-1 text-gray-500 truncate dark:text-gray-400">
+        Number of Chat Messages: {dashboard_item.number_of_chat_messages}
+    </p>
+</div>
+
                                         </Link>
                                     </div>
                                     <div className="inline-flex items-center text-[13.5px] text-gray-900 dark:text-gray-400 tracking-wider">
