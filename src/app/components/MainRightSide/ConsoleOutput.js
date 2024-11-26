@@ -5,7 +5,7 @@ import { faPlay, faSpinner, faHandshake } from "@fortawesome/free-solid-svg-icon
 import axios from "axios";
 
 
-const ConsoleOutput = ({ codeState, setCodeState, output, setOutput, setCurrentUserInputMessage, 
+const ConsoleOutput = ({ setCodeState, output, setOutput, setCurrentUserInputMessage, 
   setActiveTab, handleSendUserChatMessage, currentUserInputMessageRef, setSendBtnEnabled, _sendCodeSaveRequest, selectedProgrammingLanguage,
   codeStateTmpRef
 }) => {

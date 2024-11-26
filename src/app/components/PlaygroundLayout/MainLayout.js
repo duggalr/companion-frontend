@@ -677,7 +677,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                         className="flex flex-col flex-1 h-full bg-[#F3F4F6] dark:bg-gray-900"
                     >
                         <ConsoleChatTabs
-                            codeState={editorCode}
+                            // codeState={editorCode}
                             setCodeState={setEditorCode}
                             chatMessages={chatMessages}
                             generatedMessage={generatedMessage}
