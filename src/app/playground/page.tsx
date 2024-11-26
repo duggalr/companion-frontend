@@ -12,25 +12,10 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const userContext = useContext(UserContext);
 
-    // const _handleInitialLoad = () => {
-    //     setLoading(false);
-    // };
-
-    // useEffect(() => {
-    //     _handleInitialLoad();
-    // }, []);
-
-
     // Update page title
     useEffect(() => {
         document.title = "Playground";
     }, []);
-
-    // const _handleUserValidation = async() => {
-    //     let user_access_token = userContext?.userAccessToken;
-    //     let validated_user_data = await validAuthenticatedUser(user_access_token);
-    //     console.log('validated-user-data-response-playground:', validated_user_data);
-    // }
 
     useEffect(() => {
         if (userContext && userContext.loading === false){
@@ -41,7 +26,6 @@ export default function Home() {
 
         }
     }, [userContext]);
-
 
     return (
         <>

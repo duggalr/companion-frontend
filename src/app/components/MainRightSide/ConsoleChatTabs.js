@@ -8,7 +8,7 @@ import { faTerminal, faComments } from '@fortawesome/free-solid-svg-icons';
 const ConsoleChatTabs = ({ 
   codeState, setCodeState, chatMessages, generatedMessage, isGeneratingMessage,
   consoleOutput, setConsoleOutput, currentUserInputMessage, setCurrentUserInputMessage, handleSendUserChatMessage, currentUserInputMessageRef,
-  sendBtnEnabled, setSendBtnEnabled, isLoading, handleClearChatMessage, _sendCodeSaveRequest, userAuthenticated
+  sendBtnEnabled, setSendBtnEnabled, isLoading, handleClearChatMessage, _sendCodeSaveRequest, userAuthenticated, selectedProgrammingLanguage, codeStateTmpRef
 }) => {
   
   // const router = useRouter();
@@ -114,6 +114,8 @@ const ConsoleChatTabs = ({
           currentUserInputMessageRef={currentUserInputMessageRef}
           setSendBtnEnabled={setSendBtnEnabled}
           _sendCodeSaveRequest={_sendCodeSaveRequest}
+          selectedProgrammingLanguage={selectedProgrammingLanguage}
+          codeStateTmpRef={codeStateTmpRef}
         />}
 
         {activeTab === "chat" && <ChatInterface messages={chatMessages}

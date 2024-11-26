@@ -30,7 +30,6 @@ export default function Home() {
 
         const user_access_token = userContext?.userAccessToken;
         await validAuthenticatedUser(user_access_token);
-        // console.log('validated-user-data-response:', validated_user_data);
 
     }
 
