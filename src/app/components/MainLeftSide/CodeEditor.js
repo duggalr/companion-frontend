@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import Editor from "@monaco-editor/react";
 
 
-const CodeEditor = ({ codeState, setCodeState, codeStateTmpRef, _sendCodeSaveRequest, selectedProgrammingLanguage, _handlePgLangChange, _handleCodeEditorValueChange }) => {
+const CodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLanguage, _handlePgLangChange, _handleCodeEditorValueChange }) => {
 
     const monacoRef = useRef(null);
     const editorRef = useRef(null);

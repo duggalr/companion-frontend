@@ -663,8 +663,8 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                     >
                         <CodeEditor
                             codeState={editorCode}
-                            setCodeState={setEditorCode}
-                            codeStateTmpRef={codeStateTmpRef}
+                            // setCodeState={setEditorCode}
+                            // codeStateTmpRef={codeStateTmpRef}
                             _sendCodeSaveRequest={_sendCodeSaveRequest}
                             selectedProgrammingLanguage={selectedProgrammingLanguage}
                             _handlePgLangChange={_handlePgLangChange}

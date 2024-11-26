@@ -23,7 +23,6 @@ export default function Home() {
             // if (userContext.isAuthenticated === true){
             //     _handleUserValidation();
             // }
-
         }
     }, [userContext]);
 
