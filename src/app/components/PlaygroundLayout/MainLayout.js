@@ -642,7 +642,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             ) : (
 
                 <div className="flex h-screen pt-0">
-                    
+
                     {/* Left Side */}
                     <ResizableBox
                         width={leftWidth}
