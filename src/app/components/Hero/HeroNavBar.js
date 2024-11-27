@@ -1,7 +1,7 @@
 import ThemeToggle from "../Utils/ThemeToggle";
 import { Pacifico } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRightFromBracket, faSquareCaretRight, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightFromBracket, faSquareCaretRight, faUserPlus, faBook } from "@fortawesome/free-solid-svg-icons";
 
 
 const pacifico_font = Pacifico({
@@ -40,6 +40,18 @@ export default function HeroNavBar({ userAuthenticated, pageLoading }) {
                         rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-zinc-950 md:dark:bg-zinc-950"
                         // dark:border-gray-700
                     >
+
+                        <li>
+                            <a
+                                href="/updates"
+                                // className="flex py-3 text-gray-900 rounded text-sm hover:text-gray-600"
+                                className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] hover mr-2 font-normal"
+                            >
+                                <FontAwesomeIcon icon={faBook} className="text-black pr-2 dark:text-white w-4 h-4" />
+                                Changelog
+                            </a>
+                        </li>
+
                         <li>
                             <a
                                 href="https://discord.gg/q95Bh5VV"
