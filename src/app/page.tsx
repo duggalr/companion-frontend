@@ -5,6 +5,7 @@ import HeroPrimary from './components/Hero/HeroPrimary';
 import { UserContext } from '../context/UserContext';
 import { validAuthenticatedUser } from '@/lib/api/checkAuthenticatedUser';
 
+
 export default function Home() {
     
     const [initialPageLoad, setInitialPageLoad] = useState(true);
@@ -61,7 +62,6 @@ export default function Home() {
                     </>
                 )}
             </main>
-
         </>
 
     );

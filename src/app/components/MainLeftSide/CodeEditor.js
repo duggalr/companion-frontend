@@ -83,8 +83,6 @@ const CodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLangua
         monaco.editor.setTheme(currentTheme === 'dark' ? 'minimalistDark' : 'minimalistLight');
     };
 
-
-
     useEffect(() => {
 
         const listenStorageChange = () => {
@@ -94,7 +92,6 @@ const CodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLangua
         window.addEventListener("themeChange", listenStorageChange);
 
     }, []);
-
 
     const _handleCodeStateChange = (value) => {
  
@@ -141,7 +138,6 @@ const CodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLangua
 
     }
 
-
     // Create Model for Monaco Editor
     useEffect(() => {
         if (isEditorReady && codeState){
@@ -156,7 +152,13 @@ const CodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLangua
 
 
     return (
-        <div className="h-full w-full border-r-2 border-gray-300">
+        // h-full
+        // <div className="h-screen w-full border-r-2 border-gray-300">
+        // style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        <div
+            className="h-screen w-full overflow-auto border-r-2 border-gray-300"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
             {/* dark:bg-gray-800 */}
             
             {showAlert && (
@@ -188,9 +190,8 @@ const CodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLangua
 
             </div>
             
-
             <Editor
-                height="100%"
+                // height="%"
                 width="100%"
                 options={{
                     minimap: { enabled: false },
