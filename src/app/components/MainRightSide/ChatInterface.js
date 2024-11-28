@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { MathJax, MathJaxContext } from "better-react-mathjax";
+
 
 
 const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserInputMessage, setCurrentUserInputMessage, 
@@ -58,6 +60,10 @@ const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserIn
 
   return (
 
+    <MathJaxContext>
+
+
+    
     <div className="flex flex-col h-4/5 dark:bg-gray-900 p-4">
 
       <div className="flex justify-between items-center">
@@ -85,14 +91,18 @@ const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserIn
                 : "self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             } p-3 rounded-lg w-full max-w-full break-words text-[13px] whitespace-pre-wrap`}
           >
-            {msg.text}
+            <MathJax>
+              {msg.text}
+            </MathJax>
           </div>
         ))}
         
         {/* Display the streaming message here */}
         {isGenerating && (
           <div className="self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-3 rounded-lg w-full max-w-full break-words text-[13px] whitespace-pre-wrap">
-            {generatedMessage}
+            <MathJax>
+              {generatedMessage}
+            </MathJax>
           </div>
         )}
       </div>
@@ -131,6 +141,8 @@ const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserIn
       </div>
 
     </div>
+
+    </MathJaxContext>
 
   );
 };

@@ -673,8 +673,9 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                     </ResizableBox>
 
                     {/* Right Side */}
+                    {/* // h-full */}
                     <div
-                        className="flex flex-col flex-1 h-full bg-[#F3F4F6] dark:bg-gray-900"
+                        className="flex flex-col flex-1 bg-[#F3F4F6] dark:bg-gray-900"
                     >
                         <ConsoleChatTabs
                             // codeState={editorCode}

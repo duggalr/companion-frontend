@@ -169,7 +169,7 @@ def find_even_numbers(start, end):
       <hr className="mt-2 mb-1"/>
 
       <span className="text-gray-500 dark:text-gray-400 text-xs pt-4 pl-1 pb-2 tracking-normal">
-        Run your code and the results will be shown in the console below. More language support coming soon!
+        Run your code and the results will be shown in the console below.
       </span>
 
       <span className="text-gray-500 dark:text-gray-400 text-xs pt-0 pl-1 pb-2 tracking-normal text-[10.5px]">
@@ -183,7 +183,7 @@ def find_even_numbers(start, end):
           </p>
         ) : (
           <p className="text-gray-400 dark:text-gray-500 pt-2 pl-1 text-[14px] tracking-normal font-normal">
-            <span className="text-blue-400">&gt;&gt;</span> console output will appear here...
+            <span className="text-blue-400">&gt;&gt;</span> stdout will appear here...
           </p>
         )}
       </div>
