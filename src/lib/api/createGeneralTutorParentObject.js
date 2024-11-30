@@ -5,8 +5,6 @@ export async function createGeneralTutorParentObject(anon_user_id , accessToken)
 
     let endPointUrl = API_BACKEND_URL + '/create-general-tutor-parent-object';
 
-    console.log('tmp-new:', accessToken, accessToken === null)
-
     if (accessToken === null) {
 
         let payload = {

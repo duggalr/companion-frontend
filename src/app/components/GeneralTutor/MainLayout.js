@@ -6,8 +6,10 @@ import { MathJax, MathJaxContext } from "better-react-mathjax";
 
 // TODO: start here by fixing generateUserID bug <-- complete Anon case
 import generateUserID from "../../../lib/utils/generateAnonUserId";
-import {createGeneralTutorParentObject} from "../../../lib/api/createGeneralTutorParentObject"
-import {createAnonUser} from "../../../lib/api/createAnonUser"
+import {createGeneralTutorParentObject} from "../../../lib/api/createGeneralTutorParentObject";
+import {createAnonUser} from "../../../lib/api/createAnonUser";
+import {fetchGeneralTutorConversation} from "../../../lib/api/fetchGeneralTutorConversation";
+import {fetchAllGeneralTutorUserConversations} from "../../../lib/api/fetchAllGeneralTutorUserConversations";
 
 
 const MainGeneralTutorLayout = ({ accessToken, userAuthenticated }) => {
@@ -30,7 +32,12 @@ const MainGeneralTutorLayout = ({ accessToken, userAuthenticated }) => {
 
     const [chatLoading, setChatIsLoading] = useState(false);
     const [sendBtnEnabled, setSendBtnEnabled] = useState(false);
-    
+
+    // Playground PID Reference
+    const currentAuthenticatedCIDRef = useRef(null);
+
+    const [allUserConversations, setAllUserConversations] = useState([]);
+
 
     const _initializeAnonData = async () => {
 
@@ -99,7 +106,7 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
             setChatIsLoading(true);
             setCurrentUserInputMessage("");
             inputValueRef.current = "";
-            
+
             setGeneralTutorChatMessages((prevMessages) => [...prevMessages, newMessage]);
             setMessageSent(true); // Mark that the message has been sent (triggers useEffect)
 
@@ -107,11 +114,33 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
 
     }
 
+    const addCIDParam = (current_cid) => {
+        window.history.pushState({}, '', `/general-tutor?cid=${current_cid}`);
+    };
+
     const _handleSaveAndMessageSend = async (message_dict) => {
 
         // TODO: 
-
         if (userAuthenticated) {
+
+            let general_tutor_parent_object_res_dict = await createGeneralTutorParentObject(
+                null,
+                accessToken
+            );
+
+            console.log('general_tutor_parent_object_res_dict:', general_tutor_parent_object_res_dict);
+            let general_tutor_parent_object_id = general_tutor_parent_object_res_dict['general_tutor_parent_object_id'];
+            console.log('general_tutor_parent_object_id:', general_tutor_parent_object_id);
+
+            addCIDParam(general_tutor_parent_object_id);
+            currentAuthenticatedCIDRef.current = general_tutor_parent_object_id;
+
+            console.log('tmp-new-ONE-CID:', currentAuthenticatedCIDRef);
+
+            message_dict['general_tutor_object_id'] = general_tutor_parent_object_id;
+
+            let wsCurrent = wsRef.current;
+            wsCurrent.send(JSON.stringify(message_dict));
 
         }
         else {
@@ -148,7 +177,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
         }
     };
 
-
     const _handleClearMessages = () => {
 
         setGeneralTutorChatMessages([{
@@ -160,6 +188,78 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         }]);
 
     }
+
+    const _initializeAuthenticatedData = async (cv_obj_id) => {
+
+        let gt_conversation_data_response = await fetchGeneralTutorConversation(
+            accessToken,
+            cv_obj_id
+        );
+
+        console.log('gt-conversation-data-RESPONSE', gt_conversation_data_response);
+
+        if (gt_conversation_data_response['success'] === true){
+            let chat_msg_list = gt_conversation_data_response['chat_messages'];
+            setGeneralTutorChatMessages(chat_msg_list);
+            showLoading(false);
+        }
+
+    }
+
+    const _fetchAuthenticatedUserConversations = async () => {
+
+        // TODO:
+        let gt_conversations_data_response = await fetchAllGeneralTutorUserConversations(
+            accessToken
+        );
+
+        console.log('gt-conversations-ALL-data', gt_conversations_data_response);
+
+        let all_gt_conversations_list = gt_conversations_data_response['all_gt_objects']
+        setAllUserConversations(all_gt_conversations_list)
+
+    }
+
+    const _handleConversationItemClick = async (cv_object_id) => {
+
+        console.log('conv-clicked:', cv_object_id);
+        // TODO:
+            // set url param and current cidref
+            // fetch data to re-initialize chat state 
+
+        currentAuthenticatedCIDRef.current = cv_object_id;
+
+        let gt_conversation_data_response = await fetchGeneralTutorConversation(
+            accessToken,
+            cv_object_id
+        );
+
+        console.log('gt-conversation-data-RESPONSE', gt_conversation_data_response);
+
+        if (gt_conversation_data_response['success'] === true){
+            let chat_msg_list = gt_conversation_data_response['chat_messages'];
+            setGeneralTutorChatMessages(chat_msg_list);
+            showLoading(false);
+            window.history.pushState({}, '', `/general-tutor?cid=${cv_object_id}`);
+
+        }
+        
+    }
+
+
+    const _handleCreateNewChat = async () => {
+        // window.location.href = '/general-tutor';
+        currentAuthenticatedCIDRef.current = null;
+        window.history.pushState({}, '', '/general-tutor');
+        setGeneralTutorChatMessages([{
+            text: `Welcome! 😄 I'm Companion, your general tutor.
+
+Feel free to ask me about anything you would like to learn, whether that's a problem you are working on, or a concept that need's further explaining...`,
+            sender: "bot",
+            complete: true
+        }]);
+    }
+
 
     // TODO: 
     // Handle Message Sending
@@ -185,6 +285,51 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
                 if (userAuthenticated){
                     // TODO:
+                        // check if CID is here
+                            // if so, send payload to backend (ws)
+                            // if not, create one and add it to the url
+                                // then, send to backend
+                    
+                    // let current_pid = saveCodeRes['parent_playground_object_id'];
+                    // addPidParam(current_pid);  // update url GET parameters
+                    // currentAuthenticatedPIDRef.current = current_pid;
+
+                    // TODO:
+                    // const currentAuthenticatedCIDRef = useRef(null);
+
+                    if (currentAuthenticatedCIDRef.current !== null){
+
+                        // TODO: 
+                            // send
+                        // fix all bugs
+
+                        let messageForBackend = {
+                            general_tutor_object_id: currentAuthenticatedCIDRef.current,
+                            text: last_message_dict['text'],
+                            all_past_chat_messages: all_chat_messages_str,
+                            sender: 'user',
+                            type: 'user_message',
+                        };
+
+                        console.log('messageForBackend', messageForBackend)
+
+                        wsCurrent.send(JSON.stringify(messageForBackend));
+
+
+                    } else {
+                        
+                        // TODO: 
+                        let messageForBackend = {
+                            text: last_message_dict['text'],
+                            all_past_chat_messages: all_chat_messages_str,
+                            sender: 'user',
+                            type: 'user_message',
+                        };
+
+                        _handleSaveAndMessageSend(messageForBackend);
+
+                    }
+
                 } 
                 else {
 
@@ -216,36 +361,8 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                             type: 'user_message',
                         };
 
-                        wsCurrent.send(JSON.stringify(messageForBackend));                        
-
+                        wsCurrent.send(JSON.stringify(messageForBackend));
                     }
-
-                    // if (general_tutor_object_id === null) {
-                        
-                    //     let messageForBackend = {
-                    //         text: last_message_dict['text'],
-                    //         all_past_chat_messages: all_chat_messages_str,
-                    //         sender: 'user',
-                    //         type: 'user_message',
-                    //     };
-
-                    //     _handleSaveAndMessageSend(
-                    //         messageForBackend
-                    //     );
-
-                    // } else {
-
-                    //     let messageForBackend = {
-                    //         general_tutor_object_id: general_tutor_object_id,
-                    //         text: last_message_dict['text'],
-                    //         all_past_chat_messages: all_chat_messages_str,
-                    //         sender: 'user',
-                    //         type: 'user_message',
-                    //     };
-                        
-                    //     wsCurrent.send(JSON.stringify(messageForBackend));
-
-                    // }
 
                 }
             }
@@ -315,7 +432,31 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         
         if (userAuthenticated) {
 
-            // TODO:
+            const url_search_params = new URLSearchParams(window.location.search);
+            const cv_obj_id = url_search_params.get('cid');
+            console.log('cid:', cv_obj_id);
+
+            _fetchAuthenticatedUserConversations();
+
+            if (cv_obj_id !== undefined && cv_obj_id !== null) {
+
+                // Fetch data from backend
+                // TODO: 
+
+                _initializeAuthenticatedData(cv_obj_id);                
+
+            } else {
+
+                setGeneralTutorChatMessages([{
+                    text: `Welcome! 😄 I'm Companion, your general tutor.
+
+Feel free to ask me about anything you would like to learn, whether that's a problem you are working on, or a concept that need's further explaining...`,
+                    sender: "bot",
+                    complete: true
+                }]);
+                showLoading(false);
+    
+            }
 
         } else {
             
@@ -359,7 +500,27 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                                 userAuthenticated ? (
 
                                     <ul className="space-y-3 text-[14px]">
-                                        <li className="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg p-2 cursor-pointer">
+
+                                        {allUserConversations.length === 0 ? (
+                                            <p className="text-gray-700 dark:text-gray-300">No conversations saved</p>
+                                        ) : (
+                                            allUserConversations.map((msg, idx) => (
+                                                <li
+                                                    key={idx}
+                                                    className="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg p-2 cursor-pointer"
+                                                    onClick={() => _handleConversationItemClick(msg.object_id)}
+                                                >
+                                                    <FontAwesomeIcon
+                                                        icon={faComment}
+                                                        size="sm"
+                                                        className="pr-1 pl-0 text-gray-800 dark:text-gray-400"
+                                                    /> 
+                                                    Conversation {idx + 1}
+                                                </li>
+                                            ))
+                                        )}
+
+                                        {/* <li className="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg p-2 cursor-pointer">
                                             <FontAwesomeIcon 
                                                 icon={faComment}
                                                 size="sm"
@@ -379,7 +540,8 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                                                 size="sm"
                                                 className="pr-1 pl-0 text-gray-800 dark:text-gray-400"
                                             /> Conversation 3
-                                        </li>
+                                        </li> */}
+
                                     </ul>
 
                                 ) : (
@@ -409,9 +571,28 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                             </div>
 
                             {/* Clear Text Button */}
-                            <button className="text-blue-500 text-[13px] pt-4 ml-auto mr-36 pb-1" onClick={_handleClearMessages}>
+                            {/* <button className="text-blue-500 text-[13px] pt-4 ml-auto mr-36 pb-1" onClick={_handleClearMessages}>
                                 Clear text
+                            </button> */}
+
+                            {(generalTutorChatMessages.length > 1 && !userAuthenticated) && (
+                                <button className="text-blue-500 text-[13px] pt-4 ml-auto mr-36 pb-1" onClick={_handleClearMessages}>
+                                    Clear text
+                                </button>    
+                            )}
+
+                            <button className="text-blue-500 text-[13px] pt-4 ml-auto mr-36 pb-1" onClick={_handleCreateNewChat}>
+                            + Create New File
                             </button>
+
+                            {/* {userAuthenticated && (
+                                <span
+                                    onClick={_handleCreateNewChat}
+                                    className="text-gray-600 dark:text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:hover:text-gray-300 px-4 py-2 mt-1 cursor-pointer"
+                                >
+                                    + Create New File
+                                </span>
+                            )} */}
 
                             {/* Messages Div */}
                             <div className="flex justify-center mt-0 w-full px-4">
@@ -444,19 +625,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                                         </MathJax>
                                         </div>
                                     )}
-
-                                    {/* generalTutorChatMessages */}
-                                    {/* <div
-                                        className="self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-3 rounded-lg w-full max-w-full break-words text-[13px] whitespace-pre-wrap"
-                                    >
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                    </div>
-            
-                                    <div
-                                        className="self-end bg-blue-400 text-white p-3 rounded-lg w-full max-w-full break-words text-[13px] whitespace-pre-wrap"
-                                    >
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                    </div> */}
                                     
                                 </div>
                             </div>

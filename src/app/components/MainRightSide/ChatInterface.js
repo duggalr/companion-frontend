@@ -4,7 +4,6 @@ import { faPaperPlane, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 
 
-
 const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserInputMessage, setCurrentUserInputMessage, 
   handleSendUserChatMessage, currentUserInputMessageRef, sendBtnEnabled, setSendBtnEnabled, isLoading, handleClearChatMessage,
   userAuthenticated
