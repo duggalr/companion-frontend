@@ -170,14 +170,14 @@ const CodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLangua
                 </div>
             )}
 
-            <div className="border-b-2 dark:border-gray-500 max-w dark:bg-gray-900">
+            <div className="border-b-2 dark:border-gray-500 max-w dark:bg-gray-900 bg-[#F3F4F6]">
 
                 <form class="max-w-[200px]">
                     {/* <select id="programming_languages" class="bg-gray-50 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
                     dark:focus:ring-blue-500 dark:focus:border-blue-500"> */}
                     <select
                         id="programming_languages"
-                        class="dark:bg-gray-900 text-gray-900 text-[13.5px] focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500 pl-2"
+                        class="bg-[#F3F4F6] dark:bg-gray-900 text-gray-900 text-[13.5px] focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500 pl-2"
                         value={selectedProgrammingLanguage}
                         onChange={handleLangSelectionChange}
                     >

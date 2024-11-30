@@ -14,7 +14,7 @@ export default function Home() {
 
     // Update page title
     useEffect(() => {
-        document.title = "Playground";
+        document.title = "Companion | Playground";
     }, []);
 
     useEffect(() => {
@@ -28,7 +28,7 @@ export default function Home() {
 
     return (
         <>
-            <main >
+            <main>
                 {loading ? (
                     // Loading indicator while page is loading
                     <div>Loading...</div>
@@ -41,7 +41,7 @@ export default function Home() {
                         <PlaygroundLayout
                             accessToken={userContext?.userAccessToken}
                             userAuthenticated={userContext?.isAuthenticated}
-                            pageLoading={loading}                            
+                            pageLoading={loading}
                         />
                     </>
                 )}

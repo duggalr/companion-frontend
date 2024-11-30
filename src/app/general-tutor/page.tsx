@@ -2,17 +2,17 @@
 import { useEffect, useState, useContext } from 'react';
 import { UserContext } from '../../context/UserContext';
 import TopNavBar from '../components/Utils/TopNavBar';
-import Changelog from '../components/Updates/Changelog';
+import MainGeneralTutorLayout from '../components/GeneralTutor/MainLayout';
 
 
-const ChangelogPage = () => {
+const GeneralTutorPage = () => {
 
     const [loading, setLoading] = useState(true);
     const userContext = useContext(UserContext);
 
     // Update page title
     useEffect(() => {
-        document.title = "Companion - Updates";
+        document.title = "Companion | General Tutor";
     }, []);
 
     useEffect(() => {
@@ -24,17 +24,21 @@ const ChangelogPage = () => {
 
     return (
         <>
-            <main >
+
+            {/* className="dark:bg-gray-900 bg-[#F3F4F6]" */}
+            <main>
                 {loading ? (
                     // Loading indicator while page is loading
                     <div>Loading...</div>
                 ) : (
-                    // Render components only after loading completes
                     <>
                         <TopNavBar
                             userAuthenticated={userContext?.isAuthenticated}
                         />
-                        <Changelog />
+                        <MainGeneralTutorLayout
+                            accessToken={userContext?.userAccessToken}
+                            userAuthenticated={userContext?.isAuthenticated}
+                        />
                     </>
                 )}
             </main>
@@ -43,4 +47,4 @@ const ChangelogPage = () => {
     );
 };
   
-export default ChangelogPage;
+export default GeneralTutorPage;
