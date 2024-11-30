@@ -72,10 +72,6 @@ console.log(helloWorld());
 
         if (userAuthenticated){
 
-            // TODO: 
-                // Set coderef to current value
-                // update code dict
-
             codeStateTmpRef.current = value;
             setUserEditorCodeDict((prevState) => ({
                 ...prevState,

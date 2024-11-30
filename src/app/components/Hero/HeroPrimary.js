@@ -18,6 +18,10 @@ export default function HeroPrimary({ userAuthenticated }) {
         router.push('/dashboard');
     }
 
+    const handleGeneralTutorClick = () => {
+        router.push('/general-tutor');
+    }
+
     return (
 
         <section className="min-h-screen flex flex-col items-center py-16 px-4">
@@ -58,6 +62,10 @@ export default function HeroPrimary({ userAuthenticated }) {
                             Visit IDE &nbsp; &#8594;
                         </span>
                     </ShimmerButton>
+                    
+                    <ShinyButton className="ml-4" onClick={handleGeneralTutorClick}>
+                        Speak with General Tutor
+                    </ShinyButton>
 
                     {/* <RainbowButton className="shadow-2xl ml-4">
                         <span
