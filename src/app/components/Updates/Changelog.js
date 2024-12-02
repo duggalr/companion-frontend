@@ -5,6 +5,15 @@ const updates = [
     {
         date: "2024-11-28",
         version: "1.0.3",
+        title: "Added About Page",
+        description:
+          "Added About Section on Landing Page, along with text refactoring and animations.",
+        type: "feature",
+    },
+
+    {
+        date: "2024-11-28",
+        version: "1.0.3",
         title: "Added MathJax Support",
         description:
           "Added MathJax support, when formatting the chat messages given from the AI. ",
