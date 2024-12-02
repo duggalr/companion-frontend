@@ -67,7 +67,8 @@ module.exports = {
   			'shimmer-slide': 'shimmer-slide var(--speed) ease-in-out infinite alternate',
   			'spin-around': 'spin-around calc(var(--speed) * 2) infinite linear',
   			'shiny-text': 'shiny-text 8s infinite',
-  			rainbow: 'rainbow var(--speed, 2s) infinite linear'
+  			rainbow: 'rainbow var(--speed, 2s) infinite linear',
+  			rippling: 'rippling var(--duration) ease-out'
   		},
   		keyframes: {
   			'shimmer-slide': {
@@ -103,6 +104,15 @@ module.exports = {
   				},
   				'100%': {
   					'background-position': '200%'
+  				}
+  			},
+  			rippling: {
+  				'0%': {
+  					opacity: '1'
+  				},
+  				'100%': {
+  					transform: 'scale(2)',
+  					opacity: '0'
   				}
   			}
   		}
