@@ -1,34 +1,34 @@
 import 'aos/dist/aos.css'; // Import AOS styles
 import AOS from 'aos';
-import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useRef } from 'react';
+// import { useRouter } from 'next/navigation';
 import ShimmerButton from "@/components/ui/shimmer-button";
 import HeroVideoDialog from "@/components/ui/hero-video-dialog";
 import SparklesText from "@/components/ui/sparkles-text";
 import AnimatedShinyText from '@/components/ui/animated-shiny-text';
 // import { RainbowButton } from "@/components/ui/rainbow-button";
-import ShinyButton from "@/components/ui/shiny-button";
-import RippleButton from "@/components/ui/ripple-button";
-import { MagicCard } from "@/components/ui/magic-card";
+// import ShinyButton from "@/components/ui/shiny-button";
+// import RippleButton from "@/components/ui/ripple-button";
+// import { MagicCard } from "@/components/ui/magic-card";
  
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCode, faCommenting, faComments, faQuestion, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { faCode, faComments, faQuestion, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 
 export default function HeroPrimary({ userAuthenticated }) {
 
-    const router = useRouter();
-    const handleVisitIDEClick = () => {
-        router.push('/playground');
-    };
+    // const router = useRouter();
+    // const handleVisitIDEClick = () => {
+    //     router.push('/playground');
+    // };
 
-    const handleVisitDashboardClick = () => {
-        router.push('/dashboard');
-    }
+    // const handleVisitDashboardClick = () => {
+    //     router.push('/dashboard');
+    // }
 
-    const handleGeneralTutorClick = () => {
-        router.push('/general-tutor');
-    }
+    // const handleGeneralTutorClick = () => {
+    //     router.push('/general-tutor');
+    // }
 
     const aboutRef = useRef(null);
     const handleLearnMoreClick = () => {
