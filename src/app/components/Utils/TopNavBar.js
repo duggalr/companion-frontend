@@ -31,7 +31,7 @@ export default function TopNavBar ({ userAuthenticated }) {
                 </a>
             </li>
 
-            <div className="ml-auto lg:flex items-center space-x-6 hidden">
+            <div className="ml-auto lg:flex items-center space-x-8 hidden">
 
                 {/* Authenticated Links */}
                 {/* {userAuthenticated && (
