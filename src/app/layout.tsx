@@ -1,4 +1,5 @@
 import "./globals.css";
+import { useEffect } from 'react';
 import { Inter } from "next/font/google";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { UserProvider as Auth0UserProvider } from '@auth0/nextjs-auth0/client';
@@ -14,7 +15,7 @@ export const metadata = {
 };
 
 export default function RootLayout({children,}: {children: React.ReactNode;}) {
-  
+    
   return (
     <html lang="en">
       <head>

@@ -1,3 +1,5 @@
+import 'aos/dist/aos.css'; // Import AOS styles
+import AOS from 'aos';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ShimmerButton from "@/components/ui/shimmer-button";
@@ -39,6 +41,13 @@ export default function HeroPrimary({ userAuthenticated }) {
     //     setCurrentTheme(theme);
     // }, [])
 
+    useEffect(() => {
+        AOS.init({
+          duration: 1000, // Animation duration in milliseconds
+          once: true,     // Trigger animation only once
+        });
+      }, []);
+
     return (
 
         <>
@@ -61,16 +70,17 @@ export default function HeroPrimary({ userAuthenticated }) {
                 <div className="max-w-5xl mx-auto text-center mt-0 ">
                     
                     <div
-                    className="mb-4 w-full lg:w-1/3 mx-auto flex justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                        className="mb-4 w-full lg:w-1/3 mx-auto flex justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                        data-aos="fade-in"
                     >
                         <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400 text-[15px]">
                             <span>✨ 100% Free and Open Source ✨</span>
                         </AnimatedShinyText>
                     </div>
                     
-                    <SparklesText text="Learn with an AI Tutor" />
+                    <SparklesText text="Learn with an AI Tutor" data-aos="fade-up"/>
 
-                    <p className="text-[20px] text-muted-foreground pt-5 tracking-wide">
+                    <p className="text-[20px] text-muted-foreground pt-5 tracking-wide" data-aos="fade-up">
                         Try the AI Tutor in our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/general-tutor">
                             General Chat Interface 
                         </a> or our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/playground">
@@ -78,7 +88,7 @@ export default function HeroPrimary({ userAuthenticated }) {
                         </a>.
                     </p>
 
-                    <div className="mt-6 flex items-center justify-center">
+                    <div className="mt-6 flex items-center justify-center" data-aos="fade-up">
 
                         {/* <ShimmerButton className="shadow-2xl mr-4" onClick={handleVisitIDEClick}>
                             <span
@@ -105,7 +115,7 @@ export default function HeroPrimary({ userAuthenticated }) {
                         (The application works best on a computer...)
                     </p>
 
-                    <div className="relative mt-8">
+                    <div className="relative mt-8" >
                         <HeroVideoDialog
                             className="dark:hidden block"
                             animationStyle="from-center"
@@ -138,17 +148,18 @@ export default function HeroPrimary({ userAuthenticated }) {
                         Learn about Companion
                     </h2> */}
 
-                    {/* <div
-                    className="mb-4 w-1/5 mx-auto flex justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                    <div
+                        className="mb-4 w-1/6 mx-auto flex justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                        data-aos="fade-down"
                     >
-                        <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400 text-[15px]">
-                            <span>✨ Companion ✨</span>
+                        <AnimatedShinyText className="inline-flex items-center justify-center px-0 py-0 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400 text-[15px]">
+                            <span>💬 Companion</span>
                         </AnimatedShinyText>
-                    </div> */}
+                    </div>
 
-                    <SparklesText text="About" className="text-5xl"/>
+                    <SparklesText text="About" className="text-5xl" data-aos="fade-down"/>
 
-                    <div className="mt-8 text-center ">
+                    <div className="mt-8 text-center" data-aos="fade-right">
                         <p className="text-xl mb-6 leading-relaxed text-gray-500 dark:text-gray-400">
                             Companion is an AI Tutor, with the goal of offering students and individuals with help and feedback, as they work through their problems.
                             {/* Companion will not provide the student the answer but rather, provide useful hints to help guide their thinking, as they work through the problem. */}
@@ -161,7 +172,7 @@ export default function HeroPrimary({ userAuthenticated }) {
                         <p className="text-xl mb-6 leading-relaxed text-gray-500 dark:text-gray-400">
                         
                             You can access the tutor via our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/general-tutor">
-                                Chat Interface</a> or, use our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/general-tutor">online programming environment</a>, to ask questions related to programming and run the code. 100% Free.
+                                Chat Interface</a> or, use our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/playground">online programming environment</a>, to ask questions related to programming and run the code. 100% Free.
                         </p>
 
                         <p className="text-xl mb-6 leading-relaxed text-gray-500 dark:text-gray-400">
@@ -174,10 +185,11 @@ export default function HeroPrimary({ userAuthenticated }) {
 
                     <div
                         className="flex h-[500px] w-full flex-col gap-8 lg:h-[250px] lg:flex-row mt-20 items-center justify-center"
+                        data-aos="fade-in"
                     >
                         <a 
                             href="/playground" 
-                            className="block w-[300px] h-[250px] p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+                            className="block w-[300px] h-[250px] p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 cursor-pointer"
                         >
                             <FontAwesomeIcon icon={faCode} className="w-10 h-10 pb-2"/>
                             <h3 className='text-xl'>
@@ -190,7 +202,7 @@ export default function HeroPrimary({ userAuthenticated }) {
 
                         <a 
                             href="/general-tutor" 
-                            className="block w-[300px] h-[250px] p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+                            className="block w-[300px] h-[250px] p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 cursor-pointer"
                         >
                             <FontAwesomeIcon icon={faComments} className="w-9 h-9 pb-2"/>
                             <h3 className='text-xl'>
@@ -201,8 +213,9 @@ export default function HeroPrimary({ userAuthenticated }) {
                             </p>
                         </a>
 
+                        {/* bg-gray-800 */}
                         <a 
-                            className="block w-[300px] h-[250px] p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+                            className="block w-[300px] h-[250px] p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-700"
                         >
                             <FontAwesomeIcon icon={faQuestion} className="w-9 h-9 pb-2"/>
                             <h3 className='text-xl'>
@@ -237,3 +250,5 @@ export default function HeroPrimary({ userAuthenticated }) {
         
     );
 }
+
+// TODO: add animations and then, push into main from there; proceed to next steps from there
