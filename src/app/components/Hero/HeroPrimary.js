@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode, faComments, faQuestion, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 
-export default function HeroPrimary({ userAuthenticated }) {
+export default function HeroPrimary({  }) {
 
     // const router = useRouter();
     // const handleVisitIDEClick = () => {
