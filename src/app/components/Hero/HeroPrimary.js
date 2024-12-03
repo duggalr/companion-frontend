@@ -85,7 +85,7 @@ export default function HeroPrimary({  }) {
                             General Chat Interface 
                         </a> or our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/playground">
                             Online Programming Environment
-                        </a>.
+                        </a>. 100% Free.
                     </p>
 
                     <div className="mt-6 flex items-center justify-center" data-aos="fade-up">
