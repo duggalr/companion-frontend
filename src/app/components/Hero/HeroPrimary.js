@@ -159,32 +159,55 @@ export default function HeroPrimary({  }) {
 
                     <SparklesText text="About" className="text-5xl" data-aos="fade-down"/>
 
-                    <div className="mt-8 text-center" data-aos="fade-right">
+                    {/* TODO: finalize padding and proceed from there <-- **alg course */}                
+                    <div className="mt-8 pb-16 text-center" data-aos="fade-right">
                         <p className="text-xl mb-6 leading-relaxed text-gray-500 dark:text-gray-400">
-                            Companion is an AI Tutor, with the goal of offering students and individuals with help and feedback, as they work through their problems.
+                            Companion is an AI-powered tutor designed to assist students and individuals by offering guidance and constructive feedback as they solve problems. It is 100% free to use.
+                            {/* Companion is an AI Tutor, with the goal of offering students and individuals with help and feedback, as they work through their problems. */}
                             {/* Companion will not provide the student the answer but rather, provide useful hints to help guide their thinking, as they work through the problem. */}
                         </p>
 
                         <p className="text-xl mb-6 leading-relaxed text-gray-500 dark:text-gray-400">
-                            Companion will not provide you the answer but rather, provide useful hints to help guide your thinking, as you work through the problem.
+                            Instead of simply providing answers, Companion delivers helpful hints and insights to stimulate critical thinking and enhance learning.
+                            {/* Companion will not provide you the answer but rather, provide useful hints to help guide your thinking, as you work through the problem. */}
                         </p>
 
                         <p className="text-xl mb-6 leading-relaxed text-gray-500 dark:text-gray-400">
-                        
-                            You can access the tutor via our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/general-tutor">
-                                Chat Interface</a> or, use our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/playground">online programming environment</a>, to ask questions related to programming and run the code. 100% Free.
+                            You can engage with the AI Tutor through our traditional <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/general-tutor">chat interface</a> to ask questions and receive guidance.
+                            {/* You can access the tutor via our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/general-tutor">
+                                Chat Interface</a>, or use our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/playground">online programming environment</a>, to ask questions related to programming and run the code. 100% Free. */}
                         </p>
 
                         <p className="text-xl mb-6 leading-relaxed text-gray-500 dark:text-gray-400">
-                        
-                            We are currently hard at work, developing a new Algorithms course, which the AI Tutor will be integrated with the material.
-                            Feel free to view our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://github.com/duggalr/companion-frontend">code</a>.
+                            You can also use our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/playground">online programming environment</a> to ask programming-related questions and run code directly within the browser.
+                        </p>
+
+                        <p className="text-xl mb-6 leading-relaxed text-gray-500 dark:text-gray-400">
+                            We are currently hard at work on creating a new Algorithms Course. The AI tutor will directly integrate with the learning material, to hopefully provide a more personalized educational experience.
+                            {/* We are currently hard at work, developing a new Algorithms course, which the AI Tutor will be integrated with the material.
+                            Feel free to view our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://github.com/duggalr/companion-frontend">code</a>. */}
+                        </p>
+
+                        <p className="text-xl mb-6 leading-relaxed text-gray-500 dark:text-gray-400">
+                            Companion is <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://github.com/duggalr/companion-frontend">open-source</a>, so feel free explore our code and contribute.
                         </p>
 
                     </div>
 
+
+                    {/* <div className='mt-20'></div> */}
                     <div
-                        className="flex h-[500px] w-full flex-col gap-8 lg:h-[250px] lg:flex-row mt-20 items-center justify-center"
+                        className="mt-8 mb-4 w-1/5 mx-auto flex justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                        data-aos="fade-down"
+                    >
+                        <AnimatedShinyText className="inline-flex items-center justify-center px-0 py-0 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400 text-[15px]">
+                            <span>⚙️ More in Development...</span>
+                        </AnimatedShinyText>
+                    </div>
+                    <SparklesText text="Current Features" className="text-5xl" data-aos="fade-down"/>
+
+                    <div
+                        className="flex h-[500px] w-full flex-col gap-8 lg:h-[250px] lg:flex-row mt-12 items-center justify-center"
                         data-aos="fade-in"
                     >
                         <a 
