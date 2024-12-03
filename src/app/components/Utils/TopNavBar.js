@@ -58,6 +58,19 @@ export default function TopNavBar ({ userAuthenticated }) {
                     </li>
                 )} */}
 
+
+                {/* Dashboard */}
+                {userAuthenticated && (
+                    <li>
+                        <a
+                            href="/dashboard"
+                            className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-2"
+                        >
+                            <FontAwesomeIcon icon={faSquareCaretRight} className="text-black pr-2 dark:text-white w-4 h-4" />
+                            Dashboard
+                        </a>
+                    </li>
+                )}
                 
                 {/* Playground */}
                 <li>
@@ -85,7 +98,7 @@ export default function TopNavBar ({ userAuthenticated }) {
                 {/* If user is authenticated, show Dashboard and Logout */}
                 {userAuthenticated ? (
                     <>
-                        <li>
+                        {/* <li>
                             <a
                             href="/dashboard"
                             className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-2"
@@ -93,7 +106,7 @@ export default function TopNavBar ({ userAuthenticated }) {
                                 <FontAwesomeIcon icon={faSquareCaretRight} className="text-black pr-2 dark:text-white w-4 h-4" />
                                 Dashboard
                             </a>
-                        </li>
+                        </li> */}
                         <li>
                             <a
                             href="/api/auth/logout"

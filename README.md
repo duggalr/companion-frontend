@@ -7,7 +7,7 @@ This repo contains the source code, powering the Companion frontend.
 
 [Here](https://github.com/duggalr/companion-backend) is the repo, powering the Companion backend.
 
-We also have a [discord community](https://discord.gg/q95Bh5VV)!
+We also have a [discord community](https://discord.gg/5xgAsPQXhf)!
 
 ---
 

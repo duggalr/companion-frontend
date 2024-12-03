@@ -29,7 +29,7 @@ export default function HeroPrimary({  }) {
     // const handleGeneralTutorClick = () => {
     //     router.push('/general-tutor');
     // }
-
+    
     const aboutRef = useRef(null);
     const handleLearnMoreClick = () => {
         aboutRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -245,7 +245,7 @@ export default function HeroPrimary({  }) {
                                 Next - Algorithms
                             </h3>
                             <p className='text-[15px] text-gray-400 pt-4 text-wrap leading-6'>
-                                We are currently developing an algorithms course where the AI tutor will sit on top of the course material.
+                                We are currently developing an algorithms course where the AI tutor will integrate with the course material.
                             </p>
                         </a>
                     </div>

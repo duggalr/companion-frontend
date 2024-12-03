@@ -18,8 +18,8 @@ export async function createGeneralTutorParentObject(anon_user_id , accessToken)
             body: JSON.stringify(payload)
         });
         const data = await apiResponse.json();
-        return data;
 
+        return data;
 
     } else {
 

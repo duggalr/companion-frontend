@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 
-// TODO: start here by fixing generateUserID bug <-- complete Anon case
 import generateUserID from "../../../lib/utils/generateAnonUserId";
 import {createGeneralTutorParentObject} from "../../../lib/api/createGeneralTutorParentObject";
 import {createAnonUser} from "../../../lib/api/createAnonUser";
@@ -135,8 +134,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
             addCIDParam(general_tutor_parent_object_id);
             currentAuthenticatedCIDRef.current = general_tutor_parent_object_id;
 
-            console.log('tmp-new-ONE-CID:', currentAuthenticatedCIDRef);
-
             message_dict['general_tutor_object_id'] = general_tutor_parent_object_id;
 
             let wsCurrent = wsRef.current;
@@ -144,9 +141,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
 
         }
         else {
-
-            // TODO: revise 
-            // create parent object first?
 
             let user_id = localStorage.getItem("user_id");
 
@@ -246,7 +240,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         
     }
 
-
     const _handleCreateNewChat = async () => {
         // window.location.href = '/general-tutor';
         currentAuthenticatedCIDRef.current = null;
@@ -261,7 +254,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
     }
 
 
-    // TODO: 
     // Handle Message Sending
     useEffect(() => {
 
@@ -284,24 +276,12 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
                 }
 
                 if (userAuthenticated){
-                    // TODO:
-                        // check if CID is here
-                            // if so, send payload to backend (ws)
-                            // if not, create one and add it to the url
-                                // then, send to backend
                     
                     // let current_pid = saveCodeRes['parent_playground_object_id'];
                     // addPidParam(current_pid);  // update url GET parameters
                     // currentAuthenticatedPIDRef.current = current_pid;
 
-                    // TODO:
-                    // const currentAuthenticatedCIDRef = useRef(null);
-
                     if (currentAuthenticatedCIDRef.current !== null){
-
-                        // TODO: 
-                            // send
-                        // fix all bugs
 
                         let messageForBackend = {
                             general_tutor_object_id: currentAuthenticatedCIDRef.current,
@@ -314,7 +294,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
                         console.log('messageForBackend', messageForBackend)
 
                         wsCurrent.send(JSON.stringify(messageForBackend));
-
 
                     } else {
                         
@@ -332,8 +311,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
 
                 } 
                 else {
-
-                    // TODO: start here by first getting the data saved in backend and go from there
 
                     let general_tutor_object_id = localStorage.getItem('general_tutor_object_id');
 
@@ -428,8 +405,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
 
     useEffect(() => {
 
-        // TODO: make below into function as not ideal right now to re-use
-        
         if (userAuthenticated) {
 
             const url_search_params = new URLSearchParams(window.location.search);
@@ -441,8 +416,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
             if (cv_obj_id !== undefined && cv_obj_id !== null) {
 
                 // Fetch data from backend
-                // TODO: 
-
                 _initializeAuthenticatedData(cv_obj_id);                
 
             } else {
@@ -520,28 +493,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
                                             ))
                                         )}
 
-                                        {/* <li className="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg p-2 cursor-pointer">
-                                            <FontAwesomeIcon 
-                                                icon={faComment}
-                                                size="sm"
-                                                className="pr-1 pl-0 text-gray-800 dark:text-gray-400"
-                                            /> Conversation 1
-                                        </li>
-                                        <li className="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg p-2 cursor-pointer">
-                                            <FontAwesomeIcon 
-                                                icon={faComment}
-                                                size="sm"
-                                                className="pr-1 pl-0 text-gray-800 dark:text-gray-400"
-                                            /> Conversation 2
-                                        </li>
-                                        <li className="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg p-2 cursor-pointer">
-                                            <FontAwesomeIcon
-                                                icon={faComment}
-                                                size="sm"
-                                                className="pr-1 pl-0 text-gray-800 dark:text-gray-400"
-                                            /> Conversation 3
-                                        </li> */}
-
                                     </ul>
 
                                 ) : (
@@ -563,36 +514,30 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
                                 <h2 className="text-[29px] font-bold">
                                     Chat with Tutor
                                 </h2>
-                                <p className="text-[14.5px] text-gray-500 dark:text-gray-400 pt-2 tracking-normal">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum.
-                                    Need an IDE, visit the <a href="/playground" className="font-medium text-blue-500 dark:text-blue-400 hover:underline">playground</a>.
+                                <p className="text-[14.5px] text-gray-600 dark:text-gray-500 pt-1 tracking-normal">
+                                    Feel free to ask for help on a specific problem you are working on, or topic you are interested in exploring.
                                 </p>
-                                
                             </div>
 
-                            {/* Clear Text Button */}
-                            {/* <button className="text-blue-500 text-[13px] pt-4 ml-auto mr-36 pb-1" onClick={_handleClearMessages}>
-                                Clear text
-                            </button> */}
-
-                            {(generalTutorChatMessages.length > 1 && !userAuthenticated) && (
-                                <button className="text-blue-500 text-[13px] pt-4 ml-auto mr-36 pb-1" onClick={_handleClearMessages}>
-                                    Clear text
-                                </button>    
-                            )}
-
-                            <button className="text-blue-500 text-[13px] pt-4 ml-auto mr-36 pb-1" onClick={_handleCreateNewChat}>
-                            + Create New File
-                            </button>
-
-                            {/* {userAuthenticated && (
-                                <span
-                                    onClick={_handleCreateNewChat}
-                                    className="text-gray-600 dark:text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:hover:text-gray-300 px-4 py-2 mt-1 cursor-pointer"
-                                >
-                                    + Create New File
+                            <div className="flex justify-between items-center w-full px-4 pt-2">
+                                <span className="text-[13px] pt-4 pb-1 ml-32 text-gray-500 dark:text-gray-400">
+                                    Need an IDE, visit the <a href="/playground" className="font-medium text-blue-500 dark:text-blue-400 hover:underline">playground</a>.
                                 </span>
-                            )} */}
+
+                                {(generalTutorChatMessages.length > 1 && !userAuthenticated) && (
+                                    <button className="text-blue-500 text-[13px] pt-4 ml-auto mr-32 pb-1" onClick={_handleClearMessages}>
+                                        Clear All Messages
+                                    </button>
+                                )}
+
+                                {userAuthenticated && (
+                                    <button 
+                                        className="text-blue-500 text-[13px] pt-4 pb-1 mr-32"
+                                        onClick={_handleCreateNewChat}>
+                                        + Create New File
+                                    </button>
+                                )}
+                            </div>
 
                             {/* Messages Div */}
                             <div className="flex justify-center mt-0 w-full px-4">

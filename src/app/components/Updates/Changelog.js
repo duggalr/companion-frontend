@@ -1,3 +1,7 @@
+"use client";
+import 'aos/dist/aos.css'; // Import AOS styles
+import AOS from 'aos';
+import { useEffect } from 'react';
 import SparklesText from "@/components/ui/sparkles-text";
 
 
@@ -47,13 +51,26 @@ const updates = [
 ];
 
 const Changelog = () => {
+
+    const DISCORD_CHANNEL_URL = process.env.NEXT_PUBLIC_DISCORD_CHAT_URL;
+    useEffect(() => {
+        AOS.init({
+            duration: 1000, // Animation duration in milliseconds
+            once: true,     // Trigger animation only once
+        });
+    }, []);
+
     return (
 
         <div className="max-w-4xl mx-auto p-6 mt-4">
 
-            <SparklesText text="Changelog" className="text-[30px] font-normal tracking-normal text-center" />
+            <SparklesText text="Changelog" className="text-[30px] font-normal tracking-normal text-center" data-aos="fade-down"/>
 
-            <ol class="relative border-s border-gray-200 dark:border-gray-700 mt-10">
+            <p className="text-center dark:text-gray-400 text-gray-500 text-[16px] pt-2" data-aos="fade-down">
+                Want to request a feature? <a className="text-blue-600 dark:text-blue-400 hover:underline" href={DISCORD_CHANNEL_URL}>Message us on Discord</a>
+            </p>
+
+            <ol class="relative border-s border-gray-200 dark:border-gray-700 mt-10" data-aos="fade-in">
                 
                 {updates.map((update, index) => (
 

@@ -12,6 +12,8 @@ const pacifico_font = Pacifico({
 
 export default function HeroNavBar({ userAuthenticated, pageLoading }) {
 
+    const DISCORD_CHANNEL_URL = process.env.NEXT_PUBLIC_DISCORD_CHAT_URL;
+
     return (
 
         <nav class="bg-white border-gray-200 dark:bg-zinc-950">
@@ -54,7 +56,7 @@ export default function HeroNavBar({ userAuthenticated, pageLoading }) {
 
                         <li>
                             <a
-                                href="https://discord.gg/q95Bh5VV"
+                                href={DISCORD_CHANNEL_URL}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] font-normal"

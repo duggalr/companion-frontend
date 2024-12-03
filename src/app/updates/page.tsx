@@ -21,7 +21,6 @@ const ChangelogPage = () => {
         }
     }, [userContext]);
 
-
     return (
         <>
             <main >
@@ -34,7 +33,7 @@ const ChangelogPage = () => {
                         <TopNavBar
                             userAuthenticated={userContext?.isAuthenticated}
                         />
-                        <Changelog />
+                        <Changelog/>
                     </>
                 )}
             </main>
