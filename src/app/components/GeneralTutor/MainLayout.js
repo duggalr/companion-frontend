@@ -489,7 +489,7 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
         if (allUserConversations.length > 0) {
             console.log('ALL CONVERSATIONS:', allUserConversations);
 
-            const initialNames = allUserConversations.map((di, _) => di['name']);
+            const initialNames = allUserConversations.map((di) => di['name']);
             setConversationNames(initialNames);
 
         }
