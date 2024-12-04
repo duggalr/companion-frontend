@@ -1,15 +1,15 @@
 import { useEffect, useState, useRef } from "react";
 // import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComment } from "@fortawesome/free-solid-svg-icons";
+import { faComment, faPencil } from "@fortawesome/free-solid-svg-icons";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 
-// TODO: start here by fixing generateUserID bug <-- complete Anon case
 import generateUserID from "../../../lib/utils/generateAnonUserId";
 import {createGeneralTutorParentObject} from "../../../lib/api/createGeneralTutorParentObject";
 import {createAnonUser} from "../../../lib/api/createAnonUser";
 import {fetchGeneralTutorConversation} from "../../../lib/api/fetchGeneralTutorConversation";
 import {fetchAllGeneralTutorUserConversations} from "../../../lib/api/fetchAllGeneralTutorUserConversations";
+import {changeGTConversationName} from "../../../lib/api/changeGTConversationName";
 
 
 const MainGeneralTutorLayout = ({ accessToken, userAuthenticated }) => {
@@ -135,8 +135,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
             addCIDParam(general_tutor_parent_object_id);
             currentAuthenticatedCIDRef.current = general_tutor_parent_object_id;
 
-            console.log('tmp-new-ONE-CID:', currentAuthenticatedCIDRef);
-
             message_dict['general_tutor_object_id'] = general_tutor_parent_object_id;
 
             let wsCurrent = wsRef.current;
@@ -144,9 +142,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
 
         }
         else {
-
-            // TODO: revise 
-            // create parent object first?
 
             let user_id = localStorage.getItem("user_id");
 
@@ -196,7 +191,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             cv_obj_id
         );
 
-        console.log('gt-conversation-data-RESPONSE', gt_conversation_data_response);
+        // console.log('gt-conversation-data-RESPONSE', gt_conversation_data_response);
 
         if (gt_conversation_data_response['success'] === true){
             let chat_msg_list = gt_conversation_data_response['chat_messages'];
@@ -208,7 +203,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     const _fetchAuthenticatedUserConversations = async () => {
 
-        // TODO:
         let gt_conversations_data_response = await fetchAllGeneralTutorUserConversations(
             accessToken
         );
@@ -216,7 +210,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         console.log('gt-conversations-ALL-data', gt_conversations_data_response);
 
         let all_gt_conversations_list = gt_conversations_data_response['all_gt_objects']
-        setAllUserConversations(all_gt_conversations_list)
+        setAllUserConversations(all_gt_conversations_list);
 
     }
 
@@ -234,7 +228,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             cv_object_id
         );
 
-        console.log('gt-conversation-data-RESPONSE', gt_conversation_data_response);
+        console.log('gt-conversation-data-RESPONSE-CLICK', gt_conversation_data_response);
 
         if (gt_conversation_data_response['success'] === true){
             let chat_msg_list = gt_conversation_data_response['chat_messages'];
@@ -245,7 +239,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         }
         
     }
-
 
     const _handleCreateNewChat = async () => {
         // window.location.href = '/general-tutor';
@@ -261,7 +254,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
     }
 
 
-    // TODO: 
     // Handle Message Sending
     useEffect(() => {
 
@@ -284,24 +276,12 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
                 }
 
                 if (userAuthenticated){
-                    // TODO:
-                        // check if CID is here
-                            // if so, send payload to backend (ws)
-                            // if not, create one and add it to the url
-                                // then, send to backend
                     
                     // let current_pid = saveCodeRes['parent_playground_object_id'];
                     // addPidParam(current_pid);  // update url GET parameters
                     // currentAuthenticatedPIDRef.current = current_pid;
 
-                    // TODO:
-                    // const currentAuthenticatedCIDRef = useRef(null);
-
                     if (currentAuthenticatedCIDRef.current !== null){
-
-                        // TODO: 
-                            // send
-                        // fix all bugs
 
                         let messageForBackend = {
                             general_tutor_object_id: currentAuthenticatedCIDRef.current,
@@ -314,7 +294,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
                         console.log('messageForBackend', messageForBackend)
 
                         wsCurrent.send(JSON.stringify(messageForBackend));
-
 
                     } else {
                         
@@ -332,8 +311,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
 
                 } 
                 else {
-
-                    // TODO: start here by first getting the data saved in backend and go from there
 
                     let general_tutor_object_id = localStorage.getItem('general_tutor_object_id');
 
@@ -428,8 +405,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
 
     useEffect(() => {
 
-        // TODO: make below into function as not ideal right now to re-use
-        
         if (userAuthenticated) {
 
             const url_search_params = new URLSearchParams(window.location.search);
@@ -441,8 +416,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
             if (cv_obj_id !== undefined && cv_obj_id !== null) {
 
                 // Fetch data from backend
-                // TODO: 
-
                 _initializeAuthenticatedData(cv_obj_id);                
 
             } else {
@@ -477,6 +450,52 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
     }, [generalTutorChatMessages, isGeneratingMessage]);
     
 
+
+    const [editingIndex, setEditingIndex] = useState(null); // Track which item is being edited
+    const [conversationNames, setConversationNames] = useState([]);
+    // const [conversationNames, setConversationNames] = useState(
+    //     allUserConversations.map((_, idx) => `Conversation ${idx + 1}`)
+    // );
+    const handleConversationNameInputChange = (e, idx) => {
+        const updatedNames = [...conversationNames];
+        updatedNames[idx] = e.target.value;
+        setConversationNames(updatedNames);
+    };
+
+    const handleConversationNameInputBlur = (idx) => {
+      
+        setEditingIndex(null);
+
+        let cdict = allUserConversations[idx];
+        console.log('c-dict:', cdict);
+
+        let current_conversation_id = cdict['object_id'];
+        let current_conversation_name = conversationNames[idx];
+        let payload = {
+            'gt_object_id': current_conversation_id,
+            'conversation_name': current_conversation_name
+        }
+        changeGTConversationName(accessToken, payload);
+
+        console.log(`New name for conversation ${idx + 1}:`, conversationNames[idx]);
+    };
+
+
+    const handleRename = (idx) => {
+        setEditingIndex(idx);
+    };
+
+    useEffect(() => {
+        if (allUserConversations.length > 0) {
+            console.log('ALL CONVERSATIONS:', allUserConversations);
+
+            const initialNames = allUserConversations.map((di) => di['name']);
+            setConversationNames(initialNames);
+
+        }
+    }, [allUserConversations]);
+
+
     return (
 
         <>
@@ -491,58 +510,86 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
                     <div className="flex h-screen">
 
                         {/* Left Navbar */}
-                        <div className="flex flex-col w-64 bg-gray-100 dark:bg-gray-800 border-r border-gray-300 dark:border-gray-600 p-4 h-screen pt-6">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                        <div className="flex flex-col w-64 bg-gray-50 dark:bg-gray-800 border-r border-gray-300 dark:border-gray-600 p-4 h-screen pt-6">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                                 Past Conversations
                             </h3>
+
+                            {userAuthenticated && (
+                                <button 
+                                    className="text-blue-500 dark:text-blue-400 text-[13px] text-left pb-4 hover:font-medium"
+                                    onClick={_handleCreateNewChat}>
+                                    + New Conversation
+                                </button>
+                            )}
 
                             {
                                 userAuthenticated ? (
 
-                                    <ul className="space-y-3 text-[14px]">
+                                    // <ul className="space-y-3 text-[14px]">
 
+                                    //     {allUserConversations.length === 0 ? (
+                                    //         <p className="text-gray-700 dark:text-gray-300">No conversations saved</p>
+                                    //     ) : (
+                                    //         allUserConversations.map((msg, idx) => (
+                                    //             <li
+                                    //                 key={idx}
+                                    //                 className="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg p-2 cursor-pointer"
+                                    //                 onClick={() => _handleConversationItemClick(msg.object_id)}
+                                    //             >
+                                    //                 <FontAwesomeIcon
+                                    //                     icon={faComment}
+                                    //                     size="sm"
+                                    //                     className="pr-1 pl-0 text-gray-800 dark:text-gray-400"
+                                    //                 /> 
+                                    //                 Conversation {idx + 1}
+                                    //             </li>
+                                    //         ))
+                                    //     )}
+
+                                    // </ul>
+
+                                    <ul className="space-y-3 text-[14px]">
                                         {allUserConversations.length === 0 ? (
                                             <p className="text-gray-700 dark:text-gray-300">No conversations saved</p>
                                         ) : (
                                             allUserConversations.map((msg, idx) => (
                                                 <li
                                                     key={idx}
-                                                    className="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg p-2 cursor-pointer"
-                                                    onClick={() => _handleConversationItemClick(msg.object_id)}
+                                                    className="relative text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg p-2 cursor-pointer flex items-center justify-between"
                                                 >
-                                                    <FontAwesomeIcon
-                                                        icon={faComment}
-                                                        size="sm"
-                                                        className="pr-1 pl-0 text-gray-800 dark:text-gray-400"
-                                                    /> 
-                                                    Conversation {idx + 1}
+                                                    {editingIndex === idx ? (
+                                                        <input
+                                                            type="text"
+                                                            value={conversationNames[idx]}
+                                                            onChange={(e) => handleConversationNameInputChange(e, idx)}
+                                                            onBlur={() => handleConversationNameInputBlur(idx)}
+                                                            className="bg-transparent border-b-2 border-gray-400 outline-none w-full"
+                                                            autoFocus
+                                                        />
+                                                    ) : (
+                                                        <span onClick={() => _handleConversationItemClick(msg.object_id)}>
+                                                            <FontAwesomeIcon
+                                                                icon={faComment}
+                                                                size="sm"
+                                                                className="pr-1 pl-0 text-gray-800 dark:text-gray-400"
+                                                            />
+                                                            {conversationNames[idx]}
+                                                        </span>
+                                                    )}
+                                                    <div className="relative">
+                                                        <FontAwesomeIcon
+                                                            icon={faPencil}
+                                                            size="sm"
+                                                            className="cursor-pointer text-gray-800 dark:text-gray-400"
+                                                            onClick={() => handleRename(idx)}
+                                                        />
+                                                    </div>
                                                 </li>
                                             ))
                                         )}
-
-                                        {/* <li className="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg p-2 cursor-pointer">
-                                            <FontAwesomeIcon 
-                                                icon={faComment}
-                                                size="sm"
-                                                className="pr-1 pl-0 text-gray-800 dark:text-gray-400"
-                                            /> Conversation 1
-                                        </li>
-                                        <li className="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg p-2 cursor-pointer">
-                                            <FontAwesomeIcon 
-                                                icon={faComment}
-                                                size="sm"
-                                                className="pr-1 pl-0 text-gray-800 dark:text-gray-400"
-                                            /> Conversation 2
-                                        </li>
-                                        <li className="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg p-2 cursor-pointer">
-                                            <FontAwesomeIcon
-                                                icon={faComment}
-                                                size="sm"
-                                                className="pr-1 pl-0 text-gray-800 dark:text-gray-400"
-                                            /> Conversation 3
-                                        </li> */}
-
                                     </ul>
+
 
                                 ) : (
 
@@ -563,36 +610,30 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
                                 <h2 className="text-[29px] font-bold">
                                     Chat with Tutor
                                 </h2>
-                                <p className="text-[14.5px] text-gray-500 dark:text-gray-400 pt-2 tracking-normal">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum.
-                                    Need an IDE, visit the <a href="/playground" className="font-medium text-blue-500 dark:text-blue-400 hover:underline">playground</a>.
+                                <p className="text-[14.5px] text-gray-600 dark:text-gray-500 pt-1 tracking-normal">
+                                    Feel free to ask for help on a specific problem you are working on, or topic you are interested in exploring.
                                 </p>
-                                
                             </div>
 
-                            {/* Clear Text Button */}
-                            {/* <button className="text-blue-500 text-[13px] pt-4 ml-auto mr-36 pb-1" onClick={_handleClearMessages}>
-                                Clear text
-                            </button> */}
-
-                            {(generalTutorChatMessages.length > 1 && !userAuthenticated) && (
-                                <button className="text-blue-500 text-[13px] pt-4 ml-auto mr-36 pb-1" onClick={_handleClearMessages}>
-                                    Clear text
-                                </button>    
-                            )}
-
-                            <button className="text-blue-500 text-[13px] pt-4 ml-auto mr-36 pb-1" onClick={_handleCreateNewChat}>
-                            + Create New File
-                            </button>
-
-                            {/* {userAuthenticated && (
-                                <span
-                                    onClick={_handleCreateNewChat}
-                                    className="text-gray-600 dark:text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:hover:text-gray-300 px-4 py-2 mt-1 cursor-pointer"
-                                >
-                                    + Create New File
+                            <div className="flex justify-between items-center w-full px-4 pt-2">
+                                <span className="text-[13px] pt-4 pb-1 ml-32 text-gray-500 dark:text-gray-400">
+                                    Need an IDE, visit the <a href="/playground" className="font-medium text-blue-500 dark:text-blue-400 hover:underline">playground</a>.
                                 </span>
-                            )} */}
+
+                                {(generalTutorChatMessages.length > 1 && !userAuthenticated) && (
+                                    <button className="text-blue-500 text-[13px] pt-4 ml-auto mr-32 pb-1" onClick={_handleClearMessages}>
+                                        Clear All Messages
+                                    </button>
+                                )}
+
+                                {/* {userAuthenticated && (
+                                    <button 
+                                        className="text-blue-500 text-[13px] pt-4 pb-1 mr-32"
+                                        onClick={_handleCreateNewChat}>
+                                        + Create New File
+                                    </button>
+                                )} */}
+                            </div>
 
                             {/* Messages Div */}
                             <div className="flex justify-center mt-0 w-full px-4">
@@ -632,14 +673,25 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
                             {/* Input and Button */}
                             <div className="flex justify-center mt-4 w-full px-4">
                                 <div className="flex w-full max-w-4xl space-x-2">
-                                    <input
+                                    {/* <input
                                         type="text"
                                         placeholder="Type your message..."
                                         className="flex-grow p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-[#F3F4F6] dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                         value={currentUserInputMessage}
                                         onChange={(e) => _handleInputTextChange(e)}
                                         onKeyDown={handleEnterKey}
+                                    /> */}
+
+                                    <textarea
+                                        value={currentUserInputMessage}
+                                        onChange={(e) => _handleInputTextChange(e)}
+                                        onKeyDown={handleEnterKey}
+                                        className="text-[14px] flex-grow resize-y p-3 bg-[#F3F4F6] dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 mr-2"
+                                        placeholder="type a message..."
+                                        rows={1}
+                                        style={{ minHeight: '50px', maxHeight: '120px' }}
                                     />
+
                                     <button
                                         // className="px-4 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"                                        
                                         disabled={chatLoading || !sendBtnEnabled} // Disable when loading or when send button is not enabled
@@ -659,8 +711,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
                     </div>
 
                 </MathJaxContext>
-
-                
 
             )}
 

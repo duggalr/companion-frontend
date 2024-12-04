@@ -58,7 +58,7 @@ export default function Home() {
                         </div>
 
                         <HeroNavBar userAuthenticated={userContext?.isAuthenticated} pageLoading={loadingRef.current} />
-                        <HeroPrimary />
+                        <HeroPrimary userAuthenticated={userContext?.isAuthenticated}/>
                     </>
                 )}
             </main>

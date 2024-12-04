@@ -65,7 +65,8 @@ const ChatInterface = ({ messages, generatedMessage, isGenerating, currentUserIn
 
         <div className="flex justify-between items-center">
           <span className="text-gray-500 dark:text-gray-400 text-xs pt-1 pl-1 pb-4 tracking-normal">
-            Get help in guiding your thinking through programming problems, with Companion, an AI Tutor.
+            {/* Get help in guiding your thinking through programming problems, with Companion, an AI Tutor. */}
+            Get help on your programming problems with Companion, an AI Tutor.
             <br/>
           </span>
           {(messages.length > 1 && !userAuthenticated) && (

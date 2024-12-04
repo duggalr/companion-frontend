@@ -7,7 +7,7 @@ import axios from "axios";
 
 const ConsoleOutput = ({ setCodeState, output, setOutput, setCurrentUserInputMessage, 
   setActiveTab, handleSendUserChatMessage, currentUserInputMessageRef, setSendBtnEnabled, _sendCodeSaveRequest, selectedProgrammingLanguage,
-  codeStateTmpRef
+  codeStateTmpRef, _handleCodeEditorValueChange
 }) => {
 
   const [isLoading, setIsLoading] = useState(false);
@@ -82,46 +82,63 @@ const ConsoleOutput = ({ setCodeState, output, setOutput, setCurrentUserInputMes
   const handleExerciseButtonClick = (exercise_id) => {
 
     const exercise_code_dict = {
-      "exercise_one": `# Exercise 1: Basic Arithmetic Operations (Function-based)
+      "exercise_one": `# Exercise 1: Valid Parentheses
 
-# Implement basic arthimetic, for the function below.
+# Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+#An input string is valid if:
+# - Open brackets must be closed by the same type of brackets.
+# - Open brackets must be closed in the correct order.
+# - Every close bracket has a corresponding open bracket of the same type.
 
-def perform_arithmetic(num1, num2):
-    # Step 1: Perform addition, subtraction, multiplication, and division
-      # HINT: Use +, -, *, / for these operations.
-    # Step 2: Return the results as a tuple or list
-    pass  # Remove this line when adding your code
+# Example 1:
+# - Input: s = "()"
+# - Output: true
 
-# Example input:
-# num1 = 10, num2 = 5
-# Example output:
-# (15, 5, 50, 2.0)
+# Example 2:
+# - Input: s = "()[]{}"
+# - Output: true
+
+# Example 3:
+# - Input: s = "(]"
+# - Output: false
+
+# Example 4:
+# - Input: s = "([])"
+# - Output: true
+
+def isValid(s):
+  raise NotImplementedError
 `,
-      "exercise_two": `# Exercise 2: String Manipulation and Functions
+      "exercise_two": `# Exercise 2: Maximum Good Subarray Sum
 
-# Return an uppercase reversed string representation of the input string,
-# removing all vowels.
+# You are given an array nums of length n and a positive integer k.
+# A subarray of nums is called good if the absolute difference between its first and last element is exactly k, in other words, the subarray nums[i..j] is good if |nums[i] - nums[j]| == k.
+# Return the maximum sum of a good subarray of nums. If there are no good subarrays, return 0.
 
-def process_string(input_string):
-    # Step 1: Reverse the string
-    # Step 2: Convert the string to uppercase
-    # Step 3: Remove vowels from the string  
-    pass  # Remove this line when adding your code
+# Example 1:
+# - Input: nums = [1,2,3,4,5,6], k = 1
+# - Output: 11
+# - Explanation: The absolute difference between the first and last element must be 1 for a good subarray. All the good subarrays are: [1,2], [2,3], [3,4], [4,5], and [5,6]. The maximum subarray sum is 11 for the subarray [5,6].
 
-# Example input:
-# input_string = "example"
-# Example output:
-# "LPMX"
+# Example 2:
+# - Input: nums = [-1,3,2,4,5], k = 3
+# - Output: 11
+# - Explanation: The absolute difference between the first and last element must be 3 for a good subarray. All the good subarrays are: [-1,3,2], and [2,4,5]. The maximum subarray sum is 11 for the subarray [2,4,5].
+
+# Example 3:
+# - Input: nums = [-1,-2,-3,-4], k = 2
+# - Output: -6
+# - Explanation: The absolute difference between the first and last element must be 2 for a good subarray. All the good subarrays are: [-1,-2,-3], and [-2,-3,-4]. The maximum subarray sum is -6 for the subarray [-1,-2,-3].
+
+def maximumSubarraySum(nums, k):
+  raise NotImplementedError
 `,
       "exercise_three": `# Exercise 3: Looping and Conditionals
 
 # Return a list of only even numbers in a given start to end range.
 
 def find_even_numbers(start, end):
-    # Step 1: Check if start is greater than end, if so return an error or empty list
-    # Step 2: Loop through the range and collect even numbers
-    # Step 3: Return the collected even numbers as a list
-    pass # Remove this line when adding your code
+  raise NotImplementedError
 
 # Example input:
 # start = 1, end = 10
@@ -132,10 +149,11 @@ def find_even_numbers(start, end):
 # start = 10, end = 5
 # Example output:
 # []
-`,}
+`}
 
     const codeValue = exercise_code_dict[exercise_id]
     setCodeState(codeValue);
+    _handleCodeEditorValueChange(codeValue)
 
   }
 
@@ -183,7 +201,8 @@ def find_even_numbers(start, end):
           </p>
         ) : (
           <p className="text-gray-400 dark:text-gray-500 pt-2 pl-1 text-[14px] tracking-normal font-normal">
-            <span className="text-blue-400">&gt;&gt;</span> stdout will appear here...
+            {/* <span className="text-blue-400">&gt;&gt;</span>  */}
+            stdout will appear here...
           </p>
         )}
       </div>
