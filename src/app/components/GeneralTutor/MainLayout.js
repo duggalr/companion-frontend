@@ -464,10 +464,19 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
                     <div className="flex h-screen">
 
                         {/* Left Navbar */}
-                        <div className="flex flex-col w-64 bg-gray-100 dark:bg-gray-800 border-r border-gray-300 dark:border-gray-600 p-4 h-screen pt-6">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                        <div className="flex flex-col w-64 bg-gray-50 dark:bg-gray-800 border-r border-gray-300 dark:border-gray-600 p-4 h-screen pt-6">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                                 Past Conversations
                             </h3>
+
+                            {/* TODO:  */}
+                            {userAuthenticated && (
+                                <button 
+                                    className="text-blue-500 dark:text-blue-400 text-[13px] text-left pb-4 hover:font-medium"
+                                    onClick={_handleCreateNewChat}>
+                                    + New Conversation
+                                </button>
+                            )}
 
                             {
                                 userAuthenticated ? (
@@ -530,13 +539,13 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
                                     </button>
                                 )}
 
-                                {userAuthenticated && (
+                                {/* {userAuthenticated && (
                                     <button 
                                         className="text-blue-500 text-[13px] pt-4 pb-1 mr-32"
                                         onClick={_handleCreateNewChat}>
                                         + Create New File
                                     </button>
-                                )}
+                                )} */}
                             </div>
 
                             {/* Messages Div */}
@@ -577,14 +586,25 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
                             {/* Input and Button */}
                             <div className="flex justify-center mt-4 w-full px-4">
                                 <div className="flex w-full max-w-4xl space-x-2">
-                                    <input
+                                    {/* <input
                                         type="text"
                                         placeholder="Type your message..."
                                         className="flex-grow p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-[#F3F4F6] dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                         value={currentUserInputMessage}
                                         onChange={(e) => _handleInputTextChange(e)}
                                         onKeyDown={handleEnterKey}
+                                    /> */}
+
+                                    <textarea
+                                        value={currentUserInputMessage}
+                                        onChange={(e) => _handleInputTextChange(e)}
+                                        onKeyDown={handleEnterKey}
+                                        className="text-[14px] flex-grow resize-y p-3 bg-[#F3F4F6] dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 mr-2"
+                                        placeholder="type a message..."
+                                        rows={1}
+                                        style={{ minHeight: '50px', maxHeight: '120px' }}
                                     />
+
                                     <button
                                         // className="px-4 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"                                        
                                         disabled={chatLoading || !sendBtnEnabled} // Disable when loading or when send button is not enabled
@@ -604,8 +624,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
                     </div>
 
                 </MathJaxContext>
-
-                
 
             )}
 

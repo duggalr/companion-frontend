@@ -700,6 +700,8 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                             selectedProgrammingLanguage={selectedProgrammingLangRef}
 
                             codeStateTmpRef={codeStateTmpRef}
+
+                            _handleCodeEditorValueChange={_handleCodeEditorValueChange}                            
                         />
                     </div>
 

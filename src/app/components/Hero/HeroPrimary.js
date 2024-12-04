@@ -1,7 +1,7 @@
 import 'aos/dist/aos.css'; // Import AOS styles
 import AOS from 'aos';
 import { useEffect, useRef } from 'react';
-// import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import ShimmerButton from "@/components/ui/shimmer-button";
 import HeroVideoDialog from "@/components/ui/hero-video-dialog";
 import SparklesText from "@/components/ui/sparkles-text";
@@ -15,16 +15,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode, faComments, faQuestion, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 
-export default function HeroPrimary({  }) {
+export default function HeroPrimary({ userAuthenticated }) {
 
-    // const router = useRouter();
+    const router = useRouter();
     // const handleVisitIDEClick = () => {
     //     router.push('/playground');
     // };
 
-    // const handleVisitDashboardClick = () => {
-    //     router.push('/dashboard');
-    // }
+    const handleVisitDashboardClick = () => {
+        router.push('/dashboard');
+    }
 
     // const handleGeneralTutorClick = () => {
     //     router.push('/general-tutor');
@@ -100,14 +100,28 @@ export default function HeroPrimary({  }) {
 
                         {/* <RippleButton rippleColor="#ADD8E6" className='bg-black text-white' onClick={handleLearnMoreClick}>Learn More</RippleButton> */}
 
-                        <ShimmerButton className="shadow-2xl mr-4" onClick={handleLearnMoreClick}>
-                            <span
-                                className="whitespace-pre-wrap text-center text-lg font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10"
-                            >
-                                Learn More
-                                 {/* &nbsp; &#8594; */}
-                            </span>
-                        </ShimmerButton>
+                        {userAuthenticated ? (
+
+                            <ShimmerButton className="shadow-2xl mr-4" onClick={handleVisitDashboardClick}>
+                                <span
+                                    className="whitespace-pre-wrap text-center text-lg font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10"
+                                >
+                                    Go to My Dashboard
+                                </span>
+                            </ShimmerButton>
+
+                        ) : (
+
+                            <ShimmerButton className="shadow-2xl mr-4" onClick={handleLearnMoreClick}>
+                                <span
+                                    className="whitespace-pre-wrap text-center text-lg font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10"
+                                >
+                                    Learn More
+                                    {/* &nbsp; &#8594; */}
+                                </span>
+                            </ShimmerButton>
+
+                        )}
                         
                     </div>
 

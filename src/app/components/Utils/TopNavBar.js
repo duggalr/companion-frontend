@@ -33,38 +33,12 @@ export default function TopNavBar ({ userAuthenticated }) {
 
             <div className="ml-auto lg:flex items-center space-x-8 hidden">
 
-                {/* Authenticated Links */}
-                {/* {userAuthenticated && (
-                    <li>
-                        <a
-                            href="/dashboard"
-                            className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-2"
-                        >
-                            <FontAwesomeIcon icon={faSquareCaretRight} className="text-black pr-2 dark:text-white w-4 h-4" />
-                            dashboard
-                        </a>
-                    </li>
-                )}
-
-                {userAuthenticated && (
-                    <li>
-                        <a
-                            href="/api/auth/logout"
-                            className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-2"
-                        >
-                            <FontAwesomeIcon icon={faArrowRightFromBracket} className="text-black pr-2 dark:text-white w-4 h-4" />
-                            logout
-                        </a>
-                    </li>
-                )} */}
-
-
                 {/* Dashboard */}
                 {userAuthenticated && (
                     <li>
                         <a
                             href="/dashboard"
-                            className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-2"
+                            className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-0"
                         >
                             <FontAwesomeIcon icon={faSquareCaretRight} className="text-black pr-2 dark:text-white w-4 h-4" />
                             Dashboard

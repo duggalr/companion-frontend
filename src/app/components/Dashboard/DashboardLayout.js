@@ -46,7 +46,7 @@ const DashboardLayout = ({
     return (
 
         // items-center
-        <div className="flex flex-col w-full max-w-2xl ml-[23em] mt-6">
+        <div className="flex flex-col w-full max-w-2xl ml-[23em] mt-6 mb-12">
 
             <h1 className="text-[24px] font-bold text-gray-800 dark:text-gray-200 mt-6">
                 Your Saved Code
@@ -66,7 +66,7 @@ const DashboardLayout = ({
                 </p>
             ) : (
                 dashboardDataList.length > 0 ? (
-                    <ul class="divide-y mt-6">
+                    <ul class="divide-y mt-4">
                         {dashboardDataList.map((dashboard_item) => (
                             <li key={dashboard_item.id} className="pb-3 sm:py-4">
                                 <div className="flex items-center space-x-4 rtl:space-x-reverse">
