@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 // import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComment } from "@fortawesome/free-solid-svg-icons";
+import { faComment, faEllipsisV, faPencil } from "@fortawesome/free-solid-svg-icons";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 
 import generateUserID from "../../../lib/utils/generateAnonUserId";
@@ -9,6 +9,7 @@ import {createGeneralTutorParentObject} from "../../../lib/api/createGeneralTuto
 import {createAnonUser} from "../../../lib/api/createAnonUser";
 import {fetchGeneralTutorConversation} from "../../../lib/api/fetchGeneralTutorConversation";
 import {fetchAllGeneralTutorUserConversations} from "../../../lib/api/fetchAllGeneralTutorUserConversations";
+import {changeGTConversationName} from "../../../lib/api/changeGTConversationName";
 
 
 const MainGeneralTutorLayout = ({ accessToken, userAuthenticated }) => {
@@ -190,7 +191,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             cv_obj_id
         );
 
-        console.log('gt-conversation-data-RESPONSE', gt_conversation_data_response);
+        // console.log('gt-conversation-data-RESPONSE', gt_conversation_data_response);
 
         if (gt_conversation_data_response['success'] === true){
             let chat_msg_list = gt_conversation_data_response['chat_messages'];
@@ -202,7 +203,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     const _fetchAuthenticatedUserConversations = async () => {
 
-        // TODO:
         let gt_conversations_data_response = await fetchAllGeneralTutorUserConversations(
             accessToken
         );
@@ -210,7 +210,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         console.log('gt-conversations-ALL-data', gt_conversations_data_response);
 
         let all_gt_conversations_list = gt_conversations_data_response['all_gt_objects']
-        setAllUserConversations(all_gt_conversations_list)
+        setAllUserConversations(all_gt_conversations_list);
 
     }
 
@@ -228,7 +228,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             cv_object_id
         );
 
-        console.log('gt-conversation-data-RESPONSE', gt_conversation_data_response);
+        console.log('gt-conversation-data-RESPONSE-CLICK', gt_conversation_data_response);
 
         if (gt_conversation_data_response['success'] === true){
             let chat_msg_list = gt_conversation_data_response['chat_messages'];
@@ -450,6 +450,52 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
     }, [generalTutorChatMessages, isGeneratingMessage]);
     
 
+
+    const [editingIndex, setEditingIndex] = useState(null); // Track which item is being edited
+    const [conversationNames, setConversationNames] = useState([]);
+    // const [conversationNames, setConversationNames] = useState(
+    //     allUserConversations.map((_, idx) => `Conversation ${idx + 1}`)
+    // );
+    const handleConversationNameInputChange = (e, idx) => {
+        const updatedNames = [...conversationNames];
+        updatedNames[idx] = e.target.value;
+        setConversationNames(updatedNames);
+    };
+
+    const handleConversationNameInputBlur = (idx) => {
+      
+        setEditingIndex(null);
+
+        let cdict = allUserConversations[idx];
+        console.log('c-dict:', cdict);
+
+        let current_conversation_id = cdict['object_id'];
+        let current_conversation_name = conversationNames[idx];
+        let payload = {
+            'gt_object_id': current_conversation_id,
+            'conversation_name': current_conversation_name
+        }
+        changeGTConversationName(accessToken, payload);
+
+        console.log(`New name for conversation ${idx + 1}:`, conversationNames[idx]);
+    };
+
+
+    const handleRename = (idx) => {
+        setEditingIndex(idx);
+    };
+
+    useEffect(() => {
+        if (allUserConversations.length > 0) {
+            console.log('ALL CONVERSATIONS:', allUserConversations);
+
+            const initialNames = allUserConversations.map((di, idx) => di['name']);
+            setConversationNames(initialNames);
+
+        }
+    }, [allUserConversations]);
+
+
     return (
 
         <>
@@ -469,7 +515,6 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
                                 Past Conversations
                             </h3>
 
-                            {/* TODO:  */}
                             {userAuthenticated && (
                                 <button 
                                     className="text-blue-500 dark:text-blue-400 text-[13px] text-left pb-4 hover:font-medium"
@@ -481,28 +526,70 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
                             {
                                 userAuthenticated ? (
 
-                                    <ul className="space-y-3 text-[14px]">
+                                    // <ul className="space-y-3 text-[14px]">
 
+                                    //     {allUserConversations.length === 0 ? (
+                                    //         <p className="text-gray-700 dark:text-gray-300">No conversations saved</p>
+                                    //     ) : (
+                                    //         allUserConversations.map((msg, idx) => (
+                                    //             <li
+                                    //                 key={idx}
+                                    //                 className="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg p-2 cursor-pointer"
+                                    //                 onClick={() => _handleConversationItemClick(msg.object_id)}
+                                    //             >
+                                    //                 <FontAwesomeIcon
+                                    //                     icon={faComment}
+                                    //                     size="sm"
+                                    //                     className="pr-1 pl-0 text-gray-800 dark:text-gray-400"
+                                    //                 /> 
+                                    //                 Conversation {idx + 1}
+                                    //             </li>
+                                    //         ))
+                                    //     )}
+
+                                    // </ul>
+
+                                    <ul className="space-y-3 text-[14px]">
                                         {allUserConversations.length === 0 ? (
                                             <p className="text-gray-700 dark:text-gray-300">No conversations saved</p>
                                         ) : (
                                             allUserConversations.map((msg, idx) => (
                                                 <li
                                                     key={idx}
-                                                    className="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg p-2 cursor-pointer"
-                                                    onClick={() => _handleConversationItemClick(msg.object_id)}
+                                                    className="relative text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg p-2 cursor-pointer flex items-center justify-between"
                                                 >
-                                                    <FontAwesomeIcon
-                                                        icon={faComment}
-                                                        size="sm"
-                                                        className="pr-1 pl-0 text-gray-800 dark:text-gray-400"
-                                                    /> 
-                                                    Conversation {idx + 1}
+                                                    {editingIndex === idx ? (
+                                                        <input
+                                                            type="text"
+                                                            value={conversationNames[idx]}
+                                                            onChange={(e) => handleConversationNameInputChange(e, idx)}
+                                                            onBlur={() => handleConversationNameInputBlur(idx)}
+                                                            className="bg-transparent border-b-2 border-gray-400 outline-none w-full"
+                                                            autoFocus
+                                                        />
+                                                    ) : (
+                                                        <span onClick={() => _handleConversationItemClick(msg.object_id)}>
+                                                            <FontAwesomeIcon
+                                                                icon={faComment}
+                                                                size="sm"
+                                                                className="pr-1 pl-0 text-gray-800 dark:text-gray-400"
+                                                            />
+                                                            {conversationNames[idx]}
+                                                        </span>
+                                                    )}
+                                                    <div className="relative">
+                                                        <FontAwesomeIcon
+                                                            icon={faPencil}
+                                                            size="sm"
+                                                            className="cursor-pointer text-gray-800 dark:text-gray-400"
+                                                            onClick={() => handleRename(idx)}
+                                                        />
+                                                    </div>
                                                 </li>
                                             ))
                                         )}
-
                                     </ul>
+
 
                                 ) : (
 
