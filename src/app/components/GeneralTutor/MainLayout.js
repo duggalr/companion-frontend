@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 // import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComment, faEllipsisV, faPencil } from "@fortawesome/free-solid-svg-icons";
+import { faComment, faPencil } from "@fortawesome/free-solid-svg-icons";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 
 import generateUserID from "../../../lib/utils/generateAnonUserId";
@@ -489,7 +489,7 @@ Feel free to ask me about anything you would like to learn, whether that's a pro
         if (allUserConversations.length > 0) {
             console.log('ALL CONVERSATIONS:', allUserConversations);
 
-            const initialNames = allUserConversations.map((di, idx) => di['name']);
+            const initialNames = allUserConversations.map((di, _) => di['name']);
             setConversationNames(initialNames);
 
         }
