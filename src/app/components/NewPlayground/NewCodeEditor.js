@@ -93,6 +93,51 @@ const NewCodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLan
 
     }, []);
 
+    const _handleCodeStateChange = (value) => {
+ 
+        // localStorage.setItem("codeState", JSON.stringify(codeStateTmpRef));l
+        // localStorage.setItem("user_generated_code", value);
+        // setCodeState(value);
+
+        _handleCodeEditorValueChange(value);
+
+    }
+
+    const [showAlert, setShowAlert] = useState(false);
+    const showTemporaryAlert = () => {
+        setShowAlert(true);
+        setTimeout(() => {
+            setShowAlert(false);
+        }, 1000);
+    };
+
+    // Command/Ctrl+s event-listener to prevent default saving behavior
+    useEffect(() => {
+
+        const handleKeyDown = (event) => {
+            if ((event.metaKey || event.ctrlKey) && event.key === 's') {
+                event.preventDefault();
+                _sendCodeSaveRequest();
+                showTemporaryAlert();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+
+    }, []);
+
+
+    const handleLangSelectionChange = (event) => {
+
+        let pg_lang = event.target.value;
+        monacoRef.current.editor.setModelLanguage(modelRef.current, pg_lang);
+        _handlePgLangChange(pg_lang);
+
+    }
+
     // Create Model for Monaco Editor
     useEffect(() => {
         if (isEditorReady && codeState){
@@ -105,11 +150,13 @@ const NewCodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLan
         }
     }, [codeState, selectedProgrammingLanguage, isEditorReady]);
 
+
     return (
 
+        // Monaco Editor
         <Editor
-            height="100%"
             width="100%"
+            height="100%"
             options={{
                 minimap: { enabled: false },
                 scrollBeyondLastLine: false,

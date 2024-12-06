@@ -13,11 +13,8 @@ import Editor from "@monaco-editor/react";
 const NewPlaygroundLayout = ({ accessToken, userAuthenticated, pageLoading }) => {
 
     const router = useRouter();
+    // const [leftWidth, setLeftWidth] = useState(720); // Initial width for editor
 
-    const [leftWidth, setLeftWidth] = useState(720); // Initial width for editor
-    const [currentHeight, setCurrentHeight] = useState(480);
-    // const [editorCode, setEditorCode] = useState("");
-    
     // 1st containing the user code dict
     const [userEditorCodeDict, setUserEditorCodeDict] = useState({});
     const [editorCode, setEditorCode] = useState("");
@@ -101,7 +98,6 @@ console.log(helloWorld());
 
     }
 
-
     const _handlePgLangChange = (value) => {
 
         if (userAuthenticated){
@@ -165,7 +161,6 @@ console.log(helloWorld());
         }
 
     };
-
 
     const handleClearChatMessage = () => {
         setChatMessages([{
@@ -482,7 +477,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     };
 
-
     // Handle Message Sending
     useEffect(() => {
         if (messageSent) {
@@ -575,14 +569,12 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         }
     }, [chatMessages, messageSent]);
 
-
     // Chat Messages Event Listener for Local Storage
     useEffect(() => {
         if (chatMessages.length > 0) {
             localStorage.setItem('user_generated_message_list', JSON.stringify(chatMessages));
         }
     }, [chatMessages]);
-
 
     // Establishing and Handling Websocket Connection
     useEffect(() => {
@@ -633,14 +625,13 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     return (
 
         // <div className="flex h-screen pt-0">
-
         <div className="flex h-screen bg-[#f4f5f6] dark:bg-gray-900">
 
             {/* Parent */}
-            <ResizableBox 
-                width={leftWidth}
+            <ResizableBox
+                width={720}
                 height={Infinity}
-                minConstraints={[500, Infinity]}
+                minConstraints={[600, Infinity]}
                 maxConstraints={[800, Infinity]}
                 axis="x"
                 className="relative"
@@ -654,38 +645,49 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 }
             >
 
-                {/* flex flex-col */}
-                <div className="h-screen">
+                <div className="h-screen flex flex-col">
 
                     {/* Code Editor - Top Half */}
-                    {/* <NewCodeEditor /> */}
                     <ResizableBox
                         width={Infinity}
-                        height={420}
-                        minConstraints={[Infinity, 350]}
-                        maxConstraints={[Infinity, 500]}
+                        height={500}
+                        minConstraints={[Infinity, 300]}
+                        maxConstraints={[Infinity, 600]}
                         axis="y"
                         className="relative"
-                        // resizeHandles={["s"]}
-                        // handle={
-                        //     <div
-                        //         className="h-[4px] bg-blue-400 dark:bg-blue-800 dark:hover:bg-blue-500 hover:bg-blue-500 cursor-ns-resize w-full absolute bottom-0 group-hover:h-4 transition-all duration-300 flex items-center justify-center"
-                        //         style={{ touchAction: "none" }}
-                        //     ></div>
-                        // }
+                        resizeHandles={["s"]}
+                        handle={
+                        <div
+                            className="h-[4px] bg-blue-400 dark:bg-blue-800 dark:hover:bg-blue-500 hover:bg-blue-500 cursor-ns-resize w-full absolute bottom-0 group-hover:h-4 transition-all duration-300 flex items-center justify-center"
+                            style={{ touchAction: "none" }}
+                        ></div>
+                        }
+                        onResizeStop={(e, data) => {
+                            const stdoutHeight = `calc(100% - ${data.size.height}px)`;
+                            document.documentElement.style.setProperty("--stdout-height", stdoutHeight);
+                        }}
                     >
                         <div className="h-full w-full">
-                            <NewCodeEditor />
+                            <NewCodeEditor
+                                codeState={editorCode}
+                                _sendCodeSaveRequest={_sendCodeSaveRequest}
+                                selectedProgrammingLanguage={selectedProgrammingLanguage}
+                                _handlePgLangChange={_handlePgLangChange}
+                                _handleCodeEditorValueChange={_handleCodeEditorValueChange}
+                            />
                         </div>
                     </ResizableBox>
-                    
+
                     {/* Stdout Output - Bottom Half */}
-                    <div className="ml-1 mt-2 h-[45%] w-[98%] overflow-y-auto rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-800 text-gray-900">
+                    <div
+                        className="ml-1 mt-2 w-[98%] overflow-y-auto rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-800 text-gray-900 flex-grow"
+                        style={{ height: "var(--stdout-height, 40%)" }} // Default height or calculated height
+                        // style={{ height: "var(--stdout-height, 45%)", transition: "height 0.2s ease-in-out" }} // Add smooth transition
+                    >
                         <p className="text-gray-600 dark:text-gray-500 pt-2 pl-3 text-[14px] tracking-normal font-normal">
-                            <span className="text-blue-500">{'>> '}</span>Stdout
+                        <span className="text-blue-500">{'>> '}</span>Stdout
                         </p>
                     </div>
-
                 </div>
 
             </ResizableBox>
@@ -728,116 +730,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 />
 
             </div>
-
-
-            {/* Left Side */}
-            {/* <ResizableBox
-                width={leftWidth}
-                height={Infinity}
-                axis="x"
-                minConstraints={[500, Infinity]}
-                maxConstraints={[900, Infinity]}
-                onResizeStop={(e, data) => setLeftWidth(data.size.width)}
-                className="relative"
-                resizeHandles={["e"]}
-                handle={
-                    <div
-                        className="w-[4px] bg-blue-400 dark:bg-blue-800 dark:hover:bg-blue-500 hover:bg-blue-500 cursor-ew-resize h-full absolute right-0 top-0 group-hover:w-4 transition-all duration-300 flex items-center justify-center"
-                        style={{ touchAction: "none" }}
-                    >
-                    </div>
-                }
-            >
-                <NewCodeEditor />
-            </ResizableBox> */}
-
-
-            {/* <ResizableBox
-                width={leftWidth}
-                height={currentHeight}
-                minConstraints={[500, Infinity]}
-                maxConstraints={[900, Infinity]}
-                // onResizeStop={(e, data) => setLeftWidth(data.size.width)}
-                className="relative"
-                resizeHandles={["n", "e"]}
-                handle={
-                    <div
-                        className="w-[4px] bg-blue-400 dark:bg-blue-800 dark:hover:bg-blue-500 hover:bg-blue-500 cursor-ew-resize h-full absolute right-0 top-0 group-hover:w-4 transition-all duration-300 flex items-center justify-center"
-                        style={{ touchAction: "none" }}
-                    >
-                    </div>
-                }
-            >
-                <NewCodeEditor />
-            </ResizableBox> */}
-
-
-            {/* <ResizableBox
-                width={leftWidth}
-                height={200} // Initial height
-                minConstraints={[300, 100]} // Minimum width and height
-                maxConstraints={[1200, 600]} // Maximum width and height
-                resizeHandles={['n', 'e']} // Resizable from top and right
-                onResizeStop={(e, data) => setLeftWidth(data.size.width)}
-                className="relative mt-2 pt-1 pl-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-[#f4f5f6] dark:bg-gray-800 text-gray-900"
-            >
-                <div className="w-full h-full overflow-y-auto">
-                    <div
-                    className="absolute top-0 left-0 w-full h-1 cursor-n-resize bg-gray-400"
-                    style={{ transform: 'translateY(-50%)' }}
-                    />
-                    <div
-                    className="absolute top-0 right-0 h-full w-1 cursor-e-resize bg-gray-400"
-                    style={{ transform: 'translateX(50%)' }}
-                    />
-                    <p className="text-gray-400 dark:text-gray-500 pt-2 pl-1 text-[14px] tracking-normal font-normal">
-                    stdout will appear here...
-                    </p>
-                </div>
-            </ResizableBox> */}
-
-            
-            
-            {/* Right Side */}
-            {/* <div
-                className="flex flex-col flex-1 bg-[#F3F4F6] dark:bg-gray-900"
-            >
-
-                <RightTablayout /> */}
-
-                {/* <ConsoleChatTabs
-                    // codeState={editorCode}
-                    setCodeState={setEditorCode}
-                    chatMessages={chatMessages}
-                    generatedMessage={generatedMessage}
-                    isGeneratingMessage={isGeneratingMessage}
-                    consoleOutput={consoleOutput}
-                    setConsoleOutput={setConsoleOutput}
-                    currentUserInputMessage={currentUserInputMessage}
-                    setCurrentUserInputMessage={setCurrentUserInputMessage}
-                    handleSendUserChatMessage={handleSendUserChatMessage}
-                    currentUserInputMessageRef={currentUserInputMessageRef}
-
-                    sendBtnEnabled={sendBtnEnabled}
-                    setSendBtnEnabled={setSendBtnEnabled}
-
-                    isLoading={isLoading}
-
-                    handleClearChatMessage={handleClearChatMessage}
-
-                    _sendCodeSaveRequest={_sendCodeSaveRequest}
-
-                    userAuthenticated={userAuthenticated}
-
-                    selectedProgrammingLanguage={selectedProgrammingLangRef}
-
-                    codeStateTmpRef={codeStateTmpRef}
-
-                    _handleCodeEditorValueChange={_handleCodeEditorValueChange}                            
-                /> */}
-
-
-            {/* </div> */}
 
         </div>
 
