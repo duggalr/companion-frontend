@@ -634,7 +634,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
         // <div className="flex h-screen pt-0">
 
-        <div className="flex h-screen">
+        <div className="flex h-screen bg-[#f4f5f6] dark:bg-gray-900">
 
             {/* Parent */}
             <ResizableBox 
@@ -679,12 +679,10 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                         </div>
                     </ResizableBox>
                     
-                    {/* TODO: handle here that adjusts veritcally */}
-
                     {/* Stdout Output - Bottom Half */}
-                    <div className="ml-1 mt-2 h-[45%] w-[98%] overflow-y-auto rounded-xl border border-gray-300 dark:border-gray-600 bg-[#f4f5f6] dark:bg-gray-800 text-gray-900">
-                        <p className="text-gray-400 dark:text-gray-500 pt-2 pl-3 text-[14px] tracking-normal font-normal">
-                            Stdout
+                    <div className="ml-1 mt-2 h-[45%] w-[98%] overflow-y-auto rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-800 text-gray-900">
+                        <p className="text-gray-600 dark:text-gray-500 pt-2 pl-3 text-[14px] tracking-normal font-normal">
+                            <span className="text-blue-500">{'>> '}</span>Stdout
                         </p>
                     </div>
 
@@ -694,8 +692,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
 
             {/* Right Side */}
-
-             <div
+            <div
                 className="flex flex-col flex-1 bg-[#F3F4F6] dark:bg-gray-900"
             >
 

@@ -170,14 +170,6 @@ const RightTabLayout = ({
 
             </div>
 
-            {/* TODO:
-                - finalize light mode and dark mode color scheme and layout
-                -- proceed from there to implementation (remove all commented code, etc...)
-                    -- Implementation for "General User Case" <-- this will be public feature first
-                    -- Then, the same components/pages will be used for the MIT course (with query params) loading the question data
-            */}
-
-
             {/* <div className="flex-grow overflow-y-scroll no-scrollbar">
                 {activeTab === "console" && <ConsoleOutput
                 // codeState={codeState}
