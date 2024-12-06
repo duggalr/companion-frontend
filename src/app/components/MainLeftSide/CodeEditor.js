@@ -155,26 +155,28 @@ const CodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLangua
         // h-full
         // <div className="h-screen w-full border-r-2 border-gray-300">
         // style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        <div
-            className="h-screen w-full overflow-auto border-r-2 border-gray-300"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-            {/* dark:bg-gray-800 */}
+        // dark:bg-gray-800
+
+        // className="h-screen w-full overflow-auto border-r-2 border-gray-300"
+        // style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             
+
+        
+        <div
+            className="w-full h-screen"
+        >
+
+            {/* Save code message */}
             {showAlert && (
-                // <div className="fixed top-1 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-1 rounded-md shadow-lg transition-opacity duration-300 text-[13px]">
-                //     Code saved successfully! 🎉
-                // </div>
                 <div className="fixed top-1 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-1 rounded-md shadow-lg transition-opacity duration-300 text-[13px] z-50">
                     Code saved successfully! 🎉
                 </div>
             )}
 
+            {/* Programming language dropdown */}
             <div className="border-b-2 dark:border-gray-500 max-w dark:bg-gray-900 bg-[#F3F4F6]">
 
-                <form class="max-w-[200px]">
-                    {/* <select id="programming_languages" class="bg-gray-50 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
-                    dark:focus:ring-blue-500 dark:focus:border-blue-500"> */}
+                <form class="max-w-[200px]">                    
                     <select
                         id="programming_languages"
                         class="bg-[#F3F4F6] dark:bg-gray-900 text-gray-900 text-[13.5px] focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500 pl-2"
@@ -183,15 +185,15 @@ const CodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLangua
                     >
                         <option value="python">Python3</option>
                         <option value="javascript">Javascript</option>
-                        {/* <option value="haskell">Haskell</option>
-                        <option value="rust">Rust</option> */}
+                        <option value="haskell">Haskell</option>
+                        <option value="rust">Rust</option>
                     </select>
                 </form>
 
             </div>
             
             <Editor
-                // height="%"
+                // height=""
                 width="100%"
                 options={{
                     minimap: { enabled: false },
@@ -203,6 +205,47 @@ const CodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLangua
                 onMount={handleEditorDidMount}
             />
         </div>
+
+
+        // <div className="flex flex-col w-full h-full">
+        //     {showAlert && (
+        //         <div className="fixed top-1 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-1 rounded-md shadow-lg transition-opacity duration-300 text-[13px] z-50">
+        //             Code saved successfully! 🎉
+        //         </div>
+        //     )}
+
+        //     {/* Language Selector */}
+        //     <div className="border-b-2 dark:border-gray-500 max-w dark:bg-gray-900 bg-[#F3F4F6]">
+        //         <form className="max-w-[200px]">
+        //             <select
+        //                 id="programming_languages"
+        //                 className="bg-[#F3F4F6] dark:bg-gray-900 text-gray-900 text-[13.5px] focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500 pl-2"
+        //                 value={selectedProgrammingLanguage}
+        //                 onChange={handleLangSelectionChange}
+        //             >
+        //                 <option value="python">Python3</option>
+        //                 <option value="javascript">Javascript</option>
+        //             </select>
+        //         </form>
+        //     </div>
+
+        //     {/* Monaco Editor */}
+        //     <div className="flex-grow overflow-auto">
+        //         <Editor
+        //             width="100%"
+        //             height="100%"
+        //             options={{
+        //                 minimap: { enabled: false },
+        //                 scrollBeyondLastLine: false,
+        //                 selectOnLineNumbers: true,
+        //                 wordWrap: "on",
+        //             }}
+        //             onChange={(value) => _handleCodeStateChange(value ?? "")}
+        //             onMount={handleEditorDidMount}
+        //         />
+        //     </div>
+        // </div>
+
     );
 };
 

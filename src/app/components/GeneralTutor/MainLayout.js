@@ -209,7 +209,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
         console.log('gt-conversations-ALL-data', gt_conversations_data_response);
 
-        let all_gt_conversations_list = gt_conversations_data_response['all_gt_objects']
+        let all_gt_conversations_list = gt_conversations_data_response['all_gt_objects'];
         setAllUserConversations(all_gt_conversations_list);
 
     }

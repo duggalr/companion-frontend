@@ -10,7 +10,7 @@ const ConsoleChatTabs = ({
   consoleOutput, setConsoleOutput, currentUserInputMessage, setCurrentUserInputMessage, handleSendUserChatMessage, currentUserInputMessageRef,
   sendBtnEnabled, setSendBtnEnabled, isLoading, handleClearChatMessage, _sendCodeSaveRequest, userAuthenticated, selectedProgrammingLanguage, codeStateTmpRef, _handleCodeEditorValueChange
 }) => {
-  
+
   // const router = useRouter();
   const [activeTab, setActiveTab] = useState("console");
 
@@ -78,7 +78,6 @@ const ConsoleChatTabs = ({
             )
           }
 
-
           {/* {userAuthenticated && <span
             onClick={_handleNewFileClick}
             // class="text-gray-600 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 font-semibold px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600"
@@ -132,7 +131,6 @@ const ConsoleChatTabs = ({
           handleClearChatMessage={handleClearChatMessage}
           userAuthenticated={userAuthenticated}
         />}
-
       </div>
       
     </div>
