@@ -14,7 +14,6 @@ export type PlaygroundAction =
     // | { type: "ADD_INPUT_OUTPUT"; payload: string }
     // | { type: "CLEAR_INPUT_OUTPUT"; payload: [] }; // For clearing the list, if needed
 
-
 // Reducer logic
 export const playgroundReducer = (state: PlaygroundState, action: PlaygroundAction): PlaygroundState => {
     switch (action.type) {

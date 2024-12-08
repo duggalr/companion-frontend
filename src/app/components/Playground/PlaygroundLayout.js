@@ -15,7 +15,7 @@ import { useWebSocket } from "../../../lib/hooks/useWebSocket";
 
 const PlaygroundLayout = ({ }) => {
     
-    const FASTAPI_WEBSOCKET_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
+    const FASTAPI_WEBSOCKET_URL = process.env.NEXT_PUBLIC_CHAT_WEBSOCKET_URL;
 
     // const router = useRouter();
 
