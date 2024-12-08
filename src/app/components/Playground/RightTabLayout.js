@@ -5,20 +5,20 @@ import { faTerminal, faComments, faQuestion } from '@fortawesome/free-solid-svg-
 import ChatInterface from "../MainRightSide/ChatInterface";
 import ProblemLayout from "./ProblemLayout";
 import SubmissionLayout from "./SubmissionLayout";
+// import useUserContext from "../lib/hooks/useUserContext";
+import useUserContext from "../../../lib/hooks/useUserContext";
 
 
-const RightTabLayout = ({ 
-    setCodeState, chatMessages, generatedMessage, isGeneratingMessage,
-    consoleOutput, setConsoleOutput, currentUserInputMessage, setCurrentUserInputMessage, handleSendUserChatMessage, currentUserInputMessageRef,
-    sendBtnEnabled, setSendBtnEnabled, isLoading, handleClearChatMessage, _sendCodeSaveRequest, userAuthenticated, selectedProgrammingLanguage, codeStateTmpRef, _handleCodeEditorValueChange
-}) => {
+const RightTabLayout = ({ }) => {
 
-    // const router = useRouter();
     const [activeTab, setActiveTab] = useState("problem");
 
     const _handleNewFileClick = () => {
         window.location.href = '/playground';
     };
+
+    // TODO: 
+    const {isAuthenticated, userAccessToken} = useUserContext();
 
     return (
       
@@ -116,7 +116,7 @@ const RightTabLayout = ({
                         </li> */}
                     </ul>
 
-                    {userAuthenticated ? 
+                    {isAuthenticated ? 
                         (
                         <span
                             onClick={_handleNewFileClick}
@@ -152,7 +152,7 @@ const RightTabLayout = ({
 
                 {activeTab === "problem" && <ProblemLayout/>}
 
-                {activeTab === "chat" && <ChatInterface messages={chatMessages}
+                {/* {activeTab === "chat" && <ChatInterface messages={chatMessages}
                 generatedMessage={generatedMessage}
                 isGenerating={isGeneratingMessage}
                 currentUserInputMessage={currentUserInputMessage}
@@ -166,7 +166,7 @@ const RightTabLayout = ({
                 userAuthenticated={userAuthenticated}
                 />}
 
-                {activeTab === "submission" && <SubmissionLayout/>}
+                {activeTab === "submission" && <SubmissionLayout/>} */}
 
             </div>
 

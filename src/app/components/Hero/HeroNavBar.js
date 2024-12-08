@@ -2,6 +2,7 @@ import ThemeToggle from "../Utils/ThemeToggle";
 import { Pacifico } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightFromBracket, faSquareCaretRight, faUserPlus, faBook } from "@fortawesome/free-solid-svg-icons";
+import useUserContext from "../../../lib/hooks/useUserContext";
 
 
 const pacifico_font = Pacifico({
@@ -10,9 +11,10 @@ const pacifico_font = Pacifico({
 });
 
 
-export default function HeroNavBar({ userAuthenticated, pageLoading }) {
+export default function HeroNavBar({}) {
 
     const DISCORD_CHANNEL_URL = process.env.NEXT_PUBLIC_DISCORD_CHAT_URL;
+    const {isAuthenticated} = useUserContext();
 
     return (
 
@@ -83,8 +85,7 @@ export default function HeroNavBar({ userAuthenticated, pageLoading }) {
                         </li>
 
                         {/* Dashboard */}
-                        {(userAuthenticated && pageLoading) && (
-
+                        {(isAuthenticated) && (
                             <li>
                                 <a
                                     href="/dashboard"
@@ -94,11 +95,10 @@ export default function HeroNavBar({ userAuthenticated, pageLoading }) {
                                     Dashboard
                                 </a>
                             </li>
-
                         )}
 
                         {/* Login */}
-                        {(!userAuthenticated && pageLoading) ? (
+                        {(!isAuthenticated) ? (
                             <li>
                                 <a
                                     href="/api/auth/login"
@@ -109,7 +109,6 @@ export default function HeroNavBar({ userAuthenticated, pageLoading }) {
                                 </a>
                             </li>
                         ) : (
-
                             <li>
                                 <a
                                     href="/api/auth/logout"
@@ -119,12 +118,12 @@ export default function HeroNavBar({ userAuthenticated, pageLoading }) {
                                     Logout
                                 </a>
                             </li>
-
                         )}
 
                         <li className="md:flex items-center text-[17px] sm:block hidden">
                             <ThemeToggle />
                         </li>
+
                     </ul>
                 </div>
             </div>

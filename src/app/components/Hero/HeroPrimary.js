@@ -6,40 +6,25 @@ import ShimmerButton from "@/components/ui/shimmer-button";
 import HeroVideoDialog from "@/components/ui/hero-video-dialog";
 import SparklesText from "@/components/ui/sparkles-text";
 import AnimatedShinyText from '@/components/ui/animated-shiny-text';
-// import { RainbowButton } from "@/components/ui/rainbow-button";
-// import ShinyButton from "@/components/ui/shiny-button";
-// import RippleButton from "@/components/ui/ripple-button";
-// import { MagicCard } from "@/components/ui/magic-card";
- 
+import useUserContext from "../../../lib/hooks/useUserContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode, faComments, faQuestion, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 
-export default function HeroPrimary({ userAuthenticated }) {
+export default function HeroPrimary({ }) {
+
+    const {isAuthenticated} = useUserContext();
 
     const router = useRouter();
-    // const handleVisitIDEClick = () => {
-    //     router.push('/playground');
-    // };
-
+  
     const handleVisitDashboardClick = () => {
         router.push('/dashboard');
     }
-
-    // const handleGeneralTutorClick = () => {
-    //     router.push('/general-tutor');
-    // }
-    
+  
     const aboutRef = useRef(null);
     const handleLearnMoreClick = () => {
         aboutRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
-
-    // const [currentTheme, setCurrentTheme] = useState(null);
-    // useEffect(() => {
-    //     let theme = localStorage.getItem('theme');
-    //     setCurrentTheme(theme);
-    // }, [])
 
     useEffect(() => {
         AOS.init({
@@ -100,7 +85,7 @@ export default function HeroPrimary({ userAuthenticated }) {
 
                         {/* <RippleButton rippleColor="#ADD8E6" className='bg-black text-white' onClick={handleLearnMoreClick}>Learn More</RippleButton> */}
 
-                        {userAuthenticated ? (
+                        {isAuthenticated ? (
 
                             <ShimmerButton className="shadow-2xl mr-4" onClick={handleVisitDashboardClick}>
                                 <span
@@ -287,5 +272,3 @@ export default function HeroPrimary({ userAuthenticated }) {
         
     );
 }
-
-// TODO: add animations and then, push into main from there; proceed to next steps from there

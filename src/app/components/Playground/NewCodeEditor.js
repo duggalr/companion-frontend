@@ -1,9 +1,16 @@
 import { useEffect, useState, useRef } from "react";
 import { ResizableBox } from "react-resizable";
 import Editor from "@monaco-editor/react";
+import { usePlaygroundContext } from "../../../lib/hooks/usePlaygroundContext";
 
 
-const NewCodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLanguage, _handlePgLangChange, _handleCodeEditorValueChange }) => {
+// const NewCodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLanguage, _handlePgLangChange, _handleCodeEditorValueChange }) => {
+
+const NewCodeEditor = ({ }) => {
+
+    const playgroundContext = usePlaygroundContext();
+    console.log("PG CONTEXT", playgroundContext);
+    let currentProblemState = playgroundContext.state;
 
     const monacoRef = useRef(null);
     const editorRef = useRef(null);
@@ -17,14 +24,12 @@ const NewCodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLan
         monacoRef.current = monaco; // Store the monaco instance
 
         setIsEditorReady(true);
-
+        
         // Create the model
         modelRef.current = monaco.editor.createModel(
-            codeState ?? "",
-            selectedProgrammingLanguage ?? "python"
+            currentProblemState.code,
+            "python"
         );
-
-        // editor.setModel(modelRef.current);
 
         // Define the light theme
         monaco.editor.defineTheme('minimalistLight', {
@@ -81,74 +86,69 @@ const NewCodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLan
         // Set the initial theme based on the localStorage value
         const currentTheme = localStorage.getItem('theme') || 'light';
         monaco.editor.setTheme(currentTheme === 'dark' ? 'minimalistDark' : 'minimalistLight');
+
     };
 
-    useEffect(() => {
 
-        const listenStorageChange = () => {
-            const currentTheme = localStorage.getItem('theme') || 'light';
-            monaco.editor.setTheme(currentTheme === 'dark' ? 'minimalistDark' : 'minimalistLight');
-        };
-        window.addEventListener("themeChange", listenStorageChange);
+    // useEffect(() => {
 
-    }, []);
+    //     const listenStorageChange = () => {
+    //         const currentTheme = localStorage.getItem('theme') || 'light';
+    //         monaco.editor.setTheme(currentTheme === 'dark' ? 'minimalistDark' : 'minimalistLight');
+    //     };
+    //     window.addEventListener("themeChange", listenStorageChange);
 
-    const _handleCodeStateChange = (value) => {
+    // }, []);
+
+    // const _handleCodeStateChange = (value) => {
  
-        // localStorage.setItem("codeState", JSON.stringify(codeStateTmpRef));l
-        // localStorage.setItem("user_generated_code", value);
-        // setCodeState(value);
+    //     // localStorage.setItem("codeState", JSON.stringify(codeStateTmpRef));l
+    //     // localStorage.setItem("user_generated_code", value);
+    //     // setCodeState(value);
 
-        _handleCodeEditorValueChange(value);
+    //     _handleCodeEditorValueChange(value);
 
-    }
+    // }
 
-    const [showAlert, setShowAlert] = useState(false);
-    const showTemporaryAlert = () => {
-        setShowAlert(true);
-        setTimeout(() => {
-            setShowAlert(false);
-        }, 1000);
-    };
+    // const [showAlert, setShowAlert] = useState(false);
+    // const showTemporaryAlert = () => {
+    //     setShowAlert(true);
+    //     setTimeout(() => {
+    //         setShowAlert(false);
+    //     }, 1000);
+    // };
 
-    // Command/Ctrl+s event-listener to prevent default saving behavior
-    useEffect(() => {
+    // // Command/Ctrl+s event-listener to prevent default saving behavior
+    // useEffect(() => {
 
-        const handleKeyDown = (event) => {
-            if ((event.metaKey || event.ctrlKey) && event.key === 's') {
-                event.preventDefault();
-                _sendCodeSaveRequest();
-                showTemporaryAlert();
-            }
-        };
+    //     const handleKeyDown = (event) => {
+    //         if ((event.metaKey || event.ctrlKey) && event.key === 's') {
+    //             event.preventDefault();
+    //             _sendCodeSaveRequest();
+    //             showTemporaryAlert();
+    //         }
+    //     };
 
-        window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
+    //     window.addEventListener('keydown', handleKeyDown);
+    //     return () => {
+    //         window.removeEventListener('keydown', handleKeyDown);
+    //     };
 
-    }, []);
+    // }, []);
 
-
-    const handleLangSelectionChange = (event) => {
-
-        let pg_lang = event.target.value;
-        monacoRef.current.editor.setModelLanguage(modelRef.current, pg_lang);
-        _handlePgLangChange(pg_lang);
-
-    }
 
     // Create Model for Monaco Editor
     useEffect(() => {
-        if (isEditorReady && codeState){
+        console.log('tmp-code:', currentProblemState)
+        if (isEditorReady && currentProblemState){
             // Create the model
             modelRef.current = monacoRef.current.editor.createModel(
-                codeState ?? "",
-                selectedProgrammingLanguage ?? "python"
+                currentProblemState.code ?? "",
+                "python"
             );
             editorRef.current.setModel(modelRef.current);
         }
-    }, [codeState, selectedProgrammingLanguage, isEditorReady]);
+    }, [isEditorReady, currentProblemState]);
 
 
     return (

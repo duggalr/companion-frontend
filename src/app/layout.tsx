@@ -18,7 +18,6 @@ export default function RootLayout({children,}: {children: React.ReactNode;}) {
   return (
     <html lang="en">
       <head>
-        {/* <title>Companion | Personal AI Tutor</title> */}
         <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js" async></script>
       </head>
 

@@ -17,6 +17,7 @@ export async function getUserAccessToken() {
 
     } else {
 
+        // not authenticated
         return null;
 
     }

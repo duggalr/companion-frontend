@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
 import ThemeToggle from './ThemeToggle';
 import { Pacifico } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightFromBracket, faSquareCaretRight, faUserPlus, faLaptopCode, faCode } from "@fortawesome/free-solid-svg-icons";
+import useUserContext from '../../../lib/hooks/useUserContext';
 
 
 const pacifico_font = Pacifico({
@@ -11,9 +11,9 @@ const pacifico_font = Pacifico({
 });
 
 
-export default function TopNavBar ({ userAuthenticated }) {
+export default function TopNavBar ({ }) {
 
-    useEffect(() => {}, []);
+    const {isAuthenticated} = useUserContext();
 
     return (
 
@@ -34,7 +34,7 @@ export default function TopNavBar ({ userAuthenticated }) {
             <div className="ml-auto lg:flex items-center space-x-8 hidden">
 
                 {/* Dashboard */}
-                {userAuthenticated && (
+                {isAuthenticated && (
                     <li>
                         <a
                             href="/dashboard"
@@ -69,7 +69,7 @@ export default function TopNavBar ({ userAuthenticated }) {
                 </li>
 
                 {/* If user is authenticated, show Dashboard and Logout */}
-                {userAuthenticated ? (
+                {isAuthenticated ? (
                     <>
                         <li>
                             <a
