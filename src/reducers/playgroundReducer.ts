@@ -13,6 +13,7 @@ export type PlaygroundAction =
     | {type: "SET_QUESTION_INPUT_OUTPUT"; name: string, question: string, input_output_list: QuestionInputOutputPair[], code: string}
     | {type: "SET_RANDOM_INITIAL_QUESTION";}
     | {type: "UPDATE_CODE_STATE"; code: string}
+    | {type: "UPDATE_CONSOLE_OUTPUT"; output: string}
 
     // | { type: "SET_QUESTION"; payload: string }
     // | { type: "ADD_INPUT_OUTPUT"; payload: string }
@@ -33,7 +34,13 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
                 code: action.code
             };
             saveToLocalStorage('playground_question_dict', JSON.stringify(d));
-            return {name: action.name, question: action.question, input_output_list: action.input_output_list, code: action.code}
+            return {
+                name: action.name,
+                question: action.question,
+                input_output_list: action.input_output_list,
+                code: action.code,
+                console_output: state.console_output
+            }
 
         case "SET_RANDOM_INITIAL_QUESTION": {
             const random_question_dict = INITIAL_QUESTION_LIST[Math.floor(Math.random() * INITIAL_QUESTION_LIST.length)];
@@ -43,23 +50,38 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
                 name: random_question_dict['name'],
                 question: random_question_dict['question'],
                 input_output_list: random_question_dict['input_output_list'],
-                code: random_question_dict['starter_code']
+                code: random_question_dict['starter_code'],
+                console_output: state.console_output
             };
             saveToLocalStorage('playground_question_dict', JSON.stringify(d));
             return d;
         }
 
-        case "UPDATE_CODE_STATE":
-            // TODO: save to local-storage
-            console.log('UPDATE CODE STATE:', action.code);
+        case "UPDATE_CODE_STATE": {
+            // console.log('UPDATE CODE STATE:', action.code);
             let pg_question_dict = {
                 name: state.name,
                 question: state.question,
                 input_output_list: state.input_output_list,
                 code: action.code,
+                // console_output: state.console_output
             }
             saveToLocalStorage('playground_question_dict', JSON.stringify(pg_question_dict));
             return {...state, code: action.code};
+        }
+
+        case "UPDATE_CONSOLE_OUTPUT": {
+            console.log('UPDATED CONSOLE OUTPUT:', action.output);
+            // let pg_question_dict = {
+            //     name: state.name,
+            //     question: state.question,
+            //     input_output_list: state.input_output_list,
+            //     code: state.code,
+            //     console_output: action.output
+            // }
+            // saveToLocalStorage('playground_question_dict', JSON.stringify(pg_question_dict));
+            return {...state, console_output: action.output};
+        }
 
         // case "SET_QUESTION":
         //     return { ...state, question: action.payload };

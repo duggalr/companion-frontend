@@ -10,6 +10,7 @@ export interface PlaygroundState {
     question: string;
     input_output_list: QuestionInputOutputPair[];
     code: string;
+    console_output: string | null;
 }
 
 export type PlaygroundAction =

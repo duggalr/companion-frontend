@@ -9,6 +9,7 @@ import { saveUserRunCode }  from "../../../lib/api/saveUserRunCode";
 import RightTablayout from "./RightTabLayout";
 import Editor from "@monaco-editor/react";
 
+import {usePlaygroundContext} from "../../../lib/hooks/usePlaygroundContext";
 import useUserContext from '../../../lib/hooks/useUserContext';
 import { useWebSocket } from "../../../lib/hooks/useWebSocket";
 
@@ -27,6 +28,8 @@ const PlaygroundLayout = ({ }) => {
         isLoading
     } = useWebSocket(FASTAPI_WEBSOCKET_URL);
 
+    const playgroundContext = usePlaygroundContext();
+    // console.log('pg-context:', playgroundContext);
 
     return (
 
@@ -83,9 +86,23 @@ const PlaygroundLayout = ({ }) => {
                         style={{ height: "var(--stdout-height, 40%)" }} // Default height or calculated height
                         // style={{ height: "var(--stdout-height, 45%)", transition: "height 0.2s ease-in-out" }} // Add smooth transition
                     >
-                        <p className="text-gray-600 dark:text-gray-500 pt-2 pl-3 text-[14px] tracking-normal font-normal">
-                            <span className="text-blue-500">{'>> '}</span>Stdout
-                        </p>
+
+                        {playgroundContext.state.console_output !== null ? (
+                            <p className="text-gray-600 dark:text-gray-500 pt-2 pl-3 text-[14px] tracking-normal font-normal">
+                                {/* <span className="text-blue-500">{'>> '}</span>{playgroundContext.state.console_output} */}
+                                {playgroundContext.state.console_output.split('\n').map((line, index) => (
+                                    <span key={index}>
+                                        {line}
+                                        <br />
+                                    </span>
+                                ))}
+                            </p>
+                        ): (
+                            <p className="text-gray-600 dark:text-gray-500 pt-2 pl-3 text-[14px] tracking-normal font-normal">
+                                <span className="text-blue-500">{'>> '}</span>Stdout
+                            </p>
+                        )}
+
                     </div>
                 </div>
 

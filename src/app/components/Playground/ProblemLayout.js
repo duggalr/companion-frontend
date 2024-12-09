@@ -1,17 +1,24 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencilAlt, faPencil, faShuffle } from "@fortawesome/free-solid-svg-icons";
+import { faPencilAlt, faPencil, faShuffle, faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { usePlaygroundContext } from "../../../lib/hooks/usePlaygroundContext";
+import useUserContext from '../../../lib/hooks/useUserContext';
 import { generateQuestionTestCases } from "../../../lib/api/generateQuestionTestCases";
+import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/localStorageUtils";
+import { saveUserRunCode } from "../../../lib/api/saveUserRunCode";
 
 
 const ProblemLayout = ({}) => {
 
+    const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_API_BACKEND_URL;
+
     const playgroundContext = usePlaygroundContext();
     let currentProblemState = playgroundContext.state;
 
+    const { isAuthenticated } = useUserContext();
     const { state, dispatch } = usePlaygroundContext();
 
     const _handleShuffleQuestion = () => {
@@ -45,14 +52,6 @@ const ProblemLayout = ({}) => {
         setQuestionName(e.target.value);
     }
 
-    // const {
-    //     sendMessage,
-    //     messages,
-    //     generatedMessage,
-    //     isGeneratingMessage,
-    //     isLoading
-    // } = useWebSocket(WEBSOCKET_URL);
-
     const _handleUpdateQuestionSubmit = async () => {
 
         setEditing(false);
@@ -69,18 +68,163 @@ const ProblemLayout = ({}) => {
             setCurrentProblemIOList(model_resp_array);
             setInputOutputLoading(false);
 
-            // // TODO: set local-storage afer the code-editor state is good
-            // SET_QUESTION_INPUT_OUTPUT
             dispatch({
                 type: "SET_QUESTION_INPUT_OUTPUT",
                 name: current_q_name,
                 question: current_q_text,
                 input_output_list: model_resp_array,
                 code: currentProblemState.code
-            })
+            });
         }
 
     }
+
+    const [isRunLoading, setIsRunLoading] = useState(false);
+
+    const _sendCodeExecutionRequest = async function (code) {
+        try {
+            const payload = {
+                language: "python",
+                code: code,
+            };
+            
+            // TODO:
+            const response = await axios.post(FASTAPI_BASE_URL + '/execute_user_code', payload);
+
+            // Get the task ID from the response
+            const { task_id } = response.data;
+
+            pollForTaskStatus(task_id);
+        } catch (error) {
+            console.log("Error:", error);
+        }
+    };
+    
+    const getTaskResponse = async (task_id) => {
+        try {
+            const taskResponseURL = FASTAPI_BASE_URL + `/result/${task_id}`;
+            const resultResponse = await axios.get(taskResponseURL);
+            const { result_output_value } = resultResponse.data;
+            // console.log('Result Output Value:', result_output_value);
+            dispatch({
+                type: "UPDATE_CONSOLE_OUTPUT",
+                output: result_output_value
+            });
+
+        } catch (error) {
+            console.error("Error polling for result:", error);
+        }
+    };
+    
+    const pollForTaskStatus = async (taskId) => {
+        try {
+            const taskStatusURL = FASTAPI_BASE_URL + `/task/status/${taskId}`;
+
+            const interval = setInterval(async () => {
+                const resultResponse = await axios.get(taskStatusURL);
+
+                const { status, task_id } = resultResponse.data;
+
+                if (status === "SUCCESS") {
+                    clearInterval(interval);
+                    getTaskResponse(task_id);
+                    setIsRunLoading(false); // Stop loading after result is received
+                }
+            }, 2000); // Poll every 2 seconds
+        } catch (error) {
+            console.error("Error polling for result:", error);
+            setIsRunLoading(false); // Stop loading if error occurs
+        }
+    };
+
+
+    const _saveUserCodeInBackend = async (current_code) => {
+
+        let current_user_id = getFromLocalStorage("user_id");
+        let current_parent_playground_object_id = getFromLocalStorage("parent_playground_object_id");
+
+        // // TODO: need to update
+        // let user_id = localStorage.getItem("user_id");
+        // // let current_code_state = localStorage.getItem("user_generated_code");
+        // let user_programming_language = localStorage.getItem("user_programming_language");
+        // let current_code_state = JSON.parse(localStorage.getItem("user_generated_code_dict"))[user_programming_language];
+        // let current_parent_playground_object_id = localStorage.getItem("parent_playground_object_id");
+  
+        let payload;
+        if (current_parent_playground_object_id !== null){
+            payload = {
+                user_id: current_user_id,
+                programming_language: "python",
+                code_state: current_code,
+                parent_playground_object_id: current_parent_playground_object_id
+            };
+        } else {
+            payload = {
+                user_id: current_user_id,
+                programming_language: "python",
+                code_state: current_code,
+            };
+        }
+
+        let saveCodeRes = await saveUserRunCode(
+            null,
+            payload
+        );
+        
+        console.log('saved-code-response:', saveCodeRes);
+
+        if (saveCodeRes['status_code'] === 200){
+
+            let parent_playground_object_id = saveCodeRes['parent_playground_object_id'];
+            saveToLocalStorage("parent_playground_object_id", parent_playground_object_id);
+
+        }
+
+    }
+
+    // Run Code
+    const handleRun = () => {
+
+        // dispatch({
+        //     type: "SET_QUESTION_INPUT_OUTPUT",
+        //     name: current_q_name,
+        //     question: current_q_text,
+        //     input_output_list: model_resp_array,
+        //     code: currentProblemState.code
+        // });
+        
+        dispatch({
+            type: "UPDATE_CONSOLE_OUTPUT",
+            output: "loading..."
+        });
+
+        // setOutput("loading..."); // Set the console output to loading while request is made
+        setIsRunLoading(true); // Start the loading state
+
+        // // let current_user_code = codeStateTmpRef.current;
+        let current_user_code = currentProblemState.code;
+    
+        console.log('current code:', current_user_code);
+
+        // send request to run code
+        _sendCodeExecutionRequest(current_user_code);
+    
+        // // save user code
+        // _sendCodeSaveRequest();
+
+        // anon case - code saving
+        if (!isAuthenticated) {
+
+            dispatch({
+                type: "UPDATE_CODE_STATE",
+                code: current_user_code,
+            });
+
+            _saveUserCodeInBackend(current_user_code);
+
+        }
+
+      };
 
     return (
 
@@ -238,7 +382,24 @@ const ProblemLayout = ({}) => {
 
                     
                     <div className="space-x-2 pt-10">
-                        <Button>Run Code</Button>
+                        {/* TODO: */}
+                        {/* <Button>Run Code</Button> */}
+                        
+                        {/* Run Code Button */}
+                        <button
+                            onClick={handleRun}
+                            disabled={isRunLoading}
+                            className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all 
+                                ${isRunLoading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-700"}`}
+                            >
+                            {isRunLoading ? (
+                                <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                            ) : (
+                                <FontAwesomeIcon icon={faPlay} className="text-white pr-2" />
+                            )}
+                            {isRunLoading ? "Running..." : "Run Code"}
+                        </button>
+
                         <Button>Chat with Tutor</Button>
                         <Button>Get Time Complexity</Button>
                     </div>

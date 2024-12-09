@@ -122,7 +122,7 @@ const NewCodeEditor = ({ }) => {
 
         // _handleCodeEditorValueChange(value);
 
-        console.log('current-code-value-UPDATE:', value);
+        // console.log('current-code-value-UPDATE:', value);
         codeRef.current = value;
         setCurrentCode(value);
         dispatch({type: "UPDATE_CODE_STATE", code: value});

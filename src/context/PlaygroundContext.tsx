@@ -18,13 +18,14 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
         name: "",
         question: "",
         input_output_list: [],
-        code: ""
+        code: "",
+        console_output: null
     };
 
     const [state, dispatch] = useReducer(playgroundReducer, initialState);
 
     const {isAuthenticated, userAccessToken} = useUserContext();
-    
+
     // Load data from localStorage on initial load
     useEffect(() => {
 
