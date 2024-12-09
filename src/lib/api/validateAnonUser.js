@@ -1,8 +1,8 @@
 const API_BACKEND_URL = process.env.NEXT_PUBLIC_API_BACKEND_URL;
 
-export async function createAnonUser(anon_user_id) {
+export async function validateAnonUser(anon_user_id) {
 
-    let endPointUrl = `${API_BACKEND_URL}/create-anon-user`;
+    let endPointUrl = `${API_BACKEND_URL}/validate-anon-user`;
     let payload = {
         'anon_user_id': anon_user_id
     };

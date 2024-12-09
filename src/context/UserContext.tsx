@@ -3,6 +3,11 @@ import { createContext, useState, ReactNode, useEffect } from 'react';
 import { getUserAccessToken } from '@/lib/internal/getUserAccessToken';
 import { validAuthenticatedUser } from "@/lib/api/checkAuthenticatedUser";
 import LoadingScreen from '../app/components/ui/Loading';
+import { getFromLocalStorage, saveToLocalStorage } from '../lib/utils/localStorageUtils';
+import generateUserID from '../lib/utils/generateAnonUserId';
+// import { createAnonUser } from '@/lib/api/createAnonUser';
+import { createAnonUser } from '../lib/api/createAnonUser';
+import { validateAnonUser } from '../lib/api/validateAnonUser';
 
 
 interface UserContextType {
@@ -21,8 +26,6 @@ export const InternalUserProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(true);
 
     const _handleUserAccessTokenFetch = async() => {
-        
-        const user_access_token = await getUserAccessToken();
 
         try {
             const user_access_token = await getUserAccessToken();
@@ -37,7 +40,22 @@ export const InternalUserProvider = ({ children }: { children: ReactNode }) => {
                 }
             }
             else {
-                // Not Authenticated
+                // Not Authenticated as access token is null
+
+                let current_user_id = getFromLocalStorage('user_id');
+                console.log('current-user_id:', current_user_id);
+                if (current_user_id){                    
+                    // User already has ID created
+                    // Pass to Backend to save if isn't saved already
+                    validateAnonUser(current_user_id);
+
+                } else {
+
+                    let rnd_user_id = await generateUserID();
+                    saveToLocalStorage('user_id', rnd_user_id);
+                    createAnonUser(rnd_user_id);
+
+                }
             }
         }
         catch (error) {

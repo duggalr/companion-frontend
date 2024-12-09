@@ -3,9 +3,9 @@ import useUserContext from "../lib/hooks/useUserContext";
 import { PlaygroundState } from "./types";
 import { playgroundReducer, PlaygroundAction } from "../reducers/playgroundReducer";
 // import { INITIAL_QUESTION_LIST } from "../lib/constants/initial_question_list";
+import { getFromLocalStorage } from '../lib/utils/localStorageUtils';
 
 
-// TODO: update state
 interface PlaygroundContextType {
     state: PlaygroundState;
     dispatch: React.Dispatch<PlaygroundAction>;
@@ -29,18 +29,25 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
 
         if (!isAuthenticated){
-            
-            // // Assume nothing in localstorage
-            dispatch({type: "SET_RANDOM_INITIAL_QUESTION"})
-            
-            // const random_question_dict = INITIAL_QUESTION_LIST[Math.floor(Math.random() * INITIAL_QUESTION_LIST.length)];
-            // console.log('random-question-dict:', random_question_dict);
-            // dispatch({
-            //     type: "SET_QUESTION_INPUT_OUTPUT",
-            //     question: random_question_dict['question'],
-            //     input_output_list: random_question_dict['input_output_list'],
-            //     code: random_question_dict['starter_code']
-            // });
+
+            let current_pg_qdict = getFromLocalStorage('playground_question_dict');
+            if (current_pg_qdict){
+
+                let current_pg_qdict_json = JSON.parse(current_pg_qdict);
+                // set current localstorage dict to state
+                dispatch({
+                    type: "SET_QUESTION_INPUT_OUTPUT",
+                    name: current_pg_qdict_json['name'],
+                    question: current_pg_qdict_json['question'],
+                    input_output_list: current_pg_qdict_json['input_output_list'],
+                    code: current_pg_qdict_json['code']
+                });
+
+            } else {
+
+                dispatch({type: "SET_RANDOM_INITIAL_QUESTION"});
+
+            }
 
         }
 

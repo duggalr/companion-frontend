@@ -36,7 +36,7 @@ export default function HeroPrimary({ }) {
     return (
 
         <>
-            
+
             {/* Landing Hero Section */}
             <section className="min-h-screen flex flex-col items-center py-16 px-4">
 
@@ -267,8 +267,8 @@ export default function HeroPrimary({ }) {
                     </div>
                 </div>
             </footer>
-        
+
         </>
-        
+
     );
 }

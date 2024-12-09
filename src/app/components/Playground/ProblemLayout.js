@@ -26,7 +26,6 @@ const ProblemLayout = ({}) => {
     
     const [inputOutputLoading, setInputOutputLoading] = useState(false);
     const [currentProblemIOList, setCurrentProblemIOList] = useState([]);
-    
 
     useEffect(() => {
         setQuestionName(currentProblemState.name);
@@ -56,35 +55,30 @@ const ProblemLayout = ({}) => {
 
     const _handleUpdateQuestionSubmit = async () => {
 
-        console.log('testing...')
-
         setEditing(false);
         setInputOutputLoading(true);
 
         let current_q_name = questionName;
         let current_q_text = questionText;
-        
-        console.log(current_q_name, current_q_text);
-
+ 
         let response_data = await generateQuestionTestCases(current_q_name, current_q_text);
-        console.log('response_data:', response_data);
+        // console.log('response_data:', response_data);
 
         if (response_data['success'] === true){
             let model_resp_array = response_data['model_response'];
             setCurrentProblemIOList(model_resp_array);
             setInputOutputLoading(false);
+
+            // // TODO: set local-storage afer the code-editor state is good
+            // SET_QUESTION_INPUT_OUTPUT
+            dispatch({
+                type: "SET_QUESTION_INPUT_OUTPUT",
+                name: current_q_name,
+                question: current_q_text,
+                input_output_list: model_resp_array,
+                code: currentProblemState.code
+            })
         }
-
-        // // send data to backend to generate testcases --> send via websocket
-        //     // with specific message and on "type   "
-
-        // let d = {
-        //     'type': 'generate_test_case',
-        //     'question_name': current_q_name,
-        //     'question_text': current_q_text,
-        // }
-
-        // sendMessage(JSON.stringify(d));
 
     }
 

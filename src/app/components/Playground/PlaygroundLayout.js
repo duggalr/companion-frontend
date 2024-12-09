@@ -16,7 +16,6 @@ import { useWebSocket } from "../../../lib/hooks/useWebSocket";
 const PlaygroundLayout = ({ }) => {
     
     const FASTAPI_WEBSOCKET_URL = process.env.NEXT_PUBLIC_CHAT_WEBSOCKET_URL;
-
     // const router = useRouter();
 
     const {isAuthenticated, userAccessToken} = useUserContext();
@@ -27,26 +26,7 @@ const PlaygroundLayout = ({ }) => {
         isGeneratingMessage,
         isLoading
     } = useWebSocket(FASTAPI_WEBSOCKET_URL);
-    
-    // // Handling User Loading
-    // useEffect(() => {
 
-    //     if (!isAuthenticated) {  // anon case
-
-    //         // Assuming initial localstorage is empty for user
-
-    //         const random_question_dict = initial_question_list[Math.floor(Math.random() * array.length)];
-    //         console.log('random-question-dict:', random_question_dict);
-
-    //         // Populate question in view
-    //         // TODO:
-
-    //     }
-
-    // }, [userAccessToken, isAuthenticated]);
-
-    // TODO:
-        // Initialize the Code Editor state and functions <-- using reducers
 
     return (
 
@@ -93,13 +73,7 @@ const PlaygroundLayout = ({ }) => {
                         }}
                     >
                         <div className="h-full w-full">
-                            <NewCodeEditor
-                                // codeState={editorCode}
-                                // _sendCodeSaveRequest={_sendCodeSaveRequest}
-                                // selectedProgrammingLanguage={selectedProgrammingLanguage}
-                                // _handlePgLangChange={_handlePgLangChange}
-                                // _handleCodeEditorValueChange={_handleCodeEditorValueChange}
-                            />
+                            <NewCodeEditor/>
                         </div>
                     </ResizableBox>
 
@@ -122,7 +96,6 @@ const PlaygroundLayout = ({ }) => {
             <div
                 className="flex flex-col flex-1 bg-[#F3F4F6] dark:bg-gray-900"
             >
-                {/* TODO: passing the question data */}
                 <RightTablayout />
             </div>
 

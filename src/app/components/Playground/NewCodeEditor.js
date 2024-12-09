@@ -2,34 +2,43 @@ import { useEffect, useState, useRef } from "react";
 import { ResizableBox } from "react-resizable";
 import Editor from "@monaco-editor/react";
 import { usePlaygroundContext } from "../../../lib/hooks/usePlaygroundContext";
+// import { getFromLocalStorage } from '../lib/utils/localStorageUtils';
+// import { saveToLocalStorage }
 
 
 // const NewCodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLanguage, _handlePgLangChange, _handleCodeEditorValueChange }) => {
 
 const NewCodeEditor = ({ }) => {
 
-    const playgroundContext = usePlaygroundContext();
-    console.log("PG CONTEXT", playgroundContext);
-    let currentProblemState = playgroundContext.state;
+    // const playgroundContext = usePlaygroundContext();
+    // console.log("PG CONTEXT", playgroundContext);
+
+    const { state, dispatch } = usePlaygroundContext();
+
+    // let currentProblemState = state;
 
     const monacoRef = useRef(null);
     const editorRef = useRef(null);
     const modelRef = useRef(null);
-    const [isEditorReady, setIsEditorReady] = useState(false);
+    // const [isEditorReady, setIsEditorReady] = useState(false);
+
+    const [currentCode, setCurrentCode] = useState("");
+    const codeRef = useRef("");
+
 
     const handleEditorDidMount = (editor, monaco) => {
 
-        // editorRef.current = editor;
-        editorRef.current = editor; // Store the editor instance
-        monacoRef.current = monaco; // Store the monaco instance
+        // // editorRef.current = editor;
+        // editorRef.current = editor; // Store the editor instance
+        // monacoRef.current = monaco; // Store the monaco instance
 
-        setIsEditorReady(true);
-        
-        // Create the model
-        modelRef.current = monaco.editor.createModel(
-            currentProblemState.code,
-            "python"
-        );
+        // setIsEditorReady(true);
+
+        // // Create the model
+        // modelRef.current = monaco.editor.createModel(
+        //     state.code,
+        //     "python"
+        // );
 
         // Define the light theme
         monaco.editor.defineTheme('minimalistLight', {
@@ -89,83 +98,99 @@ const NewCodeEditor = ({ }) => {
 
     };
 
-
-    // useEffect(() => {
-
-    //     const listenStorageChange = () => {
-    //         const currentTheme = localStorage.getItem('theme') || 'light';
-    //         monaco.editor.setTheme(currentTheme === 'dark' ? 'minimalistDark' : 'minimalistLight');
-    //     };
-    //     window.addEventListener("themeChange", listenStorageChange);
-
-    // }, []);
-
-    // const _handleCodeStateChange = (value) => {
- 
-    //     // localStorage.setItem("codeState", JSON.stringify(codeStateTmpRef));l
-    //     // localStorage.setItem("user_generated_code", value);
-    //     // setCodeState(value);
-
-    //     _handleCodeEditorValueChange(value);
-
-    // }
-
-    // const [showAlert, setShowAlert] = useState(false);
-    // const showTemporaryAlert = () => {
-    //     setShowAlert(true);
-    //     setTimeout(() => {
-    //         setShowAlert(false);
-    //     }, 1000);
-    // };
-
-    // // Command/Ctrl+s event-listener to prevent default saving behavior
-    // useEffect(() => {
-
-    //     const handleKeyDown = (event) => {
-    //         if ((event.metaKey || event.ctrlKey) && event.key === 's') {
-    //             event.preventDefault();
-    //             _sendCodeSaveRequest();
-    //             showTemporaryAlert();
-    //         }
-    //     };
-
-    //     window.addEventListener('keydown', handleKeyDown);
-    //     return () => {
-    //         window.removeEventListener('keydown', handleKeyDown);
-    //     };
-
-    // }, []);
-
-
-    // Create Model for Monaco Editor
     useEffect(() => {
-        console.log('tmp-code:', currentProblemState)
-        if (isEditorReady && currentProblemState){
-            // Create the model
-            modelRef.current = monacoRef.current.editor.createModel(
-                currentProblemState.code ?? "",
-                "python"
-            );
-            editorRef.current.setModel(modelRef.current);
-        }
-    }, [isEditorReady, currentProblemState]);
+
+        const listenStorageChange = () => {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            monaco.editor.setTheme(currentTheme === 'dark' ? 'minimalistDark' : 'minimalistLight');
+        };
+        window.addEventListener("themeChange", listenStorageChange);
+
+    }, []);
+
+
+    const _handleCodeStateChange = (value) => {
+ 
+        // TODO:
+            // local-state-change here
+            // reducer for code state update 
+                // it should update state and local-storage
+
+        // localStorage.setItem("codeState", JSON.stringify(codeStateTmpRef));l
+        // localStorage.setItem("user_generated_code", value);
+        // setCodeState(value);
+
+        // _handleCodeEditorValueChange(value);
+
+        console.log('current-code-value-UPDATE:', value);
+        codeRef.current = value;
+        setCurrentCode(value);
+        dispatch({type: "UPDATE_CODE_STATE", code: value});
+
+    }
+
+    const [showAlert, setShowAlert] = useState(false);
+    const showTemporaryAlert = () => {
+        setShowAlert(true);
+        setTimeout(() => {
+            setShowAlert(false);
+        }, 1000);
+    };
+
+    // Command/Ctrl+s event-listener to prevent default saving behavior
+    useEffect(() => {
+
+        const handleKeyDown = (event) => {
+            if ((event.metaKey || event.ctrlKey) && event.key === 's') {
+                event.preventDefault();
+                _handleCodeStateChange(codeRef.current);
+                showTemporaryAlert();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+
+    }, []);
+
+
+    useEffect(() => {
+
+        codeRef.current = state.code;
+        setCurrentCode(state.code);
+
+    }, [state]);
 
 
     return (
 
-        // Monaco Editor
-        <Editor
-            width="100%"
-            height="100%"
-            options={{
-                minimap: { enabled: false },
-                scrollBeyondLastLine: false,
-                selectOnLineNumbers: true,
-                wordWrap: "on",
-            }}
-            onChange={(value) => _handleCodeStateChange(value ?? "")}
-            onMount={handleEditorDidMount}
-        />
+        <>
+
+            {showAlert && (
+                <div className="fixed top-1 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-1 rounded-md shadow-lg transition-opacity duration-300 text-[13px] z-50">
+                    Code saved successfully! 🎉
+                </div>
+            )}
+
+            {/* // Monaco Editor */}
+            <Editor
+                width="100%"
+                height="100%"
+                language="python"
+                options={{
+                    minimap: { enabled: false },
+                    scrollBeyondLastLine: false,
+                    selectOnLineNumbers: true,
+                    wordWrap: "on",
+                }}
+                onChange={(value) => _handleCodeStateChange(value ?? "")}
+                onMount={handleEditorDidMount}
+                value={currentCode}
+            />
+
+        </>
 
     );
 };
