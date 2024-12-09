@@ -2,9 +2,10 @@ import { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTerminal, faComments, faQuestion } from '@fortawesome/free-solid-svg-icons';
 // import ConsoleOutput from "./ConsoleOutput";
-import ChatInterface from "../MainRightSide/ChatInterface";
+// import ChatInterface from "../MainRightSide/ChatInterface";
 import ProblemLayout from "./ProblemLayout";
 import SubmissionLayout from "./SubmissionLayout";
+import NewChatInterface from './NewChatInterface';
 // import useUserContext from "../lib/hooks/useUserContext";
 import useUserContext from "../../../lib/hooks/useUserContext";
 
@@ -151,6 +152,8 @@ const RightTabLayout = ({ }) => {
                 {/* <ProblemLayout/> */}
 
                 {activeTab === "problem" && <ProblemLayout/>}
+
+                {activeTab === "chat" && <NewChatInterface/>}
 
                 {/* {activeTab === "chat" && <ChatInterface messages={chatMessages}
                 generatedMessage={generatedMessage}

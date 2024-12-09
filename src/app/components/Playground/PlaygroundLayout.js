@@ -11,7 +11,7 @@ import Editor from "@monaco-editor/react";
 
 import {usePlaygroundContext} from "../../../lib/hooks/usePlaygroundContext";
 import useUserContext from '../../../lib/hooks/useUserContext';
-import { useWebSocket } from "../../../lib/hooks/useWebSocket";
+// import { useWebSocket } from "../../../lib/hooks/useWebSocket";
 
 
 const PlaygroundLayout = ({ }) => {
@@ -20,13 +20,13 @@ const PlaygroundLayout = ({ }) => {
     // const router = useRouter();
 
     const {isAuthenticated, userAccessToken} = useUserContext();
-    const {
-        sendMessage,
-        messages,
-        generatedMessage,
-        isGeneratingMessage,
-        isLoading
-    } = useWebSocket(FASTAPI_WEBSOCKET_URL);
+    // const {
+    //     sendMessage,
+    //     messages,
+    //     generatedMessage,
+    //     isGeneratingMessage,
+    //     isLoading
+    // } = useWebSocket(FASTAPI_WEBSOCKET_URL);
 
     const playgroundContext = usePlaygroundContext();
     // console.log('pg-context:', playgroundContext);
