@@ -6,6 +6,7 @@ export interface QuestionInputOutputPair{
 }
 
 export interface PlaygroundState {
+    question_id: string | null;
     name: string;
     question: string;
     input_output_list: QuestionInputOutputPair[];

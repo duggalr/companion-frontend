@@ -21,4 +21,3 @@ const SubmissionLayout = ({}) => {
 }
 
 export default SubmissionLayout;
-

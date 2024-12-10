@@ -23,8 +23,21 @@ def find_palindromic_substrings(s: str) -> list:p
         expand_around_center(i, i + 1)  # Even-length alindromes
     return palindromes
 `,
-        'time_complexity': 'O(n^2)'
+        'time_complexity': 'O(n^2)',
+        'test_case_list': [
+            { 'input': '"abba"', 'expected_output': ["a", "b", "bb", "abba"] },
+            { 'input': '"racecar"', 'expected_output': ["r", "a", "c", "e", "cec", "aceca", "racecar"] },
+            { 'input': '"abc"', 'expected_output': ["a", "b", "c"] },
+            { 'input': '"a"', 'expected_output': ["a"] },
+            { 'input': '""', 'expected_output': [] },
+            { 'input': '"madamimadam"', 'expected_output': ["m", "a", "d", "madam", "a", "m", "i", "madamimadam", "a", "d", "madam", "a", "m"] },
+            { 'input': '"xyzzyx"', 'expected_output': ["x", "y", "z", "zz", "yzz", "xyzzyx"] },
+            { 'input': '"noonracecar"', 'expected_output': ["n", "o", "noon", "o", "n", "r", "a", "c", "e", "cec", "aceca", "racecar"] },
+            { 'input': '"abcbabcba"', 'expected_output': ["a", "b", "c", "bcb", "abcba", "bcbabcba", "b", "a"] },
+            { 'input': '"xyzyxxyzz"', 'expected_output': ["x", "y", "z", "yzy", "xyzyx", "x", "y", "zz", "xyzz"] }
+        ]
     },
+
     {
         'name': 'String Compression',
         'question': 'Implement a function that compresses a string using the counts of repeated characters (e.g., "aaabb" -> "a3b2").',
@@ -52,6 +65,7 @@ def compress_string(s: str) -> str:
 `,
         'time_complexity': 'O(n)'
     },
+
     {
         'name': 'Longest Common Prefix',
         'question': 'Write a function to find the longest common prefix among an array of strings.',

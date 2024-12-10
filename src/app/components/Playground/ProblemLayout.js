@@ -6,12 +6,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt, faPencil, faShuffle, faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { usePlaygroundContext } from "../../../lib/hooks/usePlaygroundContext";
 import useUserContext from '../../../lib/hooks/useUserContext';
-import { generateQuestionTestCases } from "../../../lib/api/generateQuestionTestCases";
+import { saveOrUpdateUserQuestion } from "../../../lib/api/saveOrUpdateUserQuestion";
 import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/localStorageUtils";
 import { saveUserRunCode } from "../../../lib/api/saveUserRunCode";
+import { getRandomInitialPlaygroundQuestion } from '../../../lib/api/getRandomInitialPlaygroundQuestion';
+import { submitUserCode } from "../../../lib/api/submitUserCode";
 
 
-const ProblemLayout = ({}) => {
+const ProblemLayout = ({ setActiveTab }) => {
 
     const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_API_BACKEND_URL;
 
@@ -21,10 +23,23 @@ const ProblemLayout = ({}) => {
     const { isAuthenticated } = useUserContext();
     const { state, dispatch } = usePlaygroundContext();
 
-    const _handleShuffleQuestion = () => {
+    const _handleShuffleQuestion = async () => {
+        // dispatch({
+        //     type: "SET_RANDOM_INITIAL_QUESTION",
+        // });
+
+        let rnd_question_dict = await getRandomInitialPlaygroundQuestion();
+        console.log('Random Question Dict:', rnd_question_dict);
+
         dispatch({
-            type: "SET_RANDOM_INITIAL_QUESTION",
+            type: "SET_QUESTION_INPUT_OUTPUT",
+            question_id: rnd_question_dict['question_id'],
+            name: rnd_question_dict['name'],
+            question: rnd_question_dict['text'],
+            input_output_list: rnd_question_dict['example_io_list'],
+            code: rnd_question_dict['starter_code'],
         });
+
     }
 
     const [editing, setEditing] = useState(false);
@@ -35,6 +50,9 @@ const ProblemLayout = ({}) => {
     const [currentProblemIOList, setCurrentProblemIOList] = useState([]);
 
     useEffect(() => {
+
+        console.log('PROBLEM STATE / QUESTIONS:', currentProblemState.input_output_list);
+
         setQuestionName(currentProblemState.name);
         setQuestionText(currentProblemState.question);
         setCurrentProblemIOList(currentProblemState.input_output_list);
@@ -57,24 +75,42 @@ const ProblemLayout = ({}) => {
         setEditing(false);
         setInputOutputLoading(true);
 
+        let current_question_id = currentProblemState.question_id;
         let current_q_name = questionName;
         let current_q_text = questionText;
- 
-        let response_data = await generateQuestionTestCases(current_q_name, current_q_text);
-        // console.log('response_data:', response_data);
+
+        let response_data = await saveOrUpdateUserQuestion(current_question_id, current_q_name, current_q_text);
+        console.log('response_data:', response_data);
+
+        // let response_data = await generateQuestionTestCases(current_q_name, current_q_text);
+        // // console.log('response_data:', response_data);
 
         if (response_data['success'] === true){
-            let model_resp_array = response_data['model_response'];
-            setCurrentProblemIOList(model_resp_array);
+            let example_io_list = response_data['example_io_list'];
+            
+            setCurrentProblemIOList(example_io_list);
             setInputOutputLoading(false);
 
             dispatch({
                 type: "SET_QUESTION_INPUT_OUTPUT",
-                name: current_q_name,
-                question: current_q_text,
-                input_output_list: model_resp_array,
+                question_id: response_data['unique_question_id'],
+                name: response_data['question_name'],
+                question: response_data['question_text'],
+                input_output_list: example_io_list,
                 code: currentProblemState.code
             });
+
+            // let model_resp_array = response_data['model_response'];
+            // setCurrentProblemIOList(model_resp_array);
+            // setInputOutputLoading(false);
+
+            // dispatch({
+            //     type: "SET_QUESTION_INPUT_OUTPUT",
+            //     name: current_q_name,
+            //     question: current_q_text,
+            //     input_output_list: model_resp_array,
+            //     code: currentProblemState.code
+            // });
         }
 
     }
@@ -224,7 +260,41 @@ const ProblemLayout = ({}) => {
 
         }
 
-      };
+      
+    };
+
+    // Submit Code
+    const submitCode = async () => {
+
+        console.log('submit code');
+        let current_parent_playground_object_id = getFromLocalStorage("parent_playground_object_id");
+        let current_user_code = currentProblemState.code;
+        let unique_question_id = currentProblemState.question_id;
+
+        // TODO: get current qid and then, start here
+
+        let d = {
+            'current_pg_object_id': current_parent_playground_object_id,
+            'current_user_code': current_user_code,
+            'unique_question_id': unique_question_id
+        }
+        // TODO:
+            // Submit to backend
+                // First save code
+                // Then implement function to execute tests
+                // Go from there
+
+        submitUserCode(d);
+        // TODO: get results and svae them in playground state --> redirect to submission-component and go from there
+
+    }
+
+    // Chat with Tutor
+    const chatWithTutor = () => {
+        console.log('set-active', setActiveTab)
+        setActiveTab("chat");
+    }
+
 
     return (
 
@@ -399,9 +469,21 @@ const ProblemLayout = ({}) => {
                             )}
                             {isRunLoading ? "Running..." : "Run Code"}
                         </button>
-
-                        <Button>Chat with Tutor</Button>
-                        <Button>Get Time Complexity</Button>
+                        
+                        {/* TODO: on feedback click -> route to tutor with message populated */}
+                        {/* <Button
+                            // onClick={submitCode}
+                        >Get Feedback</Button> */}
+                        <Button
+                            onClick={chatWithTutor}
+                        >Chat with Tutor</Button>
+                        <Button
+                            onClick={submitCode}
+                            disabled={true} // Disable the button
+                            className="bg-gray-400 text-gray-700 cursor-not-allowed" // Add disabled styles
+                        >
+                            Run Test Cases (coming soon...)
+                        </Button>
                     </div>
 
                 </div>

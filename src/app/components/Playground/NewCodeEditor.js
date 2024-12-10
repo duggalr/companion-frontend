@@ -157,6 +157,7 @@ const NewCodeEditor = ({ }) => {
 
 
     useEffect(() => {
+        console.log('current-state-code:', state.code);
 
         codeRef.current = state.code;
         setCurrentCode(state.code);

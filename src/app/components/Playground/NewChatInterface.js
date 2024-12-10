@@ -12,7 +12,7 @@ import { useWebSocket } from "../../../lib/hooks/useWebSocket";
     // get messages from websocket
     // render from there
 
-const NewChatInterface = ({}) => {
+const NewChatInterface = ({ }) => {
 
     const FASTAPI_WEBSOCKET_URL = process.env.NEXT_PUBLIC_CHAT_WEBSOCKET_URL;
 

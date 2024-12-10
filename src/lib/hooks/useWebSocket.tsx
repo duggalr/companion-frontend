@@ -38,7 +38,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         }]);
     }
 
-
     const _sendMessage = async (payload: MessagePayload) => {
 
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
