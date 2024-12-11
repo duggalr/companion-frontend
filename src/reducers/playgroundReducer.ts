@@ -62,12 +62,15 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
         case "UPDATE_CODE_STATE": {
             // console.log('UPDATE CODE STATE:', action.code);
             let pg_question_dict = {
+                question_id: state.question_id,
                 name: state.name,
                 question: state.question,
                 input_output_list: state.input_output_list,
                 code: action.code,
                 // console_output: state.console_output
             }
+
+
             saveToLocalStorage('playground_question_dict', JSON.stringify(pg_question_dict));
             return {...state, code: action.code};
         }

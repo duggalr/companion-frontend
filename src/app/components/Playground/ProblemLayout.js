@@ -11,6 +11,7 @@ import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/loca
 import { saveUserRunCode } from "../../../lib/api/saveUserRunCode";
 import { getRandomInitialPlaygroundQuestion } from '../../../lib/api/getRandomInitialPlaygroundQuestion';
 import { submitUserCode } from "../../../lib/api/submitUserCode";
+import { saveUserCode } from "../../../lib/api/saveUserCode"
 
 
 const ProblemLayout = ({ setActiveTab }) => {
@@ -270,10 +271,20 @@ const ProblemLayout = ({ setActiveTab }) => {
                 code: current_user_code,
             });
 
-            _saveUserCodeInBackend(current_user_code);
+            // _saveUserCodeInBackend(current_user_code);
+
+            // TODO: so much abstraction/refactoring possible due to duplicate code possible in the utils functions, fetch responses and backend...
+            let anon_user_id = getFromLocalStorage("user_id");
+            console.log('current-user-id:', anon_user_id);
+
+            let payload = {
+                'user_id': anon_user_id,
+                'question_id': state.question_id,
+                'code': current_user_code
+            }
+            saveUserCode(null, payload);
 
         }
-
       
     };
 
@@ -471,7 +482,7 @@ const ProblemLayout = ({ setActiveTab }) => {
                     <div className="space-x-2 pt-10">
                         {/* TODO: */}
                         {/* <Button>Run Code</Button> */}
-                        
+
                         {/* Run Code Button */}
                         <button
                             onClick={handleRun}
@@ -495,7 +506,7 @@ const ProblemLayout = ({ setActiveTab }) => {
                             onClick={chatWithTutor}
                         >Chat with Tutor</Button>
                         <Button
-                            onClick={submitCode}
+                            // onClick={submitCode}
                             disabled={true} // Disable the button
                             className="bg-gray-400 text-gray-700 cursor-not-allowed" // Add disabled styles
                         >

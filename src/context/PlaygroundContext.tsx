@@ -75,6 +75,8 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
             if (current_pg_qdict){
 
                 let current_pg_qdict_json = JSON.parse(current_pg_qdict);
+                console.log('initial PG-DICT-JSON:', current_pg_qdict_json);
+
                 dispatch({
                     type: "SET_QUESTION_INPUT_OUTPUT",
                     question_id: current_pg_qdict_json['question_id'],

@@ -2,19 +2,15 @@ import { useEffect, useState, useRef } from "react";
 import { ResizableBox } from "react-resizable";
 import Editor from "@monaco-editor/react";
 import { usePlaygroundContext } from "../../../lib/hooks/usePlaygroundContext";
-// import { getFromLocalStorage } from '../lib/utils/localStorageUtils';
-// import { saveToLocalStorage }
+import { getFromLocalStorage } from "../../../lib/utils/localStorageUtils";
+import { saveUserCode } from "../../../lib/api/saveUserCode";
 
 
 // const NewCodeEditor = ({ codeState, _sendCodeSaveRequest, selectedProgrammingLanguage, _handlePgLangChange, _handleCodeEditorValueChange }) => {
-
 const NewCodeEditor = ({ }) => {
 
-    // const playgroundContext = usePlaygroundContext();
-    // console.log("PG CONTEXT", playgroundContext);
-
     const { state, dispatch } = usePlaygroundContext();
-
+    console.log('INITIAL PLAYGROUND STATE NEW CODE EDITOR:', state);
     // let currentProblemState = state;
 
     const monacoRef = useRef(null);
@@ -24,7 +20,6 @@ const NewCodeEditor = ({ }) => {
 
     const [currentCode, setCurrentCode] = useState("");
     const codeRef = useRef("");
-
 
     const handleEditorDidMount = (editor, monaco) => {
 
@@ -143,8 +138,27 @@ const NewCodeEditor = ({ }) => {
         const handleKeyDown = (event) => {
             if ((event.metaKey || event.ctrlKey) && event.key === 's') {
                 event.preventDefault();
-                _handleCodeStateChange(codeRef.current);
+                
+                // _handleCodeStateChange(codeRef.current);
+                
                 showTemporaryAlert();
+
+                console.log("CURRENT PLAYGROUND STATE ON SAVE:", state);
+
+                // TODO: save code in backend
+                // Anon Case
+                // TODO: so much abstraction/refactoring possible due to duplicate code possible in the utils functions, fetch responses and backend...
+                let anon_user_id = getFromLocalStorage("user_id");
+                console.log('current-user-id:', anon_user_id);
+
+                let payload = {
+                    'user_id': anon_user_id,
+                    'question_id': state.question_id,
+                    'code': codeRef.current
+                }
+                console.log('SAVING USER CODE WITH PAYLOAD:', payload);
+                saveUserCode(null, payload)
+
             }
         };
 
@@ -153,7 +167,7 @@ const NewCodeEditor = ({ }) => {
             window.removeEventListener('keydown', handleKeyDown);
         };
 
-    }, []);
+    }, [state]);
 
 
     useEffect(() => {
