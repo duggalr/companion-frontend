@@ -7,7 +7,16 @@ import { saveUserRunCode } from "../api/saveUserRunCode";
 
 
 interface MessagePayload {
-    parent_playground_object_id: string,
+    // parent_playground_object_id: string,
+    // text: string,
+    // user_code: string,
+    // all_user_messages_str: string,
+    // sender: string,
+    // type: string,
+
+    parent_question_object_id: string,
+    current_problem_name: string,
+    current_problem_question: string,
     text: string,
     user_code: string,
     all_user_messages_str: string,
@@ -41,9 +50,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     const _sendMessage = async (payload: MessagePayload) => {
 
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-
             console.log("SENDING PAYLOAD:", payload);
-
             wsRef.current.send(JSON.stringify(payload));
         }
 
@@ -74,69 +81,86 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         else {
 
             let current_user_id = getFromLocalStorage("user_id");
-            let current_parent_playground_object_id = getFromLocalStorage("parent_playground_object_id");
             let user_current_code = state.code;
-            let current_problem_name = state.name;
-            let current_problem_question = state.question;
 
-            if (current_parent_playground_object_id === null){
+            let messageForBackend = {
+                parent_question_object_id: state.question_id,
+                current_problem_name: state.name,
+                current_problem_question: state.question,
+                text: current_user_message,
+                user_code: user_current_code,
+                all_user_messages_str: all_chat_messages_str,
+                sender: 'user',
+                type: 'user_message',
+            };
 
-                let save_pg_object_payload = {
-                    user_id: current_user_id,
-                    programming_language: "python",
-                    code_state: user_current_code,
-                };
+            setMessages((messages) => [...messages, messageForBackend]);
+            _sendMessage(messageForBackend);
 
-                let saveCodeRes = await saveUserRunCode(
-                    null,
-                    save_pg_object_payload
-                );                
-                console.log('saved-code-response:', saveCodeRes);
+            // let current_user_id = getFromLocalStorage("user_id");
+            // let current_parent_playground_object_id = getFromLocalStorage("parent_playground_object_id");
+            // let user_current_code = state.code;
+            // let current_problem_name = state.name;
+            // let current_problem_question = state.question;
 
-                let new_parent_pg_object_id;
-                if (saveCodeRes['status_code'] === 200){
-                    new_parent_pg_object_id = saveCodeRes['parent_playground_object_id'];
-                    saveToLocalStorage("parent_playground_object_id", new_parent_pg_object_id);
-                }
+            // if (current_parent_playground_object_id === null){
 
-                let messageForBackend = {
-                    parent_playground_object_id: new_parent_pg_object_id,
+            //     let save_pg_object_payload = {
+            //         user_id: current_user_id,
+            //         programming_language: "python",
+            //         code_state: user_current_code,
+            //     };
 
-                    current_problem_name: current_problem_name,
-                    current_problem_question: current_problem_question,
+            //     let saveCodeRes = await saveUserRunCode(
+            //         null,
+            //         save_pg_object_payload
+            //     );                
+            //     console.log('saved-code-response:', saveCodeRes);
 
-                    text: current_user_message,
-                    user_code: user_current_code,
-                    all_user_messages_str: all_chat_messages_str,
-                    sender: 'user',
-                    type: 'user_message',
-                    // complete: true
-                };
+            //     let new_parent_pg_object_id;
+            //     if (saveCodeRes['status_code'] === 200){
+            //         new_parent_pg_object_id = saveCodeRes['parent_playground_object_id'];
+            //         saveToLocalStorage("parent_playground_object_id", new_parent_pg_object_id);
+            //     }
+
+                // let messageForBackend = {
+                //     parent_playground_object_id: new_parent_pg_object_id,
+
+                //     current_problem_name: current_problem_name,
+                //     current_problem_question: current_problem_question,
+
+                //     text: current_user_message,
+                //     user_code: user_current_code,
+                //     all_user_messages_str: all_chat_messages_str,
+                //     sender: 'user',
+                //     type: 'user_message',
+                //     // complete: true
+                // };
                 
-                setMessages((messages) => [...messages, messageForBackend]);
-                _sendMessage(messageForBackend);
+                // setMessages((messages) => [...messages, messageForBackend]);
+                // _sendMessage(messageForBackend);
       
-            } 
-            else {
+            // } 
+            // else {
 
-                let messageForBackend = {
-                    parent_playground_object_id: current_parent_playground_object_id,
+            //     let messageForBackend = {
+            //         parent_playground_object_id: current_parent_playground_object_id,
 
-                    current_problem_name: current_problem_name,
-                    current_problem_question: current_problem_question,
+            //         current_problem_name: current_problem_name,
+            //         current_problem_question: current_problem_question,
 
-                    text: current_user_message,
-                    user_code: user_current_code,
-                    all_user_messages_str: all_chat_messages_str,
-                    sender: 'user',
-                    type: 'user_message',
-                    // complete: true
-                };
+            //         text: current_user_message,
+            //         user_code: user_current_code,
+            //         all_user_messages_str: all_chat_messages_str,
+            //         sender: 'user',
+            //         type: 'user_message',
+            //         // complete: true
+            //     };
                 
-                setMessages((messages) => [...messages, messageForBackend]);
-                _sendMessage(messageForBackend);
+            //     setMessages((messages) => [...messages, messageForBackend]);
+            //     _sendMessage(messageForBackend);
 
-            }
+            // }
 
         }
 

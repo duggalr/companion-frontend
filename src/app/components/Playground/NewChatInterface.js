@@ -6,12 +6,6 @@ import useUserContext from "../../../lib/hooks/useUserContext";
 import { useWebSocket } from "../../../lib/hooks/useWebSocket";
 
 
-// TODO: 
-    // get usercontext
-    // connect to websocket
-    // get messages from websocket
-    // render from there
-
 const NewChatInterface = ({ }) => {
 
     const FASTAPI_WEBSOCKET_URL = process.env.NEXT_PUBLIC_CHAT_WEBSOCKET_URL;
@@ -53,7 +47,7 @@ const NewChatInterface = ({ }) => {
 
         _handleUserMessageSend(current_user_msg);
         setCurrentUserInputMessage("");
-        
+
     }
 
     const handleNewInputValue = (e) => {
@@ -89,7 +83,7 @@ const NewChatInterface = ({ }) => {
     return (
 
         <MathJaxContext>
-            
+
             <div className="flex flex-col h-4/5 dark:bg-gray-900 p-4">
 
                 <div className="flex justify-between items-center">
