@@ -151,7 +151,7 @@ const RightTabLayout = ({ }) => {
                 
                 {/* <ProblemLayout/> */}
 
-                {activeTab === "problem" && <ProblemLayout  setActiveTab={setActiveTab}/>}
+                {activeTab === "problem" && <ProblemLayout setActiveTab={setActiveTab}/>}
 
                 {activeTab === "chat" && <NewChatInterface/>}
 

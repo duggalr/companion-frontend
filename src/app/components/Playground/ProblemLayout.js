@@ -28,17 +28,24 @@ const ProblemLayout = ({ setActiveTab }) => {
         //     type: "SET_RANDOM_INITIAL_QUESTION",
         // });
 
-        let rnd_question_dict = await getRandomInitialPlaygroundQuestion();
+        let current_user_id = getFromLocalStorage('user_id');
+        let rnd_question_dict = await getRandomInitialPlaygroundQuestion(current_user_id);
         console.log('Random Question Dict:', rnd_question_dict);
 
-        dispatch({
-            type: "SET_QUESTION_INPUT_OUTPUT",
-            question_id: rnd_question_dict['question_id'],
-            name: rnd_question_dict['name'],
-            question: rnd_question_dict['text'],
-            input_output_list: rnd_question_dict['example_io_list'],
-            code: rnd_question_dict['starter_code'],
-        });
+        if (rnd_question_dict['success'] === true){
+
+            let rnd_q_data = rnd_question_dict['data'];
+
+            dispatch({
+                type: "SET_QUESTION_INPUT_OUTPUT",
+                question_id: rnd_q_data['question_id'],
+                name: rnd_q_data['name'],
+                question: rnd_q_data['text'],
+                input_output_list: rnd_q_data['example_io_list'],
+                code: rnd_q_data['starter_code'],
+            });
+            
+        }
 
     }
 
@@ -72,6 +79,8 @@ const ProblemLayout = ({ setActiveTab }) => {
 
     const _handleUpdateQuestionSubmit = async () => {
 
+        // TODO: assuming anon case
+
         setEditing(false);
         setInputOutputLoading(true);
 
@@ -79,15 +88,20 @@ const ProblemLayout = ({ setActiveTab }) => {
         let current_q_name = questionName;
         let current_q_text = questionText;
 
-        let response_data = await saveOrUpdateUserQuestion(current_question_id, current_q_name, current_q_text);
+        let current_anon_user_id = getFromLocalStorage("user_id");
+        console.log('current_anon_user_id:', current_anon_user_id);
+
+        let response_data = await saveOrUpdateUserQuestion(
+            current_anon_user_id, current_question_id, current_q_name, current_q_text
+        );
         console.log('response_data:', response_data);
 
         // let response_data = await generateQuestionTestCases(current_q_name, current_q_text);
         // // console.log('response_data:', response_data);
 
         if (response_data['success'] === true){
-            let example_io_list = response_data['example_io_list'];
-            
+            let example_io_list = JSON.parse(response_data['example_io_list']);
+
             setCurrentProblemIOList(example_io_list);
             setInputOutputLoading(false);
 
@@ -440,6 +454,10 @@ const ProblemLayout = ({ setActiveTab }) => {
                                                 <span className="font-semibold pr-1">Output:</span>
                                                 {item.output}
                                             </p>
+                                            <p className="pt-2 text-[14px]">
+                                                <span className="font-semibold pr-1">Explanation:</span>
+                                                {item.explanation}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -447,7 +465,6 @@ const ProblemLayout = ({ setActiveTab }) => {
     
                         })
     
-
                     )}
 
                     

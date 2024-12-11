@@ -30,18 +30,36 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
     const {isAuthenticated, userAccessToken} = useUserContext();
 
     const _setRandomQuestion = async () => {
+        
+        // TODO: 
+        let current_user_id = await getFromLocalStorage('user_id');
+        console.log('Current User ID:', current_user_id);
 
-        let rnd_question_dict = await getRandomInitialPlaygroundQuestion();
+        let rnd_question_dict = await getRandomInitialPlaygroundQuestion(current_user_id);
         console.log('Random Question Dict:', rnd_question_dict);
 
-        dispatch({
-            type: "SET_QUESTION_INPUT_OUTPUT",
-            question_id: rnd_question_dict['question_id'],
-            name: rnd_question_dict['name'],
-            question: rnd_question_dict['text'],
-            input_output_list: rnd_question_dict['example_io_list'],
-            code: rnd_question_dict['starter_code'],
-        });
+        if (rnd_question_dict['success'] === true){
+
+            let rnd_q_data = rnd_question_dict['data'];
+            console.log('data:', rnd_q_data);
+            dispatch({
+                type: "SET_QUESTION_INPUT_OUTPUT",
+                question_id: rnd_q_data['question_id'],
+                name: rnd_q_data['name'],
+                question: rnd_q_data['text'],
+                input_output_list: rnd_q_data['example_io_list'],
+                code: rnd_q_data['starter_code'],
+            });
+        }
+
+        // dispatch({
+        //     type: "SET_QUESTION_INPUT_OUTPUT",
+        //     question_id: rnd_question_dict['question_id'],
+        //     name: rnd_question_dict['name'],
+        //     question: rnd_question_dict['text'],
+        //     input_output_list: rnd_question_dict['example_io_list'],
+        //     code: rnd_question_dict['starter_code'],
+        // });
 
     }
 
