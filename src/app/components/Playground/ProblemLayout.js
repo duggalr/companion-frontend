@@ -488,7 +488,7 @@ const ProblemLayout = ({ setActiveTab }) => {
                             onClick={handleRun}
                             disabled={isRunLoading}
                             className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all 
-                                ${isRunLoading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-700"}`}
+                                ${isRunLoading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
                             >
                             {isRunLoading ? (
                                 <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
@@ -502,9 +502,13 @@ const ProblemLayout = ({ setActiveTab }) => {
                         {/* <Button
                             // onClick={submitCode}
                         >Get Feedback</Button> */}
+                        
                         <Button
                             onClick={chatWithTutor}
-                        >Chat with Tutor</Button>
+                        >
+                            Chat with Tutor
+                        </Button>
+
                         <Button
                             // onClick={submitCode}
                             disabled={true} // Disable the button
