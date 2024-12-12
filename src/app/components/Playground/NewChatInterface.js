@@ -5,6 +5,10 @@ import { MathJax, MathJaxContext } from "better-react-mathjax";
 import useUserContext from "../../../lib/hooks/useUserContext";
 import { useWebSocket } from "../../../lib/hooks/useWebSocket";
 
+// TODO:
+    // Proceed to completing (4)
+    // From there --> do complete testing in (5), fix all bugs, + basic UI and functionality finalizations
+    // Proceed to implementing in Auth
 
 const NewChatInterface = ({ }) => {
 
