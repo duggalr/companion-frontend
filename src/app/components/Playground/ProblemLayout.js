@@ -21,7 +21,7 @@ const ProblemLayout = ({ setActiveTab }) => {
     const playgroundContext = usePlaygroundContext();
     let currentProblemState = playgroundContext.state;
 
-    const { isAuthenticated } = useUserContext();
+    const { isAuthenticated, userAccessToken } = useUserContext();
     const { state, dispatch } = usePlaygroundContext();
 
     const _handleShuffleQuestion = async () => {
@@ -60,11 +60,11 @@ const ProblemLayout = ({ setActiveTab }) => {
     useEffect(() => {
 
         console.log('PROBLEM STATE / QUESTIONS:', currentProblemState.input_output_list);
-
         setQuestionName(currentProblemState.name);
         setQuestionText(currentProblemState.question);
         setCurrentProblemIOList(currentProblemState.input_output_list);
     }, [currentProblemState])
+
 
     const _handleEditQuestion = (e) => {
         setEditing(true);
@@ -84,48 +84,58 @@ const ProblemLayout = ({ setActiveTab }) => {
 
         setEditing(false);
         setInputOutputLoading(true);
-
         let current_question_id = currentProblemState.question_id;
         let current_q_name = questionName;
         let current_q_text = questionText;
 
-        let current_anon_user_id = getFromLocalStorage("user_id");
-        console.log('current_anon_user_id:', current_anon_user_id);
+        if (isAuthenticated) {
+            
+            // userAccessToken
+            // TODO:
+            
 
-        let response_data = await saveOrUpdateUserQuestion(
-            current_anon_user_id, current_question_id, current_q_name, current_q_text
-        );
-        console.log('response_data:', response_data);
 
-        // let response_data = await generateQuestionTestCases(current_q_name, current_q_text);
-        // // console.log('response_data:', response_data);
+        } else {  // TODO: need to update anon case as reducer is no longer using local-storage; should be handled outside of there
+    
+            let current_anon_user_id = getFromLocalStorage("user_id");
+            console.log('current_anon_user_id:', current_anon_user_id);
+    
+            let response_data = await saveOrUpdateUserQuestion(
+                current_anon_user_id, current_question_id, current_q_name, current_q_text
+            );
+            console.log('response_data:', response_data);
+    
+            // let response_data = await generateQuestionTestCases(current_q_name, current_q_text);
+            // // console.log('response_data:', response_data);
+    
+            if (response_data['success'] === true){
+                let example_io_list = JSON.parse(response_data['example_io_list']);
+    
+                setCurrentProblemIOList(example_io_list);
+                setInputOutputLoading(false);
+    
+                dispatch({
+                    type: "SET_QUESTION_INPUT_OUTPUT",
+                    question_id: response_data['unique_question_id'],
+                    name: response_data['question_name'],
+                    question: response_data['question_text'],
+                    input_output_list: example_io_list,
+                    code: currentProblemState.code
+                });
+    
+                // let model_resp_array = response_data['model_response'];
+                // setCurrentProblemIOList(model_resp_array);
+                // setInputOutputLoading(false);
+    
+                // dispatch({
+                //     type: "SET_QUESTION_INPUT_OUTPUT",
+                //     name: current_q_name,
+                //     question: current_q_text,
+                //     input_output_list: model_resp_array,
+                //     code: currentProblemState.code
+                // });
+            }
 
-        if (response_data['success'] === true){
-            let example_io_list = JSON.parse(response_data['example_io_list']);
-
-            setCurrentProblemIOList(example_io_list);
-            setInputOutputLoading(false);
-
-            dispatch({
-                type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: response_data['unique_question_id'],
-                name: response_data['question_name'],
-                question: response_data['question_text'],
-                input_output_list: example_io_list,
-                code: currentProblemState.code
-            });
-
-            // let model_resp_array = response_data['model_response'];
-            // setCurrentProblemIOList(model_resp_array);
-            // setInputOutputLoading(false);
-
-            // dispatch({
-            //     type: "SET_QUESTION_INPUT_OUTPUT",
-            //     name: current_q_name,
-            //     question: current_q_text,
-            //     input_output_list: model_resp_array,
-            //     code: currentProblemState.code
-            // });
         }
 
     }
@@ -399,7 +409,7 @@ const ProblemLayout = ({ setActiveTab }) => {
                             />
 
                             <div className="mt-4 mr-2">
-                                <Button 
+                                <Button
                                     onClick={_handleUpdateQuestionSubmit}
                                     className="text-[14px]"
                                 >Update Question</Button>

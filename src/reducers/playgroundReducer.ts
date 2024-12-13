@@ -25,14 +25,14 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
     switch (action.type) {
 
         case "SET_QUESTION_INPUT_OUTPUT": {
-            let d = {
-                question_id: action.question_id,
-                name: action.name,
-                question: action.question,
-                input_output_list: action.input_output_list,
-                code: action.code,
-            };
-            saveToLocalStorage('playground_question_dict', JSON.stringify(d));
+            // let d = {
+            //     question_id: action.question_id,
+            //     name: action.name,
+            //     question: action.question,
+            //     input_output_list: action.input_output_list,
+            //     code: action.code,
+            // };
+            // saveToLocalStorage('playground_question_dict', JSON.stringify(d));s
             return {
                 question_id: action.question_id,
                 name: action.name,
