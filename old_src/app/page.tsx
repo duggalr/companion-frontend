@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useRef, useContext, useState } from "react";
-import { UserContext } from "@/context/UserContext";
 import HeroNavBar from './components/Hero/HeroNavBar';
 import HeroPrimary from './components/Hero/HeroPrimary';
+import { UserContext } from '../context/UserContext';
+import { validAuthenticatedUser } from '@/lib/api/checkAuthenticatedUser';
 
 
 export default function Home() {
@@ -17,9 +18,24 @@ export default function Home() {
         document.title = "Playground";
     }, []);
 
+    const _handleUserValidation = async() => {
+
+        const user_access_token = userContext?.userAccessToken;
+        await validAuthenticatedUser(user_access_token);
+
+    }
+
     useEffect(() => {
 
-    }, []);
+        if (userContext && userContext.loading === false){
+            setInitialPageLoad(false);
+            if (userContext.isAuthenticated === true){
+                _handleUserValidation();
+            }
+        };
+
+    }, [userContext]);
+
 
     return (
     

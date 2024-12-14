@@ -1,56 +1,63 @@
 "use client";
-import { createContext, useState, ReactNode } from 'react';
-import { getUserAccessToken } from '@/lib/internal/getUserAccessToken';
+import { createContext, useState, ReactNode, useEffect } from 'react';
+import { getFromLocalStorage, saveToLocalStorage } from '@/lib/utils/localStorageUtils';
+import LoadingScreen from '@/app/components/ui/Loading';
+import { validateAnonUser } from '@/lib/backend_api/validateAnonUser';
+import generateAnonUserID from '@/lib/utils/generateAnonUserID';
+import { createAnonUser } from '@/lib/backend_api/createAnonUser'
 
 
 interface UserContextType {
     isAuthenticated: boolean;
     userAccessToken: string | null;
-    loading: boolean;
-    // login: (name: string) => void;
-    // logout: () => void;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(undefined);
 
 // User Provider component
 export const InternalUserProvider = ({ children }: { children: ReactNode }) => {
-    
+
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userAccessToken, setUserAccessToken] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const _handleUserAccessTokenFetch = async() => {
+    const _handleAnonUserValidation = async () => {
 
-        try {
-            const user_access_token = await getUserAccessToken();
-            if (user_access_token) {
-                setIsAuthenticated(true);
-                setUserAccessToken(user_access_token);                
+        let current_user_id = getFromLocalStorage('user_id');
+        console.log('current-user_id:', current_user_id);
 
+        if (current_user_id){
+            // User already has ID created
+            // Pass to Backend to save if isn't saved already
+            let validation_response = await validateAnonUser(current_user_id);
+            if (validation_response['success'] == false){
+                // TODO: how to handle here when user ID given is not valid?
             }
-        }
-        catch (error) {
-            console.error("Error fetching user access token:", error);
-        }
-        finally {
-            setLoading(false); // Set loading to false after the fetch completes
+            setLoading(false);
+
+        } else {
+
+            let rnd_user_id = await generateAnonUserID();
+            saveToLocalStorage('user_id', rnd_user_id);
+            createAnonUser(rnd_user_id);
+            setLoading(false);
+
         }
 
     }
 
-    _handleUserAccessTokenFetch();
+    useEffect(() => {
+        _handleAnonUserValidation();
+    }, []);
+
+    if (loading) {
+        return <LoadingScreen />;
+    }
 
     return (
-        <UserContext.Provider value={{ isAuthenticated, userAccessToken, loading }}>
+        <UserContext.Provider value={{ isAuthenticated, userAccessToken }}>
             {children}
         </UserContext.Provider>
     );
-};
 
-// // Custom hook to use the UserContext
-// export const useUser = () => {
-//     const context = useContext(UserContext);
-//     if (!context) throw new Error("useUser must be used within a UserProvider");
-//     return context;
-// };
+};
