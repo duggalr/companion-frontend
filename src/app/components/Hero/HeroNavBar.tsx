@@ -40,34 +40,11 @@ export default function HeroNavBar({ userAuthenticated }: HeroNavBarProps): JSX.
 
                 <div className="hidden w-full md:block md:w-auto" id="navbar-default">
                     
-                    {/* <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700"> */}
                     <ul 
                         className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 
                         rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-zinc-950 md:dark:bg-zinc-950"
                         // dark:border-gray-700
                     >
-
-                        {/* <li>
-                            <a
-                                href="/updates"
-                                // className="flex py-3 text-gray-900 rounded text-sm hover:text-gray-600"
-                                className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] hover mr-2 font-normal"
-                            >
-                                <FontAwesomeIcon icon={faBook} className="text-black pr-2 dark:text-white w-4 h-4" />
-                                Changelog
-                            </a>
-                        </li> */}
-
-
-                        {/* <li>
-                            <a
-                                // href={DISCORD_CHANNEL_URL}
-                                className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] font-normal"
-                            >
-                                <FontAwesomeIcon icon={faBook} className="text-black pr-2 dark:text-white w-4 h-4" />
-                                Learn More
-                            </a>
-                        </li> */}
 
                         <li>
                             <a
@@ -97,46 +74,6 @@ export default function HeroNavBar({ userAuthenticated }: HeroNavBarProps): JSX.
                                 Github
                             </a>
                         </li>
-
-                        {/* Dashboard */}
-                        {/* {(userAuthenticated) && (
-
-                            <li>
-                                <a
-                                    href="/dashboard"
-                                    className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] hover mr-2 font-normal"
-                                >
-                                    <FontAwesomeIcon icon={faSquareCaretRight} className="text-black pr-2 dark:text-white w-4 h-4" />
-                                    Dashboard
-                                </a>
-                            </li>
-
-                        )} */}
-
-                        {/* Login */}
-                        {/* {(!userAuthenticated) ? (
-                            <li>
-                                <a
-                                    href="/api/auth/login"
-                                    className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] hover mr-2 font-normal"
-                                >
-                                    <FontAwesomeIcon icon={faUserPlus} className="text-black pr-2 dark:text-white w-4 h-4" />
-                                    Signup or Login
-                                </a>
-                            </li>
-                        ) : (
-
-                            <li>
-                                <a
-                                    href="/api/auth/logout"
-                                    className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] hover mr-2 font-normal"
-                                >
-                                    <FontAwesomeIcon icon={faArrowRightFromBracket} className="text-black pr-2 dark:text-white w-4 h-4" />
-                                    Logout
-                                </a>
-                            </li>
-
-                        )} */}
 
                         <li className="md:flex items-center text-[17px] sm:block hidden">
                             <ThemeToggle />
