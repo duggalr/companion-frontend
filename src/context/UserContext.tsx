@@ -23,23 +23,40 @@ export const InternalUserProvider = ({ children }: { children: ReactNode }) => {
 
     const _handleAnonUserValidation = async () => {
 
-        let current_user_id = getFromLocalStorage('user_id');
-        console.log('current-user_id:', current_user_id);
+        let current_user_id = await getFromLocalStorage('user_id');
 
-        if (current_user_id){
-            // User already has ID created
-            // Pass to Backend to save if isn't saved already
+        if (current_user_id !== null){
             let validation_response = await validateAnonUser(current_user_id);
-            if (validation_response['success'] == false){
-                // TODO: how to handle here when user ID given is not valid?
+
+            if ('success' in validation_response){
+                if (validation_response['success'] == false){
+                    // TODO: how to handle here when user ID given is not valid?
+                    console.log('error:', validation_response['error_message']);
+                } else {
+                    saveToLocalStorage('user_id', validation_response['custom_user_object_dict']['anon_user_id']);
+                    setLoading(false);
+                }
             }
+
             setLoading(false);
 
         } else {
 
             let rnd_user_id = await generateAnonUserID();
             saveToLocalStorage('user_id', rnd_user_id);
-            createAnonUser(rnd_user_id);
+            
+            let create_user_response = await createAnonUser(rnd_user_id);
+
+            if ('success' in create_user_response){
+                if (create_user_response['success'] == false){
+                    // TODO: how to handle here when user ID given is not valid?
+                    console.log('error:', create_user_response['error_message']);
+                } else {
+                    saveToLocalStorage('user_id', create_user_response['custom_user_object_dict']['anon_user_id']);
+                    setLoading(false);
+                }
+            }
+
             setLoading(false);
 
         }

@@ -6,7 +6,7 @@ export async function createAnonUser(anon_user_id: string): Promise<any | null>{
 
     let endPointUrl = `${API_BACKEND_URL}/create-anon-user`;
     let payload = {
-        'anon_user_id': anon_user_id
+        'user_id': anon_user_id
     };
 
     let apiResponse = await handleAPIFetch(

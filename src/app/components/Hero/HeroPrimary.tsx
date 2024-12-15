@@ -38,24 +38,24 @@ export default function HeroPrimary({ userAuthenticated }: HeroPrimaryProps): JS
     return (
 
         <>
-            
+
             {/* Landing Hero Section */}
             <section className="min-h-screen flex flex-col items-center py-16 px-4">
 
                 <div className="absolute bottom-1/3 left-16 -rotate-12 xl:block hidden">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="50" height="50">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m6 0h3" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9l3 3-3 3m6 0h3" />
                     </svg>
                 </div>
 
                 <div className="absolute top-1/4 right-24 rotate-12 xl:block hidden">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="feather feather-star">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-star">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
                 </div>
 
                 <div className="max-w-5xl mx-auto text-center mt-0 ">
-                    
+
                     <div
                         className="mb-4 w-full lg:w-1/3 mx-auto flex justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
                         data-aos="fade-in"
@@ -76,16 +76,6 @@ export default function HeroPrimary({ userAuthenticated }: HeroPrimaryProps): JS
                     </p>
 
                     <div className="mt-6 flex items-center justify-center" data-aos="fade-up">
-
-                        {/* <ShimmerButton className="shadow-2xl mr-4" onClick={handleVisitIDEClick}>
-                            <span
-                                className="whitespace-pre-wrap text-center text-lg font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10"
-                            >
-                                Visit IDE &nbsp; &#8594;
-                            </span>
-                        </ShimmerButton> */}
-
-                        {/* <RippleButton rippleColor="#ADD8E6" className='bg-black text-white' onClick={handleLearnMoreClick}>Learn More</RippleButton> */}
 
                         {userAuthenticated ? (
 
