@@ -9,7 +9,7 @@
 //     data: DataDict | null
 // ): Promise<any | null> {
 
-export default async function handleAPIFetch() {
+export default async function handleAPIFetch(endpoint_url, method, access_token, data) {
 
     try {
 

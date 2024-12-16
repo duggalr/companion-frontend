@@ -43,13 +43,13 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
         if (isAuthenticated){
 
             // TODO: test
-            let rnd_question_dict_response = await getRandomInitialPlaygroundQuestion(
+            const rnd_question_dict_response = await getRandomInitialPlaygroundQuestion(
                 userAccessToken,
                 null
             )
             if (rnd_question_dict_response['success'] === true){
 
-                let rnd_q_data = rnd_question_dict_response['data'];
+                const rnd_q_data = rnd_question_dict_response['data'];
                 console.log('data:', rnd_q_data);
                 
                 // Update URL Param
@@ -67,18 +67,18 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
         } else {
 
-            let current_user_id = await getFromLocalStorage('user_id');
+            const current_user_id = await getFromLocalStorage('user_id');
             console.log('Current User ID:', current_user_id);
 
-            let rnd_question_dict = await getRandomInitialPlaygroundQuestion(current_user_id);
+            const rnd_question_dict = await getRandomInitialPlaygroundQuestion(current_user_id);
             console.log('Random Question Dict:', rnd_question_dict);
 
             if (rnd_question_dict['success'] === true){
 
-                let rnd_q_data = rnd_question_dict['data'];
+                const rnd_q_data = rnd_question_dict['data'];
                 console.log('data:', rnd_q_data);
                 
-                let d = {
+                const d = {
                     question_id: rnd_q_data['question_id'],
                     name: rnd_q_data['name'],
                     question: rnd_q_data['text'],
@@ -127,10 +127,10 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
         else {
 
-            let current_pg_qdict = getFromLocalStorage('playground_question_dict');
+            const current_pg_qdict = getFromLocalStorage('playground_question_dict');
             if (current_pg_qdict){
 
-                let current_pg_qdict_json = JSON.parse(current_pg_qdict);
+                const current_pg_qdict_json = JSON.parse(current_pg_qdict);
                 console.log('initial PG-DICT-JSON:', current_pg_qdict_json);
 
                 dispatch({

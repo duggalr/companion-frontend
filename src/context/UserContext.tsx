@@ -17,16 +17,16 @@ export const UserContext = createContext<UserContextType | undefined>(undefined)
 // User Provider component
 export const InternalUserProvider = ({ children }: { children: ReactNode }) => {
 
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [userAccessToken, setUserAccessToken] = useState(null);
+    const [isAuthenticated] = useState(false);
+    const [userAccessToken] = useState(null);
     const [loading, setLoading] = useState(true);
 
     const _handleAnonUserValidation = async () => {
 
-        let current_user_id = await getFromLocalStorage('user_id');
+        const current_user_id = await getFromLocalStorage('user_id');
 
         if (current_user_id !== null){
-            let validation_response = await validateAnonUser(current_user_id);
+            const validation_response = await validateAnonUser(current_user_id);
 
             if ('success' in validation_response){
                 if (validation_response['success'] == false){
@@ -42,10 +42,10 @@ export const InternalUserProvider = ({ children }: { children: ReactNode }) => {
 
         } else {
 
-            let rnd_user_id = await generateAnonUserID();
+            const rnd_user_id = await generateAnonUserID();
             saveToLocalStorage('user_id', rnd_user_id);
             
-            let create_user_response = await createAnonUser(rnd_user_id);
+            const create_user_response = await createAnonUser(rnd_user_id);
 
             if ('success' in create_user_response){
                 if (create_user_response['success'] == false){
