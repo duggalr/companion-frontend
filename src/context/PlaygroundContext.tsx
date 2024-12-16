@@ -43,7 +43,6 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
         
         if (isAuthenticated){
 
-            // TODO: test
             const rnd_question_dict_response = await getRandomInitialPlaygroundQuestion(
                 userAccessToken
             )
