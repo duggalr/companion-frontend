@@ -307,35 +307,20 @@ export default function HeroPrimary() {
                             {/* Blog Post 1 */}
                             <li className="flex justify-between items-center border-b pb-4 text-[17px]">
                                 <StandardLink 
-                                    uri="#"
-                                    text="📰 Second Blog Post (TODO:)"
+                                    uri="https://medium.com/@drahul2820/companion-update-upcoming-mit-course-release-47bd9714b0a4"
+                                    text="Companion: Update and Upcoming MIT Course Release"
                                     new_tab={true}
                                 />
-                                
-                                {/* <a 
-                                    href="#"
-                                    className="text-lg font-medium text-blue-600 hover:underline hover:text-blue-800"
-                                >
-                                    Exploring Python Basics: A Beginner's Guide
-                                </a> */}
-                                <span className="text-gray-500 text-sm">Dec 15, 2024</span>
+                                <span className="text-gray-500 text-sm">Dec 16, 2024</span>
                             </li>
 
                             {/* Blog Post 2 */}
                             <li className="flex justify-between items-center border-b pb-2 pt-2 text-[17px]">
                                 <StandardLink 
-                                    uri="#"
+                                    uri="https://medium.com/@drahul2820/introducing-companion-an-online-repl-with-an-ai-tutor-85c564fae398"
                                     text="📰 Companion: Initial MVP Launch"
                                     new_tab={true}
                                 />
-                                
-                                {/* <a 
-                                    href="https://medium.com/@drahul2820/introducing-companion-an-online-repl-with-an-ai-tutor-85c564fae398"
-                                    className="text-lg font-medium text-blue-600 hover:underline hover:text-blue-800"
-                                >
-                                    Companion: Initial MVP Launch
-                                </a> */}
-                                
                                 <span className="text-gray-500 text-sm">Oct 21, 2024</span>
                             </li>
 
