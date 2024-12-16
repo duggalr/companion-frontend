@@ -14,4 +14,4 @@ export interface PlaygroundState {
 
 export type PlaygroundAction =
     | { type: "SET_QUESTION"; payload: string }
-    | { type: "SET_OTHER_DATA"; payload: Record<string, any> };
+    // | { type: "SET_OTHER_DATA"; payload: Record<string, any> };
