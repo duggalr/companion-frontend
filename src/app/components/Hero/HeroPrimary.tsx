@@ -30,8 +30,16 @@ export default function HeroPrimary(): JSX.Element {
         currentLandingEmailRef.current = e.target.value;
     }
 
+    // const handleLearnMoreClick = () => {
+    //     aboutRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // };
+
     const handleLearnMoreClick = () => {
-        aboutRef.current?.scrollIntoView({ behavior: 'smooth' });
+        aboutRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start', // Optional, default is 'start'
+            inline: 'nearest', // Optional, default is 'nearest'
+        });
     };
 
     const _handleLPFormSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
