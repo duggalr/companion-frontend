@@ -1,31 +1,12 @@
-// import { useEffect, useState, useRef } from "react";
-// import { useRouter } from 'next/navigation';
-
 import { ResizableBox } from "react-resizable";
-import NewCodeEditor from './NewCodeEditor';
-import RightTablayout from "./RightTabLayout";
-import useUserContext from "@/lib/hooks/useUserContext";
+import NewCodeEditor from '@/app/components/Playground/NewCodeEditor';
+import RightTablayout from '@/app/components/Playground/RightTablayout';
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
-
-// import CodeEditor from '../MainLeftSide/CodeEditor';
-// import NewCodeEditor from './NewCodeEditor';
-// import ConsoleChatTabs from "../MainRightSide/ConsoleChatTabs";
-// import { fetchPlaygroundData }  from "../../../lib/api/fetchPlaygroundData";
-// import { saveUserRunCode }  from "../../../lib/api/saveUserRunCode";
-// import RightTablayout from "./RightTabLayout";
-// import Editor from "@monaco-editor/react";
-
-// import useUserContext from '../../../lib/hooks/useUserContext';
-// import { useWebSocket } from "../../../lib/hooks/useWebSocket";
 
 
 const Layout = ({ }) => {
 
-    // const FASTAPI_WEBSOCKET_URL = process.env.NEXT_PUBLIC_CHAT_WEBSOCKET_URL;
-
-    const {isAuthenticated, userAccessToken} = useUserContext();
     const playgroundContext = usePlaygroundContext();
-    // console.log('pg-context:', playgroundContext);
 
     return (
 

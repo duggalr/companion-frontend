@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Pacifico } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRightFromBracket, faSquareCaretRight, faUserPlus, faBook, faCode } from "@fortawesome/free-solid-svg-icons";
+import { faCode } from "@fortawesome/free-solid-svg-icons";
 import ThemeToggle from "@/app/components/Utils/ThemeToggle";
 
 

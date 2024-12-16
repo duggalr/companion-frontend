@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { ResizableBox } from "react-resizable";
+// import { ResizableBox } from "react-resizable";
 import Editor from "@monaco-editor/react";
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
 import { getFromLocalStorage } from "@/lib/utils/localStorageUtils";
@@ -118,8 +118,6 @@ const NewCodeEditor = ({ }) => {
 
                 showTemporaryAlert();
 
-                console.log("CURRENT PLAYGROUND STATE ON SAVE:", state);
-
                 // Anon Case
                 let anon_user_id = getFromLocalStorage("user_id");
                 console.log('current-user-id:', anon_user_id);
@@ -130,8 +128,8 @@ const NewCodeEditor = ({ }) => {
                     'code': codeRef.current
                 };
 
-                console.log('SAVING USER CODE WITH PAYLOAD:', payload);
-                // saveUserCode(null, payload);
+                dispatch({type: "UPDATE_CODE_STATE", code: codeRef.current});
+                saveUserCode(null, payload);
             }
         };
 
