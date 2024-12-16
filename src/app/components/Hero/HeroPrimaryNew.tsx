@@ -1,6 +1,6 @@
 import 'aos/dist/aos.css'; // Import AOS styles
 import AOS from 'aos';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input } from "@/components/ui/input";
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode, faComments, faQuestion, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 import StandardLink from '@/app/components/ui/StandardLink';
+import { saveLandingPageEmailSubmission } from '@/lib/backend_api/saveLandingPageEmailSubmission';
+
+import { getLPEmailSubmissionCount } from '@/lib/backend_api/getLPEmailSubmissionCount';
 
 
 
@@ -23,17 +26,51 @@ export default function HeroPrimaryNew({ userAuthenticated }: HeroPrimaryProps):
 
     const router = useRouter();
     const aboutRef = useRef(null);
+    const currentLandingEmailRef = useRef("");
+    const [currentLandingSaved, setCurrentLandingSaved] = useState(false);
+    
+    const _handleLandingEmailChange = (e) => {
+        currentLandingEmailRef.current = e.target.value;
+    }
 
     const handleLearnMoreClick = () => {
         aboutRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    const _handleLPFormSubmit = async (e) => {
+        e.preventDefault();
+        console.log('current-email:', currentLandingEmailRef.current);
+
+        let user_email = currentLandingEmailRef.current;
+        let saveRes = await saveLandingPageEmailSubmission(user_email);
+        console.log('save-res:', saveRes);
+
+        setCurrentLandingSaved(true);
+        _getEmailSubCount();
+
+    }
+    
     useEffect(() => {
         AOS.init({
             duration: 1000, // Animation duration in milliseconds
             once: true,     // Trigger animation only once
         });
     }, []);
+
+    
+    const [emailSubmissionCount, setEmailSubmissionCount] = useState(null);
+
+    const _getEmailSubCount = async () => {
+        let total_count_response = await getLPEmailSubmissionCount();
+        if (total_count_response['success'] == true){
+            setEmailSubmissionCount(total_count_response['number_of_email_submissions']);
+        }
+    }
+
+    useEffect(() => {
+        _getEmailSubCount();
+    }, []);
+
 
     return (
 
@@ -69,12 +106,6 @@ export default function HeroPrimaryNew({ userAuthenticated }: HeroPrimaryProps):
                     <SparklesText text="Learn Programming With Your Personal AI Tutor" data-aos="fade-up" className="mt-0 tracking-wide"/>
 
                     <p className="text-[19px] text-muted-foreground pt-4 tracking-wide" data-aos="fade-up">
-                        {/* Our first programming course offered here for free with the AI Tutor will be the popular <a target="_blank" rel="noopener 
-                        noreferrer" className="text-blue-600 dark:text-blue-500 hover:underline" href="https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/">MIT 6.100L Introduction to Python</a>. */}
-
-                        {/* Our first programming course that will be offered here for free with the AI Tutor, will be the popular <a target="_blank" rel="noopener 
-                        noreferrer" className="text-blue-600 dark:text-blue-500 hover:underline" href="https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/">MIT 6.100L Introduction to Python</a>. */}
-
                         Our first free programming course that will be offered here with the AI Tutor, will be the popular <StandardLink uri="https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/" text="MIT 6.100L Introduction to Python" new_tab={true}/>.
                     </p>
 
@@ -87,25 +118,41 @@ export default function HeroPrimaryNew({ userAuthenticated }: HeroPrimaryProps):
                         Learn More
                     </p>
 
-
                     <div className="flex justify-center mt-8 mb-1" data-aos="fade-up">
-                        <div className="flex items-center w-1/2 max-w-3xl space-x-3">
-                            <Input 
-                                type="email" 
-                                placeholder="Enter your email" 
-                                className="h-12 flex-grow rounded-lg px-4 border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-600 focus:border-blue-500"
-                            />
-                            <Button 
-                                className="h-11 rounded-lg bg-blue-600 px-6 text-white hover:bg-blue-700 transition-all"
-                            >
-                                Get notified when the course is live!
-                                {/* Notify Me When The Course Is Live! */}
-                            </Button>
-                        </div>                    
+                        {currentLandingSaved ? (
+                            <div className="bg-green-600 dark:bg-green-700 text-gray-100 px-4 py-1.5 rounded-md shadow-lg transition-opacity duration-300 text-[15.5px] z-50">
+                                🎉 Email saved successfully. You will be notified when the course is complete very soon. Thank you! 🎉
+                            </div>
+                        ) : (
+                            <div className="flex items-center w-11/12 max-w-3xl lg:w-1/2">
+                                <form 
+                                    onSubmit={_handleLPFormSubmit} 
+                                    className="flex flex-col lg:flex-row items-center w-full lg:space-x-3 space-y-3 lg:space-y-0"
+                                >
+                                    <Input
+                                        onChange={(e) => _handleLandingEmailChange(e)}
+                                        type="email"
+                                        placeholder="Enter your email"
+                                        className="h-12 w-full lg:flex-grow rounded-lg px-4 border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-600 focus:border-blue-500"
+                                        required
+                                    />
+                                    <Button
+                                        className="h-12 w-full lg:w-auto rounded-lg bg-blue-600 px-6 text-white hover:bg-blue-700 transition-all"
+                                        type="submit"
+                                    >
+                                        Get notified when the course is live!
+                                    </Button>
+                                </form>
+                            </div>
+                        )}
                     </div>
 
                     <span className="text-[13px] text-gray-400" data-aos="fade-up">
-                        13 people have signed up already!
+                        {/* TODO:  */}
+
+                        {emailSubmissionCount !== null ? (
+                            `${emailSubmissionCount} people have signed up already!`
+                        ): null}
                     </span>
 
                     <div className="pt-2 text-gray-800 dark:text-gray-400 text-center" data-aos="fade-down">
@@ -163,7 +210,7 @@ export default function HeroPrimaryNew({ userAuthenticated }: HeroPrimaryProps):
                 <div className="max-w-5xl mx-auto mt-0 text-center">
 
                     <div
-                        className="mb-4 w-1/6 mx-auto flex justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                        className="hidden md:flex mb-4 w-1/6 mx-auto justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
                         data-aos="fade-down"
                     >
                         <AnimatedShinyText className="inline-flex items-center justify-center px-0 py-0 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400 text-[15px]">
@@ -226,11 +273,20 @@ export default function HeroPrimaryNew({ userAuthenticated }: HeroPrimaryProps):
 
                     
                     {/* Blog Section */}
-                    <div
+                    {/* <div
                         className="mt-8 mb-4 w-1/6 mx-auto flex justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
                         data-aos="fade-down"
                     >
                         <AnimatedShinyText className="inline-flex items-center justify-center px-0 py-0 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400 text-[14px]">
+                            <span>📖 Learn More</span>
+                        </AnimatedShinyText>
+                    </div> */}
+
+                    <div
+                        className="hidden md:flex mb-4 w-1/6 mx-auto justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                        data-aos="fade-down"
+                    >
+                        <AnimatedShinyText className="inline-flex items-center justify-center px-0 py-0 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400 text-[15px]">
                             <span>📖 Learn More</span>
                         </AnimatedShinyText>
                     </div>

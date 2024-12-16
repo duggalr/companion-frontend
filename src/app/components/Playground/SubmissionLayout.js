@@ -12,14 +12,13 @@ const SubmissionLayout = ({}) => {
                 Submissions
             </h1>
 
-            <p className="pt-2 leading-7 text-[14px] text-gray-600 dark:text-gray-300">
-                Submissions with dynamically generated tests are coming soon to the general playground...
+            <p className="pt-4 leading-7 text-[14px] text-gray-600 dark:text-gray-300">
+                Submissions with dynamically generated tests are coming soon to the playground...
             </p>
 
-            <p className="pt-2 leading-7 text-[14px] text-gray-600 dark:text-gray-300">
+            {/* <p className="pt-2 leading-7 text-[14px] text-gray-600 dark:text-gray-300">
                 Currently, this feature is implemented in the <a href="#" className="cursor-pointer text-blue-500 hover:text-blue-400">course (todo)</a>.
-                {/* TODO: add link to the course */}
-            </p>
+            </p> */}
 
         </div>
 

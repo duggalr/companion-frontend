@@ -12,15 +12,6 @@ import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomI
 import { updateUserQuestion } from '@/lib/backend_api/updateUserQuestion';
 import { saveUserCode } from "@/lib/backend_api/saveUserCode";
 
-// import { usePlaygroundContext } from "../../../lib/hooks/usePlaygroundContext";
-// import useUserContext from '../../../lib/hooks/useUserContext';
-// import { saveOrUpdateUserQuestion } from "../../../lib/api/saveOrUpdateUserQuestion";
-// import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/localStorageUtils";
-// import { saveUserRunCode } from "../../../lib/api/saveUserRunCode";
-// import { getRandomInitialPlaygroundQuestion } from '../../../lib/api/getRandomInitialPlaygroundQuestion';
-// import { submitUserCode } from "../../../lib/api/submitUserCode";
-// import { saveUserCode } from "../../../lib/api/saveUserCode"
-
 
 const ProblemLayout = ({ setActiveTab }) => {
 
