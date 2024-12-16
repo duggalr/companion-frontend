@@ -18,15 +18,17 @@ import { getLPEmailSubmissionCount } from '@/lib/backend_api/getLPEmailSubmissio
 //     userAuthenticated: boolean;
 // }
 // { userAuthenticated }: HeroPrimaryProps
+// : JSX.Element 
 
-export default function HeroPrimary(): JSX.Element {
+export default function HeroPrimary() {
 
     // const router = useRouter();
     const aboutRef = useRef(null);
     const currentLandingEmailRef = useRef("");
     const [currentLandingSaved, setCurrentLandingSaved] = useState(false);
     
-    const _handleLandingEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // React.ChangeEvent<HTMLInputElement>
+    const _handleLandingEmailChange = (e) => {
         currentLandingEmailRef.current = e.target.value;
     }
 
@@ -42,7 +44,7 @@ export default function HeroPrimary(): JSX.Element {
         });
     };
 
-    const _handleLPFormSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const _handleLPFormSubmit = async (e) => {
         e.preventDefault();
         console.log('current-email:', currentLandingEmailRef.current);
 
