@@ -4,7 +4,11 @@ import { UserContext } from '@/context/UserContext';
 
 export default function useUserContext() {
 
-    const userData = useContext(UserContext);
-    return userData;
+    const userContext = useContext(UserContext) || { isAuthenticated: false, userAccessToken: null };
+    return userContext;
+    // const userData = useContext(UserContext);
+    // if (userData){
+    //     return userData;
+    // }
 
 }

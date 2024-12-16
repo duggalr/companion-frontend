@@ -32,8 +32,9 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const [state, dispatch] = useReducer(playgroundReducer, initialState);
-    const {isAuthenticated, userAccessToken} = useUserContext();
     
+    const {isAuthenticated, userAccessToken} = useUserContext();
+
     const addQIDParam = (current_qid: string) => {
         window.history.pushState({}, '', `/playground?pid=${current_qid}`);
     };
