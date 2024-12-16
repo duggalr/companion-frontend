@@ -15,7 +15,7 @@ const NewChatInterface = ({ }) => {
     const {
         _handleUserMessageSend,
         _handleResetChatMessages,
-        sendMessage,
+        // sendMessage,
         messages,
         generatedMessage,
         isGeneratingMessage,

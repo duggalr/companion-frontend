@@ -1,15 +1,13 @@
 import ThemeToggle from './ThemeToggle';
 import { Pacifico } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRightFromBracket, faSquareCaretRight, faUserPlus, faLaptopCode, faCode, faHome } from "@fortawesome/free-solid-svg-icons";
+import { faSquareCaretRight, faCode, faHome } from "@fortawesome/free-solid-svg-icons";
 import useUserContext from '../../../lib/hooks/useUserContext';
-
 
 const pacifico_font = Pacifico({
     subsets: ['latin'],
     weight: ['400']
 });
-
 
 export default function TopNavBar ({ }) {
 

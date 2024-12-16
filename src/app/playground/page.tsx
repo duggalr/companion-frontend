@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useState, useContext } from 'react';
-import { UserContext } from '@/context/UserContext';
+import { useEffect } from 'react';
+// import { UserContext } from '@/context/UserContext';
 import { PlaygroundProvider } from '@/context/PlaygroundContext';
 import TopNavBar from '@/app/components/Utils/TopNavBar';
 import Layout from '@/app/components/Playground/Layout';
@@ -8,7 +8,7 @@ import Layout from '@/app/components/Playground/Layout';
 
 export default function Home() {
 
-    const userContext = useContext(UserContext);
+    // const userContext = useContext(UserContext);
 
     // Update page title
     useEffect(() => {

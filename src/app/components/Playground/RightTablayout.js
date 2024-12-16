@@ -1,23 +1,21 @@
 import { useState } from "react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTerminal, faComments, faQuestion } from '@fortawesome/free-solid-svg-icons';
-import useUserContext from "@/lib/hooks/useUserContext";
-// import ConsoleOutput from "./ConsoleOutput";
-// import ChatInterface from "../MainRightSide/ChatInterface";
-import ProblemLayout from "./ProblemLayout";
-import SubmissionLayout from "./SubmissionLayout";
-import NewChatInterface from './NewChatInterface';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faTerminal, faComments, faQuestion } from '@fortawesome/free-solid-svg-icons';
+// import useUserContext from "@/lib/hooks/useUserContext";
+import ProblemLayout from "@/app/components/Playground/ProblemLayout";
+import SubmissionLayout from "@/app/components/Playground/SubmissionLayout";
+import NewChatInterface from '@/app/components/Playground/NewChatInterface';
 
 
 const RightTabLayout = ({ }) => {
 
     const [activeTab, setActiveTab] = useState("problem");
 
-    const _handleNewFileClick = () => {
-        window.location.href = '/playground';
-    };
+    // const _handleNewFileClick = () => {
+    //     window.location.href = '/playground';
+    // };
 
-    const {isAuthenticated, userAccessToken} = useUserContext();
+    // const {isAuthenticated, userAccessToken} = useUserContext();
 
     return (
       

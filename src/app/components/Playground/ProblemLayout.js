@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencilAlt, faPencil, faShuffle, faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faShuffle, faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
 import useUserContext from "@/lib/hooks/useUserContext";
@@ -20,7 +20,7 @@ const ProblemLayout = ({ setActiveTab }) => {
     const playgroundContext = usePlaygroundContext();
     let currentProblemState = playgroundContext.state;
 
-    const { isAuthenticated, userAccessToken } = useUserContext();
+    const { isAuthenticated } = useUserContext();
     const { state, dispatch } = usePlaygroundContext();
 
     const _handleShuffleQuestion = async () => {
@@ -70,7 +70,7 @@ const ProblemLayout = ({ setActiveTab }) => {
     }, [currentProblemState])
 
 
-    const _handleEditQuestion = (e) => {
+    const _handleEditQuestion = () => {
         setEditing(true);
     }
 
@@ -198,49 +198,49 @@ const ProblemLayout = ({ setActiveTab }) => {
     };
 
 
-    const _saveUserCodeInBackend = async (current_code) => {
+    // const _saveUserCodeInBackend = async (current_code) => {
 
-        let current_user_id = getFromLocalStorage("user_id");
-        let current_parent_playground_object_id = getFromLocalStorage("parent_playground_object_id");
+    //     let current_user_id = getFromLocalStorage("user_id");
+    //     let current_parent_playground_object_id = getFromLocalStorage("parent_playground_object_id");
 
-        // // TODO: need to update
-        // let user_id = localStorage.getItem("user_id");
-        // // let current_code_state = localStorage.getItem("user_generated_code");
-        // let user_programming_language = localStorage.getItem("user_programming_language");
-        // let current_code_state = JSON.parse(localStorage.getItem("user_generated_code_dict"))[user_programming_language];
-        // let current_parent_playground_object_id = localStorage.getItem("parent_playground_object_id");
+    //     // // TODO: need to update
+    //     // let user_id = localStorage.getItem("user_id");
+    //     // // let current_code_state = localStorage.getItem("user_generated_code");
+    //     // let user_programming_language = localStorage.getItem("user_programming_language");
+    //     // let current_code_state = JSON.parse(localStorage.getItem("user_generated_code_dict"))[user_programming_language];
+    //     // let current_parent_playground_object_id = localStorage.getItem("parent_playground_object_id");
   
-        let payload;
-        if (current_parent_playground_object_id !== null){
-            payload = {
-                user_id: current_user_id,
-                programming_language: "python",
-                code_state: current_code,
-                parent_playground_object_id: current_parent_playground_object_id
-            };
-        } else {
-            payload = {
-                user_id: current_user_id,
-                programming_language: "python",
-                code_state: current_code,
-            };
-        }
+    //     let payload;
+    //     if (current_parent_playground_object_id !== null){
+    //         payload = {
+    //             user_id: current_user_id,
+    //             programming_language: "python",
+    //             code_state: current_code,
+    //             parent_playground_object_id: current_parent_playground_object_id
+    //         };
+    //     } else {
+    //         payload = {
+    //             user_id: current_user_id,
+    //             programming_language: "python",
+    //             code_state: current_code,
+    //         };
+    //     }
 
-        let saveCodeRes = await saveUserRunCode(
-            null,
-            payload
-        );
+    //     let saveCodeRes = await saveUserRunCode(
+    //         null,
+    //         payload
+    //     );
         
-        console.log('saved-code-response:', saveCodeRes);
+    //     console.log('saved-code-response:', saveCodeRes);
 
-        if (saveCodeRes['status_code'] === 200){
+    //     if (saveCodeRes['status_code'] === 200){
 
-            let parent_playground_object_id = saveCodeRes['parent_playground_object_id'];
-            saveToLocalStorage("parent_playground_object_id", parent_playground_object_id);
+    //         let parent_playground_object_id = saveCodeRes['parent_playground_object_id'];
+    //         saveToLocalStorage("parent_playground_object_id", parent_playground_object_id);
 
-        }
+    //     }
 
-    }
+    // }
 
     // Run Code
     const handleRun = () => {
@@ -294,31 +294,31 @@ const ProblemLayout = ({ setActiveTab }) => {
       
     };
 
-    // Submit Code
-    const submitCode = async () => {
+    // // Submit Code
+    // const submitCode = async () => {
 
-        console.log('submit code');
-        let current_parent_playground_object_id = getFromLocalStorage("parent_playground_object_id");
-        let current_user_code = currentProblemState.code;
-        let unique_question_id = currentProblemState.question_id;
+    //     console.log('submit code');
+    //     let current_parent_playground_object_id = getFromLocalStorage("parent_playground_object_id");
+    //     let current_user_code = currentProblemState.code;
+    //     let unique_question_id = currentProblemState.question_id;
 
-        // TODO: get current qid and then, start here
+    //     // TODO: get current qid and then, start here
 
-        let d = {
-            'current_pg_object_id': current_parent_playground_object_id,
-            'current_user_code': current_user_code,
-            'unique_question_id': unique_question_id
-        }
-        // TODO:
-            // Submit to backend
-                // First save code
-                // Then implement function to execute tests
-                // Go from there
+    //     let d = {
+    //         'current_pg_object_id': current_parent_playground_object_id,
+    //         'current_user_code': current_user_code,
+    //         'unique_question_id': unique_question_id
+    //     }
+    //     // TODO:
+    //         // Submit to backend
+    //             // First save code
+    //             // Then implement function to execute tests
+    //             // Go from there
 
-        submitUserCode(d);
-        // TODO: get results and svae them in playground state --> redirect to submission-component and go from there
+    //     submitUserCode(d);
+    //     // TODO: get results and svae them in playground state --> redirect to submission-component and go from there
 
-    }
+    // }
 
     // Chat with Tutor
     const chatWithTutor = () => {

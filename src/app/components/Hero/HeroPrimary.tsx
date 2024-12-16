@@ -1,7 +1,7 @@
 import 'aos/dist/aos.css'; // Import AOS styles
 import AOS from 'aos';
 import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { Input } from "@/components/ui/input";
 import { Button } from '@/components/ui/button';
 import HeroVideoDialog from "@/components/ui/hero-video-dialog";
@@ -14,13 +14,14 @@ import { saveLandingPageEmailSubmission } from '@/lib/backend_api/saveLandingPag
 import { getLPEmailSubmissionCount } from '@/lib/backend_api/getLPEmailSubmissionCount';
 
 
-interface HeroPrimaryProps {
-    userAuthenticated: boolean;
-}
+// interface HeroPrimaryProps {
+//     userAuthenticated: boolean;
+// }
+// { userAuthenticated }: HeroPrimaryProps
 
-export default function HeroPrimary({ userAuthenticated }: HeroPrimaryProps): JSX.Element {
+export default function HeroPrimary(): JSX.Element {
 
-    const router = useRouter();
+    // const router = useRouter();
     const aboutRef = useRef(null);
     const currentLandingEmailRef = useRef("");
     const [currentLandingSaved, setCurrentLandingSaved] = useState(false);
@@ -37,8 +38,8 @@ export default function HeroPrimary({ userAuthenticated }: HeroPrimaryProps): JS
         e.preventDefault();
         console.log('current-email:', currentLandingEmailRef.current);
 
-        let user_email = currentLandingEmailRef.current;
-        let saveRes = await saveLandingPageEmailSubmission(user_email);
+        const user_email = currentLandingEmailRef.current;
+        const saveRes = await saveLandingPageEmailSubmission(user_email);
         console.log('save-res:', saveRes);
 
         setCurrentLandingSaved(true);
@@ -57,7 +58,7 @@ export default function HeroPrimary({ userAuthenticated }: HeroPrimaryProps): JS
     const [emailSubmissionCount, setEmailSubmissionCount] = useState(null);
 
     const _getEmailSubCount = async () => {
-        let total_count_response = await getLPEmailSubmissionCount();
+        const total_count_response = await getLPEmailSubmissionCount();
         if (total_count_response['success'] == true){
             setEmailSubmissionCount(total_count_response['number_of_email_submissions']);
         }
