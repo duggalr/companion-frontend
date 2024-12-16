@@ -51,7 +51,7 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
 
         case "UPDATE_CODE_STATE": {
             // console.log('UPDATE CODE STATE:', action.code);
-            let pg_question_dict = {
+            const pg_question_dict = {
                 question_id: state.question_id,
                 name: state.name,
                 question: state.question,

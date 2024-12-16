@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import useUserContext from "./useUserContext";
 import { usePlaygroundContext } from "./usePlaygroundContext";
 import { getFromLocalStorage, saveToLocalStorage } from "../utils/localStorageUtils";
-import { saveUserCode } from "../backend_api/saveUserCode";
+// import { saveUserCode } from "../backend_api/saveUserCode";
 // // import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/localStorageUtils";
 // import { getFromLocalStorage, saveToLocalStorage } from "../utils/localStorageUtils";
 // import { saveUserRunCode } from "../api/saveUserRunCode";
@@ -38,7 +38,7 @@ export const useWebSocket = (url: string) => {
 
     // User Context
     const {isAuthenticated} = useUserContext();
-    const { state, dispatch } = usePlaygroundContext();
+    const { state } = usePlaygroundContext();
 
     const _handleResetChatMessages = async () => {
         setMessages([{
@@ -83,10 +83,10 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         }
         else {
 
-            let current_user_id = getFromLocalStorage("user_id");
-            let user_current_code = state.code;
+            // let current_user_id = getFromLocalStorage("user_id");
+            const user_current_code = state.code;
 
-            let messageForBackend = {
+            const messageForBackend = {
                 parent_question_object_id: state.question_id,
                 current_problem_name: state.name,
                 current_problem_question: state.question,
@@ -231,7 +231,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             // let current_user_id = getFromLocalStorage('user_id');
 
             // Fetch Messages
-            let user_chat_messages = getFromLocalStorage("user_chat_messages");
+            const user_chat_messages = getFromLocalStorage("user_chat_messages");
             console.log('user_chat_messages:', user_chat_messages);
 
             if (user_chat_messages === null || user_chat_messages.length === 0 || user_chat_messages === undefined) {
@@ -245,9 +245,8 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
             }
             else{
-                // TODO: set the messages state to the existing ones from localstorage
 
-                let chat_msg_list = JSON.parse(user_chat_messages);
+                const chat_msg_list = JSON.parse(user_chat_messages);
                 console.log('parsed-chat_msg_list:', chat_msg_list);
                 setMessages(chat_msg_list);
 
