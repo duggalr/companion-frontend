@@ -1,135 +1,192 @@
 import 'aos/dist/aos.css'; // Import AOS styles
 import AOS from 'aos';
-import { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import ShimmerButton from "@/components/ui/shimmer-button";
+import { useEffect, useRef, useState } from 'react';
+// import { useRouter } from 'next/navigation';
+import { Input } from "@/components/ui/input";
+import { Button } from '@/components/ui/button';
 import HeroVideoDialog from "@/components/ui/hero-video-dialog";
 import SparklesText from "@/components/ui/sparkles-text";
 import AnimatedShinyText from '@/components/ui/animated-shiny-text';
-// import { RainbowButton } from "@/components/ui/rainbow-button";
-// import ShinyButton from "@/components/ui/shiny-button";
-// import RippleButton from "@/components/ui/ripple-button";
-// import { MagicCard } from "@/components/ui/magic-card";
- 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCode, faComments, faQuestion, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import StandardLink from '@/app/components/ui/StandardLink';
+import { saveLandingPageEmailSubmission } from '@/lib/backend_api/saveLandingPageEmailSubmission';
+import { getLPEmailSubmissionCount } from '@/lib/backend_api/getLPEmailSubmissionCount';
 
 
-export default function HeroPrimary({ userAuthenticated }) {
+// interface HeroPrimaryProps {
+//     userAuthenticated: boolean;
+// }
+// { userAuthenticated }: HeroPrimaryProps
+// : JSX.Element 
 
-    const router = useRouter();
-    // const handleVisitIDEClick = () => {
-    //     router.push('/playground');
-    // };
+export default function HeroPrimary() {
 
-    const handleVisitDashboardClick = () => {
-        router.push('/dashboard');
+    // const router = useRouter();
+    const aboutRef = useRef(null);
+    const currentLandingEmailRef = useRef("");
+    const [currentLandingSaved, setCurrentLandingSaved] = useState(false);
+    
+    // React.ChangeEvent<HTMLInputElement>
+    const _handleLandingEmailChange = (e) => {
+        currentLandingEmailRef.current = e.target.value;
     }
 
-    // const handleGeneralTutorClick = () => {
-    //     router.push('/general-tutor');
-    // }
-    
-    const aboutRef = useRef(null);
+    // const handleLearnMoreClick = () => {
+    //     aboutRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // };
+
     const handleLearnMoreClick = () => {
-        aboutRef.current?.scrollIntoView({ behavior: 'smooth' });
+        aboutRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start', // Optional, default is 'start'
+            inline: 'nearest', // Optional, default is 'nearest'
+        });
     };
 
-    // const [currentTheme, setCurrentTheme] = useState(null);
-    // useEffect(() => {
-    //     let theme = localStorage.getItem('theme');
-    //     setCurrentTheme(theme);
-    // }, [])
+    const _handleLPFormSubmit = async (e) => {
+        e.preventDefault();
+        console.log('current-email:', currentLandingEmailRef.current);
 
+        const user_email = currentLandingEmailRef.current;
+        const saveRes = await saveLandingPageEmailSubmission(user_email);
+        console.log('save-res:', saveRes);
+
+        setCurrentLandingSaved(true);
+        _getEmailSubCount();
+
+    }
+    
     useEffect(() => {
         AOS.init({
-          duration: 1000, // Animation duration in milliseconds
-          once: true,     // Trigger animation only once
+            duration: 1000, // Animation duration in milliseconds
+            once: true,     // Trigger animation only once
         });
-      }, []);
+    }, []);
+
+    
+    const [emailSubmissionCount, setEmailSubmissionCount] = useState(null);
+
+    const _getEmailSubCount = async () => {
+        const total_count_response = await getLPEmailSubmissionCount();
+        if (total_count_response['success'] == true){
+            setEmailSubmissionCount(total_count_response['number_of_email_submissions']);
+        }
+    }
+
+    useEffect(() => {
+        _getEmailSubCount();
+    }, []);
+
 
     return (
 
         <>
-            
+
             {/* Landing Hero Section */}
             <section className="min-h-screen flex flex-col items-center py-16 px-4">
 
-                <div class="absolute bottom-1/3 left-16 -rotate-12 xl:block hidden">
+                <div className="absolute bottom-1/3 left-16 -rotate-12 xl:block hidden">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="50" height="50">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m6 0h3" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9l3 3-3 3m6 0h3" />
                     </svg>
                 </div>
 
-                <div class="absolute top-1/4 right-24 rotate-12 xl:block hidden">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star">
+                <div className="absolute top-1/4 right-24 rotate-12 xl:block hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-star">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
                 </div>
 
-                <div className="max-w-5xl mx-auto text-center mt-0 ">
-                    
+                <div className="max-w-7xl mx-auto text-center mt-0 ">
+
                     <div
-                        className="mb-4 w-full lg:w-1/3 mx-auto flex justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                        className="mb-6 w-full lg:w-1/3 mx-auto flex justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
                         data-aos="fade-in"
                     >
-                        <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400 text-[15px]">
+                        <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400 text-[14px]">
                             <span>✨ 100% Free and Open Source ✨</span>
                         </AnimatedShinyText>
                     </div>
-                    
-                    <SparklesText text="Learn with an AI Tutor" data-aos="fade-up"/>
 
-                    <p className="text-[20px] text-muted-foreground pt-5 tracking-wide" data-aos="fade-up">
-                        Try the AI Tutor in our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/general-tutor">
-                            General Chat Interface 
-                        </a> or our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/playground">
-                            Online Programming Environment
-                        </a>. 100% Free.
+                    {/* <SparklesText text="Learn CS Courses with Your Personal AI Tutor" data-aos="fade-up" className="mt-0 tracking-wide"/> */}
+                    <SparklesText text="Learn Programming With Your Personal AI Tutor" data-aos="fade-up" className="mt-0 tracking-wide"/>
+
+                    <p className="text-[19px] text-muted-foreground pt-4 tracking-wide" data-aos="fade-up">
+                        Our first free programming course that will be offered here with the AI Tutor, will be the popular <StandardLink uri="https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/" text="MIT 6.100L Introduction to Python" new_tab={true}/>.
                     </p>
 
-                    <div className="mt-6 flex items-center justify-center" data-aos="fade-up">
+                    <p
+                        onClick={handleLearnMoreClick}
+                        ref={aboutRef}
+                        className="inline-block text-[12.5px] text-blue-400 dark:text-blue-400 pt-2 tracking-wide hover:cursor-pointer hover:underline"
+                        data-aos="fade-up"
+                    >
+                        Learn More
+                    </p>
 
-                        {/* <ShimmerButton className="shadow-2xl mr-4" onClick={handleVisitIDEClick}>
-                            <span
-                                className="whitespace-pre-wrap text-center text-lg font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10"
-                            >
-                                Visit IDE &nbsp; &#8594;
-                            </span>
-                        </ShimmerButton> */}
-
-                        {/* <RippleButton rippleColor="#ADD8E6" className='bg-black text-white' onClick={handleLearnMoreClick}>Learn More</RippleButton> */}
-
-                        {userAuthenticated ? (
-
-                            <ShimmerButton className="shadow-2xl mr-4" onClick={handleVisitDashboardClick}>
-                                <span
-                                    className="whitespace-pre-wrap text-center text-lg font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10"
-                                >
-                                    Go to My Dashboard
-                                </span>
-                            </ShimmerButton>
-
+                    <div className="flex justify-center mt-8 mb-1" data-aos="fade-up">
+                        {currentLandingSaved ? (
+                            <div className="bg-green-600 dark:bg-green-700 text-gray-100 px-4 py-1.5 rounded-md shadow-lg transition-opacity duration-300 text-[15.5px] z-50">
+                                🎉 Email saved successfully. You will be notified when the course is complete very soon. Thank you! 🎉
+                            </div>
                         ) : (
-
-                            <ShimmerButton className="shadow-2xl mr-4" onClick={handleLearnMoreClick}>
-                                <span
-                                    className="whitespace-pre-wrap text-center text-lg font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10"
+                            <div className="flex items-center w-11/12 max-w-3xl lg:w-1/2">
+                                <form 
+                                    onSubmit={_handleLPFormSubmit} 
+                                    className="flex flex-col lg:flex-row items-center w-full lg:space-x-3 space-y-3 lg:space-y-0"
                                 >
-                                    Learn More
-                                    {/* &nbsp; &#8594; */}
-                                </span>
-                            </ShimmerButton>
-
+                                    <Input
+                                        onChange={(e) => _handleLandingEmailChange(e)}
+                                        type="email"
+                                        placeholder="Enter your email"
+                                        className="h-12 w-full lg:flex-grow rounded-lg px-4 border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-600 focus:border-blue-500"
+                                        required
+                                    />
+                                    <Button
+                                        className="h-12 w-full lg:w-auto rounded-lg bg-blue-600 px-6 text-white hover:bg-blue-700 transition-all"
+                                        type="submit"
+                                    >
+                                        Get notified when the course is live!
+                                    </Button>
+                                </form>
+                            </div>
                         )}
-                        
+                    </div>
+
+                    <span className="text-[13px] text-gray-400" data-aos="fade-up">
+                        {/* TODO:  */}
+
+                        {emailSubmissionCount !== null ? (
+                            `${emailSubmissionCount} people have signed up already!`
+                        ): null}
+                    </span>
+
+                    <div className="pt-2 text-gray-800 dark:text-gray-400 text-center" data-aos="fade-down">
+                        <hr className="my-4 w-1/2 mx-auto border-gray-300 dark:border-gray-700" />
+                        <p className="text-[15px] pt-1">
+                            {/* In the meantime, feel free to try our AI Tutor on your own programming problems, in our */}
+                            Meanwhile, feel free to try our AI Tutor on your own programming problems, in our
+                            {/* <a 
+                                className="text-blue-600 dark:text-blue-500 hover:underline mx-1" 
+                                href=""
+                            >
+                                Python Online IDE / REPL Environment
+                            </a>. */}
+                            {" "}
+                            <StandardLink 
+                                uri="/playground"
+                                text="Online Python IDE / REPL Environment"
+                                new_tab={false}
+                            />.
+                        </p>
                     </div>
 
                     <p className="text-[13px] text-gray-700 text-muted-foreground pt-2 tracking-normal md:hidden">
                         (The application works best on a computer...)
                     </p>
 
-                    <div className="relative mt-8" >
+                    <div className="relative mt-10">
                         <HeroVideoDialog
                             className="dark:hidden block"
                             animationStyle="from-center"
@@ -158,12 +215,9 @@ export default function HeroPrimary({ userAuthenticated }) {
             >
                 
                 <div className="max-w-5xl mx-auto mt-0 text-center">
-                    {/* <h2 className="text-center text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
-                        Learn about Companion
-                    </h2> */}
 
                     <div
-                        className="mb-4 w-1/6 mx-auto flex justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                        className="hidden md:flex mb-4 w-1/6 mx-auto justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
                         data-aos="fade-down"
                     >
                         <AnimatedShinyText className="inline-flex items-center justify-center px-0 py-0 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400 text-[15px]">
@@ -173,95 +227,119 @@ export default function HeroPrimary({ userAuthenticated }) {
 
                     <SparklesText text="About" className="text-5xl" data-aos="fade-down"/>
 
-                    {/* TODO: finalize padding and proceed from there <-- **alg course */}                
                     <div className="mt-8 pb-16 text-center" data-aos="fade-right">
                         <p className="text-xl mb-6 leading-relaxed text-gray-500 dark:text-gray-400">
                             Companion is an AI-powered tutor designed to assist students and individuals by offering guidance and constructive feedback as they solve problems. It is 100% free to use.
-                            {/* Companion is an AI Tutor, with the goal of offering students and individuals with help and feedback, as they work through their problems. */}
-                            {/* Companion will not provide the student the answer but rather, provide useful hints to help guide their thinking, as they work through the problem. */}
                         </p>
 
                         <p className="text-xl mb-6 leading-relaxed text-gray-500 dark:text-gray-400">
                             Instead of simply providing answers, Companion delivers helpful hints and insights to stimulate critical thinking and enhance learning.
-                            {/* Companion will not provide you the answer but rather, provide useful hints to help guide your thinking, as you work through the problem. */}
                         </p>
 
                         <p className="text-xl mb-6 leading-relaxed text-gray-500 dark:text-gray-400">
-                            You can engage with the AI Tutor through our traditional <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/general-tutor">chat interface</a> to ask questions and receive guidance.
-                            {/* You can access the tutor via our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/general-tutor">
-                                Chat Interface</a>, or use our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/playground">online programming environment</a>, to ask questions related to programming and run the code. 100% Free. */}
+                            You can currently engage with the AI Tutor in our 
+                            {/* <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/playground">online programming environment</a>,  */}
+                            {" "}
+                            <StandardLink 
+                                uri="/playground"
+                                text="online programming environment"
+                                new_tab={false}
+                            />,
+                            where you can ask programming-related questions and run code directly within the browser.
                         </p>
 
                         <p className="text-xl mb-6 leading-relaxed text-gray-500 dark:text-gray-400">
-                            You can also use our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="/playground">online programming environment</a> to ask programming-related questions and run code directly within the browser.
+                            {/* We are currently hard at work, integrating 
+                            <a target="_blank" rel="noopener 
+                        noreferrer" className="text-blue-600 dark:text-blue-500 hover:underline" href="https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/">MIT's 6.100L Introduction to Python</a> material in our platform. */}
+
+                            We are currently hard at work, integrating {" "}
+                            <StandardLink 
+                                uri="https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/"
+                                text="MIT's 6.100L Introduction to Python"
+                                new_tab={true}
+                            /> material in our platform. Enter your email above to stay up-to-date on the launch!
+
                         </p>
 
                         <p className="text-xl mb-6 leading-relaxed text-gray-500 dark:text-gray-400">
-                            We are currently hard at work on creating a new Algorithms Course. The AI tutor will directly integrate with the learning material, to hopefully provide a more personalized educational experience.
-                            {/* We are currently hard at work, developing a new Algorithms course, which the AI Tutor will be integrated with the material.
-                            Feel free to view our <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://github.com/duggalr/companion-frontend">code</a>. */}
+                            The goal is to hopefully allow students to gain a deeper understanding of the material than they otherwise can, by leveraging the AI tutor as they learn the concepts and work through the exercises.
                         </p>
 
                         <p className="text-xl mb-6 leading-relaxed text-gray-500 dark:text-gray-400">
-                            Companion is <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://github.com/duggalr/companion-frontend">open-source</a>, so feel free explore our code and contribute.
+                            Companion is {" "}
+                            <StandardLink 
+                                uri="https://github.com/duggalr/companion-frontend"
+                                text="open-source"
+                                new_tab={true}
+                            />, so feel free explore our code and contribute.
+                            {/* <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://github.com/duggalr/companion-frontend">open-source</a> */}
                         </p>
 
                     </div>
 
+                    
+                    {/* Blog Section */}
+                    {/* <div
+                        className="mt-8 mb-4 w-1/6 mx-auto flex justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                        data-aos="fade-down"
+                    >
+                        <AnimatedShinyText className="inline-flex items-center justify-center px-0 py-0 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400 text-[14px]">
+                            <span>📖 Learn More</span>
+                        </AnimatedShinyText>
+                    </div> */}
 
-                    {/* <div className='mt-20'></div> */}
                     <div
-                        className="mt-8 mb-4 w-1/5 mx-auto flex justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                        className="hidden md:flex mb-4 w-1/6 mx-auto justify-center items-center group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
                         data-aos="fade-down"
                     >
                         <AnimatedShinyText className="inline-flex items-center justify-center px-0 py-0 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400 text-[15px]">
-                            <span>⚙️ More in Development...</span>
+                            <span>📖 Learn More</span>
                         </AnimatedShinyText>
                     </div>
-                    <SparklesText text="Current Features" className="text-5xl" data-aos="fade-down"/>
 
-                    <div
-                        className="flex h-[500px] w-full flex-col gap-8 lg:h-[250px] lg:flex-row mt-12 items-center justify-center"
-                        data-aos="fade-in"
-                    >
-                        <a 
-                            href="/playground" 
-                            className="block w-[300px] h-[250px] p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 cursor-pointer"
-                        >
-                            <FontAwesomeIcon icon={faCode} className="w-10 h-10 pb-2"/>
-                            <h3 className='text-xl'>
-                                Programming IDE
-                            </h3>
-                            <p className='text-[15px] text-gray-400 pt-4 text-wrap leading-6'>
-                                Run code in our online IDE environment, and get help/feedback from Companion along the way.
-                            </p>
-                        </a>
+                    <SparklesText text="Blog Posts" className="text-5xl" data-aos="fade-down"/>
 
-                        <a 
-                            href="/general-tutor" 
-                            className="block w-[300px] h-[250px] p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 cursor-pointer"
-                        >
-                            <FontAwesomeIcon icon={faComments} className="w-9 h-9 pb-2"/>
-                            <h3 className='text-xl'>
-                                General Tutor
-                            </h3>
-                            <p className='text-[15px] text-gray-400 pt-4 text-wrap leading-6'>
-                                Interact with the tutor in our traditional chat interface.
-                            </p>
-                        </a>
+                    {/* Blog Post List */}
+                    <div className="mt-10" data-aos="fade-up">
+                        <ul className="space-y-4">
 
-                        {/* bg-gray-800 */}
-                        <a 
-                            className="block w-[300px] h-[250px] p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-700"
-                        >
-                            <FontAwesomeIcon icon={faQuestion} className="w-9 h-9 pb-2"/>
-                            <h3 className='text-xl'>
-                                Next - Algorithms
-                            </h3>
-                            <p className='text-[15px] text-gray-400 pt-4 text-wrap leading-6'>
-                                We are currently developing an algorithms course where the AI tutor will integrate with the course material.
-                            </p>
-                        </a>
+                            {/* Blog Post 1 */}
+                            <li className="flex justify-between items-center border-b pb-4 text-[17px]">
+                                <StandardLink 
+                                    uri="#"
+                                    text="📰 Second Blog Post (TODO:)"
+                                    new_tab={true}
+                                />
+                                
+                                {/* <a 
+                                    href="#"
+                                    className="text-lg font-medium text-blue-600 hover:underline hover:text-blue-800"
+                                >
+                                    Exploring Python Basics: A Beginner's Guide
+                                </a> */}
+                                <span className="text-gray-500 text-sm">Dec 15, 2024</span>
+                            </li>
+
+                            {/* Blog Post 2 */}
+                            <li className="flex justify-between items-center border-b pb-2 pt-2 text-[17px]">
+                                <StandardLink 
+                                    uri="#"
+                                    text="📰 Companion: Initial MVP Launch"
+                                    new_tab={true}
+                                />
+                                
+                                {/* <a 
+                                    href="https://medium.com/@drahul2820/introducing-companion-an-online-repl-with-an-ai-tutor-85c564fae398"
+                                    className="text-lg font-medium text-blue-600 hover:underline hover:text-blue-800"
+                                >
+                                    Companion: Initial MVP Launch
+                                </a> */}
+                                
+                                <span className="text-gray-500 text-sm">Oct 21, 2024</span>
+                            </li>
+
+                        </ul>
                     </div>
 
                 </div>
@@ -284,8 +362,6 @@ export default function HeroPrimary({ userAuthenticated }) {
             </footer>
         
         </>
-        
     );
-}
 
-// TODO: add animations and then, push into main from there; proceed to next steps from there
+}
