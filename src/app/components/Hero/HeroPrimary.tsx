@@ -26,7 +26,7 @@ export default function HeroPrimary(): JSX.Element {
     const currentLandingEmailRef = useRef("");
     const [currentLandingSaved, setCurrentLandingSaved] = useState(false);
     
-    const _handleLandingEmailChange = (e) => {
+    const _handleLandingEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         currentLandingEmailRef.current = e.target.value;
     }
 
@@ -34,7 +34,7 @@ export default function HeroPrimary(): JSX.Element {
         aboutRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    const _handleLPFormSubmit = async (e) => {
+    const _handleLPFormSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         console.log('current-email:', currentLandingEmailRef.current);
 
