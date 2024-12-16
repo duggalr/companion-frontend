@@ -44,7 +44,7 @@ export default function ThemeToggle() {
         >
             <FontAwesomeIcon
                 icon={faMoon}
-                size="md"
+                // size="md"
                 className={theme === 'light' ? 'text-gray-900' : 'text-gray-300'}
             />
         </button>
