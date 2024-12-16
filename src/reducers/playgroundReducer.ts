@@ -1,6 +1,7 @@
 // import { saveToLocalStorage } from "../utils/localStorageUtils"; // Assuming this utility handles localStorage
-import { PlaygroundState, QuestionInputOutputPair } from '../context/types';
-import { INITIAL_QUESTION_LIST } from '@/lib/constants/initial_question_list';
+// import { PlaygroundState, QuestionInputOutputPair } from '../context/types';
+// import { INITIAL_QUESTION_LIST } from '@/lib/constants/initial_question_list';
+import { PlaygroundState, QuestionInputOutputPair } from '@/context/types';
 import { saveToLocalStorage } from '@/lib/utils/localStorageUtils';
 
 export type PlaygroundAction =

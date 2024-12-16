@@ -1,6 +1,6 @@
 // Utility Functions for Local Storage
 
-export const saveToLocalStorage = (key: string, value: any) => {
+export const saveToLocalStorage = (key, value) => {
     try {
         const serializedValue = JSON.stringify(value);
         localStorage.setItem(key, serializedValue);
@@ -9,7 +9,7 @@ export const saveToLocalStorage = (key: string, value: any) => {
     }
 };
 
-export const getFromLocalStorage = (key: string): (any | null) => {
+export const getFromLocalStorage = (key) => {
     try {
         const serializedValue = localStorage.getItem(key);
         return serializedValue ? JSON.parse(serializedValue) : null;
@@ -19,7 +19,7 @@ export const getFromLocalStorage = (key: string): (any | null) => {
     }
 };
 
-export const removeFromLocalStorage = (key: string) => {
+export const removeFromLocalStorage = (key) => {
     try {
         localStorage.removeItem(key);
     } catch (error) {
