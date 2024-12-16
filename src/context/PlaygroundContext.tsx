@@ -45,8 +45,7 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
             // TODO: test
             const rnd_question_dict_response = await getRandomInitialPlaygroundQuestion(
-                userAccessToken,
-                null
+                userAccessToken
             )
             if (rnd_question_dict_response['success'] === true){
 
