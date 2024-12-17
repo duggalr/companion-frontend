@@ -190,15 +190,15 @@ export default function HeroPrimary() {
                         <HeroVideoDialog
                             className="dark:hidden block"
                             animationStyle="from-center"
-                            videoSrc="https://www.youtube.com/embed/4Plt_sh_cIg?si=Fya0LnWnhxqi2XQh"
-                            thumbnailSrc="https://i.ytimg.com/vi/4Plt_sh_cIg/maxresdefault.jpg"
+                            videoSrc="https://www.youtube.com/embed/ZK3eGk_i_48?si=mqjUlCsZyTPuDLVB"
+                            thumbnailSrc="https://i.ytimg.com/vi/ZK3eGk_i_48/maxresdefault.jpg"
                             thumbnailAlt="Companion AI Demo"
                         />
                         <HeroVideoDialog
                             className="hidden dark:block"
                             animationStyle="from-center"
-                            videoSrc="https://www.youtube.com/embed/4Plt_sh_cIg?si=Fya0LnWnhxqi2XQh"
-                            thumbnailSrc="https://i.ytimg.com/vi/4Plt_sh_cIg/maxresdefault.jpg"
+                            videoSrc="https://www.youtube.com/embed/ZK3eGk_i_48?si=mqjUlCsZyTPuDLVB"
+                            thumbnailSrc="https://i.ytimg.com/vi/ZK3eGk_i_48/maxresdefault.jpg"
                             thumbnailAlt="Companion AI Demo"
                         />
                     </div>
