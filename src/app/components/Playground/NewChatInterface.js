@@ -43,11 +43,8 @@ const NewChatInterface = ({ }) => {
     const handleMessageSend = () => {
         // handleSendUserChatMessage();
         let current_user_msg = currentUserInputMessageRef.current;
-        console.log('sending:', current_user_msg);
-
         _handleUserMessageSend(current_user_msg);
         setCurrentUserInputMessage("");
-
     }
 
     const handleNewInputValue = (e) => {
@@ -69,7 +66,6 @@ const NewChatInterface = ({ }) => {
             event.preventDefault();
 
             let current_user_msg = currentUserInputMessageRef.current;
-            console.log('sending:', current_user_msg);
 
             _handleUserMessageSend(current_user_msg);
             setCurrentUserInputMessage("");

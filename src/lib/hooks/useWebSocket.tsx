@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import useUserContext from "./useUserContext";
 import { usePlaygroundContext } from "./usePlaygroundContext";
 import { getFromLocalStorage, saveToLocalStorage } from "../utils/localStorageUtils";
+import { fetchChatMessages } from "@/lib/backend_api/fetchChatMessages";
 // import { saveUserCode } from "../backend_api/saveUserCode";
 // // import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/localStorageUtils";
 // import { getFromLocalStorage, saveToLocalStorage } from "../utils/localStorageUtils";
@@ -37,7 +38,7 @@ export const useWebSocket = (url: string) => {
     const [isLoading, setIsLoading] = useState(false);
 
     // User Context
-    const {isAuthenticated} = useUserContext();
+    const {isAuthenticated, userAccessToken} = useUserContext();
     const { state } = usePlaygroundContext();
 
     const _handleResetChatMessages = async () => {
@@ -52,16 +53,12 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     const _sendMessage = async (payload: MessagePayload) => {
 
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-            console.log("SENDING PAYLOAD:", payload);
             wsRef.current.send(JSON.stringify(payload));
         }
 
     }
     
     const _handleUserMessageSend = async (current_user_message: string) => {
-
-        console.log('current_user_message:', current_user_message);
-        console.log('messages-length:', messages.length);
 
         accumulatedMessageRef.current = "";
 
@@ -75,11 +72,26 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             }
         }
 
-        console.log('ACCUMLATED MESSAGE STRING:', accumulatedMessageRef.current);
-        console.log('all-msg_string:', all_chat_messages_str)
-
         if (isAuthenticated){
             // TODO:
+                // save message in backend
+            
+            const user_current_code = state.code;
+
+            const messageForBackend = {
+                parent_question_object_id: state.question_id,
+                current_problem_name: state.name,
+                current_problem_question: state.question,
+                text: current_user_message,
+                user_code: user_current_code,
+                all_user_messages_str: all_chat_messages_str,
+                sender: 'user',
+                type: 'user_message',
+            };
+
+            setMessages((messages) => [...messages, messageForBackend]);
+            _sendMessage(messageForBackend);
+
         }
         else {
 
@@ -215,6 +227,40 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     }, [url]);
 
 
+    const _handleAuthenticatedChatMessageInitialization = async (question_object_id: string) => {
+
+        let user_chat_msg_list = await fetchChatMessages(
+            userAccessToken,
+            question_object_id
+        );
+
+        if (user_chat_msg_list['data'].length > 0){
+
+            // const messageForBackend = {
+            //     parent_question_object_id: state.question_id,
+            //     current_problem_name: state.name,
+            //     current_problem_question: state.question,
+            //     text: current_user_message,
+            //     user_code: user_current_code,
+            //     all_user_messages_str: all_chat_messages_str,
+            //     sender: 'user',
+            //     type: 'user_message',
+            // };
+            setMessages(user_chat_msg_list['data']);
+
+        } else {
+
+            setMessages([{
+                text: `Welcome! 😄 I'm Companion, your personal programming tutor.
+
+If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
+                sender: "bot",
+            }]);
+
+        }
+
+    }
+
     useEffect(() => {
 
         // TODO:
@@ -222,6 +268,23 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
         if (isAuthenticated){
             // TODO:
+                // fetch messages for the question (qid)
+            const url_search_params = new URLSearchParams(window.location.search);
+            const question_object_id = url_search_params.get('qid');
+
+            if (question_object_id){
+                _handleAuthenticatedChatMessageInitialization(
+                    question_object_id
+                )
+            } else {
+                setMessages([{
+                    text: `Welcome! 😄 I'm Companion, your personal programming tutor.
+
+If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
+                    sender: "bot",
+                }]);
+            }
+         
         }
         else {
             
@@ -232,7 +295,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
             // Fetch Messages
             const user_chat_messages = getFromLocalStorage("user_chat_messages");
-            console.log('user_chat_messages:', user_chat_messages);
 
             if (user_chat_messages === null || user_chat_messages.length === 0 || user_chat_messages === undefined) {
 
@@ -247,7 +309,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             else{
 
                 const chat_msg_list = JSON.parse(user_chat_messages);
-                console.log('parsed-chat_msg_list:', chat_msg_list);
                 setMessages(chat_msg_list);
 
             }

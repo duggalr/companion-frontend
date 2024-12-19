@@ -8,7 +8,6 @@ export async function getUserAccessToken(){
         null,
         null
     )
-    // console.log('GET TOKEN RES:', res);
 
     if ('accessToken' in res){
         let access_token = res['accessToken'];

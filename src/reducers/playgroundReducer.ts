@@ -5,7 +5,7 @@ import { PlaygroundState, QuestionInputOutputPair } from '@/context/types';
 import { saveToLocalStorage } from '@/lib/utils/localStorageUtils';
 
 export type PlaygroundAction =
-    | {type: "SET_QUESTION_INPUT_OUTPUT"; question_id: string, name: string, question: string, input_output_list: QuestionInputOutputPair[], code: string}
+    | {type: "SET_QUESTION_INPUT_OUTPUT"; question_id: string | null, name: string, question: string, input_output_list: QuestionInputOutputPair[], code: string}
     | {type: "UPDATE_CODE_STATE"; code: string}
     | {type: "UPDATE_CONSOLE_OUTPUT"; output: string}
 
@@ -65,7 +65,6 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
         }
 
         case "UPDATE_CONSOLE_OUTPUT": {
-            console.log('UPDATED CONSOLE OUTPUT:', action.output);
             // let pg_question_dict = {
             //     name: state.name,
             //     question: state.question,

@@ -49,7 +49,6 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
         setEditingIndex(null);
 
         let cdict = dashboardDataList[index];
-        console.log('c-dict:', cdict);
 
         let current_conversation_id = cdict['id'];
         let new_conversation_name = fileNames[index];
@@ -59,8 +58,6 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
             'new_conversation_name': new_conversation_name
         }
         changePGCodeName(accessToken, payload);
-
-        console.log(`New name for file at index ${index}:`, fileNames[index]);
     };
 
 
@@ -73,7 +70,7 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                         className="text-blue-400 hover:text-blue-600 dark:text-blue-500 hover:underline text-[14px] font-medium text-right pl-4"
                         href="/playground"
                     >
-                        <FontAwesomeIcon icon={faPlus} className="pr-1 text-[13px]" />Create
+                        <FontAwesomeIcon icon={faPlus} className="pr-1 text-[13px]" />New
                     </Link>
                 </h1>
 
@@ -103,7 +100,7 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                                                     />
                                                 ) : (
                                                     <p
-                                                        className="tracking-wide text-[17.5px] font-medium text-gray-900 truncate dark:text-white cursor-pointer hover:text-blue-400 dark:hover:text-blue-400"
+                                                        className="tracking-wide text-[17.5px] font-medium text-gray-900 truncate dark:text-white cursor-pointer hover:text-blue-400 dark:hover:text-blue-400 inline-block"
                                                     >
                                                         {fileNames[index] || dashboard_item.name}
                                                     </p>

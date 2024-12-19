@@ -12,7 +12,6 @@ const NewCodeEditor = ({ }) => {
     const { isAuthenticated, userAccessToken } = useUserContext();
 
     const { state, dispatch } = usePlaygroundContext();
-    console.log('INITIAL PLAYGROUND STATE NEW CODE EDITOR:', state);
     // let currentProblemState = state;
 
     // const monacoRef = useRef(null);
@@ -121,14 +120,23 @@ const NewCodeEditor = ({ }) => {
 
                 showTemporaryAlert();
 
-                // TODO:
+                let payload = {
+                    'question_id': state.question_id,
+                    'question_name': state.name,
+                    'question_text': state.question,
+                    'example_input_output_list': state.input_output_list,
+                };
                 if (isAuthenticated){
 
-                    let payload = {
-                        'user_id': null,
-                        'question_id': state.question_id,
-                        'code': codeRef.current
-                    };
+                    // // TODO: modify this and go from there
+                    // let payload = {
+                    //     'user_id': null,
+                    //     'question_id': state.question_id,
+                    //     'code': codeRef.current
+                    // };
+                    
+                    payload['user_id'] = null;
+                    payload['code'] = codeRef.current;
                     saveUserCode(
                         userAccessToken,
                         payload
@@ -138,16 +146,20 @@ const NewCodeEditor = ({ }) => {
                 
                     // Anon Case
                     let anon_user_id = getFromLocalStorage("user_id");
-                    console.log('current-user-id:', anon_user_id);
 
-                    let payload = {
-                        'user_id': anon_user_id,
-                        'question_id': state.question_id,
-                        'code': codeRef.current
-                    };
+                    // let payload = {
+                    //     'user_id': anon_user_id,
+                    //     'question_id': state.question_id,
+                    //     'code': codeRef.current
+                    // };
 
+                    payload['user_id'] = anon_user_id;
+                    payload['code'] = codeRef.current;
                     dispatch({type: "UPDATE_CODE_STATE", code: codeRef.current});
-                    saveUserCode(null, payload);
+                    saveUserCode(
+                        null,
+                        payload
+                    );
 
                 }
 
@@ -164,7 +176,6 @@ const NewCodeEditor = ({ }) => {
 
 
     useEffect(() => {
-        console.log('current-state-code:', state.code);
 
         codeRef.current = state.code;
         setCurrentCode(state.code);

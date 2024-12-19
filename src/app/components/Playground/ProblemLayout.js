@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencil, faShuffle, faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faShuffle, faPlay, faSpinner, faSave, faMessage } from "@fortawesome/free-solid-svg-icons";
 
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
 import useUserContext from "@/lib/hooks/useUserContext";
 import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/localStorageUtils";
-import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomInitialPlaygroundQuestion';
+// import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomInitialPlaygroundQuestion';
 import { updateUserQuestion } from '@/lib/backend_api/updateUserQuestion';
 import { saveUserCode } from "@/lib/backend_api/saveUserCode";
 import addQIDParam from '@/lib/utils/addQidParam';
@@ -24,67 +24,64 @@ const ProblemLayout = ({ setActiveTab }) => {
     const { isAuthenticated, userAccessToken } = useUserContext();
     const { state, dispatch } = usePlaygroundContext();
 
-    const _handleShuffleQuestion = async () => {
+    // const _handleShuffleQuestion = async () => {
 
-        if (isAuthenticated) {
+    //     if (isAuthenticated) {
             
-            let rnd_question_dict = await getRandomInitialPlaygroundQuestion(
-                null, userAccessToken
-            );
-            console.log('Random Question Dict:', rnd_question_dict);
+    //         let rnd_question_dict = await getRandomInitialPlaygroundQuestion(
+    //             null, userAccessToken
+    //         );
 
-            if (rnd_question_dict['success'] === true){
+    //         if (rnd_question_dict['success'] === true){
 
-                const rnd_q_data = rnd_question_dict['data'];
-                console.log('data:', rnd_q_data);
+    //             const rnd_q_data = rnd_question_dict['data'];
                 
-                // Update URL Param
-                addQIDParam(rnd_q_data['question_id']);
+    //             // Update URL Param
+    //             addQIDParam(rnd_q_data['question_id']);
 
-                dispatch({
-                    type: "SET_QUESTION_INPUT_OUTPUT",
-                    question_id: rnd_q_data['question_id'],
-                    name: rnd_q_data['name'],
-                    question: rnd_q_data['text'],
-                    input_output_list: rnd_q_data['example_io_list'],
-                    code: rnd_q_data['starter_code'],
-                });
+    //             dispatch({
+    //                 type: "SET_QUESTION_INPUT_OUTPUT",
+    //                 question_id: rnd_q_data['question_id'],
+    //                 name: rnd_q_data['name'],
+    //                 question: rnd_q_data['text'],
+    //                 input_output_list: rnd_q_data['example_io_list'],
+    //                 code: rnd_q_data['starter_code'],
+    //             });
 
-            }
+    //         }
 
-        } else {
+    //     } else {
 
-            let current_user_id = getFromLocalStorage('user_id');
-            let rnd_question_dict = await getRandomInitialPlaygroundQuestion(current_user_id);
-            console.log('Random Question Dict:', rnd_question_dict);
+    //         let current_user_id = getFromLocalStorage('user_id');
+    //         let rnd_question_dict = await getRandomInitialPlaygroundQuestion(current_user_id);
 
-            if (rnd_question_dict['success'] === true){
+    //         if (rnd_question_dict['success'] === true){
 
-                let rnd_q_data = rnd_question_dict['data'];
+    //             let rnd_q_data = rnd_question_dict['data'];
                 
-                let tmp_d = {
-                    question_id: rnd_q_data['question_id'],
-                    name: rnd_q_data['name'],
-                    question: rnd_q_data['text'],
-                    input_output_list: rnd_q_data['example_io_list'],
-                    code: rnd_q_data['starter_code'],
-                };
-                saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
+    //             let tmp_d = {
+    //                 question_id: rnd_q_data['question_id'],
+    //                 name: rnd_q_data['name'],
+    //                 question: rnd_q_data['text'],
+    //                 input_output_list: rnd_q_data['example_io_list'],
+    //                 code: rnd_q_data['starter_code'],
+    //             };
+    //             saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
 
-                dispatch({
-                    type: "SET_QUESTION_INPUT_OUTPUT",
-                    question_id: rnd_q_data['question_id'],
-                    name: rnd_q_data['name'],
-                    question: rnd_q_data['text'],
-                    input_output_list: rnd_q_data['example_io_list'],
-                    code: rnd_q_data['starter_code'],
-                });
+    //             dispatch({
+    //                 type: "SET_QUESTION_INPUT_OUTPUT",
+    //                 question_id: rnd_q_data['question_id'],
+    //                 name: rnd_q_data['name'],
+    //                 question: rnd_q_data['text'],
+    //                 input_output_list: rnd_q_data['example_io_list'],
+    //                 code: rnd_q_data['starter_code'],
+    //             });
 
-            }
+    //         }
         
-        }
+    //     }
 
-    }
+    // }
 
     const [editing, setEditing] = useState(false);
     const [questionName, setQuestionName] = useState("");
@@ -94,7 +91,6 @@ const ProblemLayout = ({ setActiveTab }) => {
     const [currentProblemIOList, setCurrentProblemIOList] = useState([]);
 
     useEffect(() => {
-        console.log('PROBLEM STATE / QUESTIONS:', currentProblemState.input_output_list);
 
         setQuestionName(currentProblemState.name);
         setQuestionText(currentProblemState.question);
@@ -143,17 +139,19 @@ const ProblemLayout = ({ setActiveTab }) => {
         } else { 
     
             let current_anon_user_id = getFromLocalStorage("user_id");
-            console.log('current_anon_user_id:', current_anon_user_id);
-            
+
             // TODO:
             let response_data = await updateUserQuestion(
-                current_anon_user_id, current_question_id, current_q_name, current_q_text
+                null,
+                current_anon_user_id,
+                current_question_id,
+                current_q_name,
+                current_q_text
             );
-            console.log('response_data:', response_data);
-    
+
             // let response_data = await generateQuestionTestCases(current_q_name, current_q_text);
             // // console.log('response_data:', response_data);
-    
+
             if (response_data['success'] === true){
                 let response_json_data = response_data['data'];
                 let example_io_list = JSON.parse(response_json_data['example_io_list']);
@@ -287,6 +285,7 @@ const ProblemLayout = ({ setActiveTab }) => {
 
     // }
 
+
     // Run Code
     const handleRun = () => {
 
@@ -308,20 +307,31 @@ const ProblemLayout = ({ setActiveTab }) => {
 
         // // let current_user_code = codeStateTmpRef.current;
         let current_user_code = currentProblemState.code;
-    
-        console.log('current code:', current_user_code);
 
         // send request to run code
         _sendCodeExecutionRequest(current_user_code);
 
+        let payload = {
+            'question_id': state.question_id,
+            'question_name': state.name,
+            'question_text': state.question,
+            'example_input_output_list': state.input_output_list,
+        }
+
         // anon case - code saving
         if (isAuthenticated){
 
-            let payload = {
-                'user_id': null,
-                'question_id': state.question_id,
-                'code': current_user_code
-            }
+            // let payload = {
+            //     'user_id': null,
+            //     'question_id': state.question_id,
+            //     'question_name': state.name,
+            //     'question_text': state.question,
+            //     'example_input_output_list': state.input_output_list,
+            //     'code': current_user_code
+            // }
+
+            payload['user_id'] = null;
+            payload['code'] = current_user_code;
             saveUserCode(
                 userAccessToken,
                 payload
@@ -337,16 +347,16 @@ const ProblemLayout = ({ setActiveTab }) => {
             // _saveUserCodeInBackend(current_user_code);
 
             let anon_user_id = getFromLocalStorage("user_id");
-            console.log('current-user-id:', anon_user_id);
+            // let payload = {
+            //     'user_id': anon_user_id,
+            //     'question_id': state.question_id,
+            //     'code': current_user_code
+            // }
 
-            let payload = {
-                'user_id': anon_user_id,
-                'question_id': state.question_id,
-                'code': current_user_code
-            }
-            
+            payload['user_id'] = anon_user_id;
+            payload['code'] = current_user_code;
             saveUserCode(null, payload);
-            
+
         }
 
         // if (!isAuthenticated) {
@@ -401,7 +411,6 @@ const ProblemLayout = ({ setActiveTab }) => {
 
     // Chat with Tutor
     const chatWithTutor = () => {
-        console.log('set-active', setActiveTab)
         setActiveTab("chat");
     }
 
@@ -444,26 +453,6 @@ const ProblemLayout = ({ setActiveTab }) => {
                                         <FontAwesomeIcon icon={faPencil} className="pr-1"/> 
                                         edit question
                                     </span>
-                                    
-                                    {isAuthenticated ? (
-
-                                        <span
-                                            onClick={_handleShuffleQuestion}
-                                            className="text-[12px] text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-400 dark:hover:text-blue-400">
-                                            <FontAwesomeIcon icon={faShuffle} className="pr-1"/>
-                                            new question
-                                        </span>
-
-                                    ): (
-
-                                        <span
-                                            onClick={_handleShuffleQuestion}
-                                            className="text-[12px] text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-400 dark:hover:text-blue-400">
-                                            <FontAwesomeIcon icon={faShuffle} className="pr-1"/>
-                                            shuffle question
-                                        </span>
-
-                                    )}
                                     
                                 </div>
                             
@@ -577,7 +566,7 @@ const ProblemLayout = ({ setActiveTab }) => {
                     )}
 
                     
-                    <div className="space-x-2 pt-10">
+                    <div className="space-x-3 pt-8">
 
                         {/* Run Code Button */}
                         <button
@@ -593,18 +582,28 @@ const ProblemLayout = ({ setActiveTab }) => {
                             )}
                             {isRunLoading ? "Running..." : "Run Code"}
                         </button>
-                        
+
+                        {/* Save Code Button */}
+                        {/* <button
+                            disabled={isRunLoading}
+                            className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all 
+                                ${isRunLoading ? "bg-gray-500 cursor-not-allowed" : "bg-green-700 hover:bg-green-500 text-white"}`}
+                            >
+                            <FontAwesomeIcon icon={faSave} className="text-white pr-2" />
+                            Save Code
+                        </button> */}
+
                         {/* TODO: on feedback click -> route to tutor with message populated */}
                         {/* <Button
                             // onClick={submitCode}
                         >Get Feedback</Button> */}
                         
-                        <Button
+                        {/* <Button
                             onClick={chatWithTutor}
                             // className="bg-black text-white"
                         >
                             Chat with Tutor
-                        </Button>
+                        </Button> */}
 
                         <Button
                             // onClick={submitCode}
@@ -613,6 +612,12 @@ const ProblemLayout = ({ setActiveTab }) => {
                         >
                             Run Test Cases (coming soon...)
                         </Button>
+                    </div>
+
+                    <div className="mt-1">
+                    <span className="text-[11.5px] text-gray-600 dark:text-gray-500">
+                        Shortcut: (Ctrl / Cmd) + S to save code
+                    </span>
                     </div>
 
                 </div>

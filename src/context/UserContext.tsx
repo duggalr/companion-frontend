@@ -25,8 +25,6 @@ export const InternalUserProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(true);
     const { user, isLoading, error } = useUser();
 
-    console.log('IS AUTH ZERO LOADING:', isLoading);
-
     const _handleAnonUserValidation = async () => {
 
         const current_user_id = await getFromLocalStorage('user_id');

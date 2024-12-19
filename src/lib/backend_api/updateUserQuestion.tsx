@@ -3,9 +3,9 @@ import handleAPIFetch from "../utils/handleAPIFetch";
 const API_BACKEND_URL = process.env.NEXT_PUBLIC_API_BACKEND_URL;
 
 export async function updateUserQuestion(
-    access_token: string,
-    anon_user_id: string,
-    qid: string,
+    access_token: string | null,
+    anon_user_id: string | null,
+    qid: string | null,
     qname: string,
     qtext: string
 ) {
@@ -18,6 +18,8 @@ export async function updateUserQuestion(
         'question_name': qname,
         'question_text': qtext
     };
+
+    console.log('Q-UPDATE-PAYLOAD:', payload);
 
     const apiResponse = await handleAPIFetch(
         endPointUrl,

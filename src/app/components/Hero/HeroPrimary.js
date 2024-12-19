@@ -46,11 +46,9 @@ export default function HeroPrimary() {
 
     const _handleLPFormSubmit = async (e) => {
         e.preventDefault();
-        console.log('current-email:', currentLandingEmailRef.current);
 
         const user_email = currentLandingEmailRef.current;
         const saveRes = await saveLandingPageEmailSubmission(user_email);
-        console.log('save-res:', saveRes);
 
         setCurrentLandingSaved(true);
         _getEmailSubCount();
@@ -69,8 +67,6 @@ export default function HeroPrimary() {
 
     const _getEmailSubCount = async () => {
         const total_count_response = await getLPEmailSubmissionCount();
-
-        console.log('total-count-res:', total_count_response);
 
         if (total_count_response['success'] == true){
             setEmailSubmissionCount(total_count_response['number_of_email_submissions']);

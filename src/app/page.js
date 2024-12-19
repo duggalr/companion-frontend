@@ -12,7 +12,6 @@ export default function Home() {
     const userContext = useUserContext();
 
     const { user, isLoading, error } = useUser();
-    console.log('AUTH ZERO USER:', user);
 
     // Update page title
     useEffect(() => {

@@ -44,8 +44,6 @@ export default async function handleAPIFetch(endpoint_url, method, access_token,
 
             if (access_token !== null){
 
-                console.log('this one:', access_token)
-
                 apiResponse = await fetch(endpoint_url, {
                     method: method,
                     headers: {
@@ -69,11 +67,7 @@ export default async function handleAPIFetch(endpoint_url, method, access_token,
 
         }
         
-        console.log('api-response:', apiResponse);
-
         if (!apiResponse.ok) {
-            // console.error(`Error: ${apiResponse.statusText}`);
-            // return null;
             return {
                 'success': false,
                 'error_message': apiResponse.statusText
