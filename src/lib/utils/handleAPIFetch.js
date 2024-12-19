@@ -44,12 +44,15 @@ export default async function handleAPIFetch(endpoint_url, method, access_token,
 
             if (access_token !== null){
 
+                console.log('this one:', access_token)
+
                 apiResponse = await fetch(endpoint_url, {
                     method: method,
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                         "Content-Type": "application/json"
-                    }
+                    },
+                    body: JSON.stringify({})
                 });
 
             } else {
@@ -58,13 +61,16 @@ export default async function handleAPIFetch(endpoint_url, method, access_token,
                     method: method,
                     headers: {
                         "Content-Type": "application/json"
-                    }
+                    },
+                    body: JSON.stringify({})
                 });
 
             }
 
         }
         
+        console.log('api-response:', apiResponse);
+
         if (!apiResponse.ok) {
             // console.error(`Error: ${apiResponse.statusText}`);
             // return null;

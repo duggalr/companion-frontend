@@ -1,9 +1,11 @@
 import React, { createContext, useReducer, ReactNode, useEffect } from "react";
+import { useRouter } from 'next/navigation';
 import useUserContext from "@/lib/hooks/useUserContext";
 import { PlaygroundState } from "./types";
 import { playgroundReducer, PlaygroundAction } from "@/reducers/playgroundReducer";
 import { getFromLocalStorage, saveToLocalStorage } from "@/lib/utils/localStorageUtils";
 import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomInitialPlaygroundQuestion';
+import { fetchQuestionData } from '@/lib/backend_api/fetchQuestionData';
 
 // import useUserContext from "../lib/hooks/useUserContext";
 // import { PlaygroundState } from "./types";
@@ -21,6 +23,9 @@ interface PlaygroundContextType {
 export const PlaygroundContext = createContext<PlaygroundContextType | undefined>(undefined);
 
 export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
+    
+    const router = useRouter();
+
     const initialState: PlaygroundState = {
         question_id: "",
         name: "",
@@ -36,7 +41,7 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
     const {isAuthenticated, userAccessToken} = useUserContext();
 
     const addQIDParam = (current_qid: string) => {
-        window.history.pushState({}, '', `/playground?pid=${current_qid}`);
+        window.history.pushState({}, '', `/playground?qid=${current_qid}`);
     };
 
     const _setRandomQuestion = async () => {
@@ -44,6 +49,7 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
         if (isAuthenticated){
 
             const rnd_question_dict_response = await getRandomInitialPlaygroundQuestion(
+                null,
                 userAccessToken
             )
             if (rnd_question_dict_response['success'] === true){
@@ -69,7 +75,10 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
             const current_user_id = await getFromLocalStorage('user_id');
             console.log('Current User ID:', current_user_id);
 
-            const rnd_question_dict = await getRandomInitialPlaygroundQuestion(current_user_id);
+            const rnd_question_dict = await getRandomInitialPlaygroundQuestion(
+                current_user_id,
+                null
+            );
             console.log('Random Question Dict:', rnd_question_dict);
 
             if (rnd_question_dict['success'] === true){
@@ -100,6 +109,37 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
     }
 
+    const _setExistingQuestionData = async (question_object_id: string) => {
+        
+        let question_data_response = await fetchQuestionData(
+            question_object_id,
+            userAccessToken
+        );
+        console.log('q-data:', question_data_response);
+ 
+        if (question_data_response['success'] === true){
+            let qdata = question_data_response['data'];
+            console.log('qdata:', qdata);
+
+            dispatch({
+                type: "SET_QUESTION_INPUT_OUTPUT",
+                question_id: qdata['question_object_id'],
+                name: qdata['name'],
+                question: qdata['text'],
+                input_output_list: qdata['example_io_list'],
+                code: qdata['current_code'],
+            });
+
+        } else {
+
+            // // TODO: return 404?
+            // router.push("/404");
+
+        }
+
+    }
+
+
     // Load data from localStorage on initial load
     useEffect(() => {
 
@@ -112,9 +152,15 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
             const question_object_id = url_search_params.get('qid');
             console.log('Question Object ID Param:', question_object_id);
         
-            if (question_object_id !== undefined && question_object_id !== null){
-            
-                // TODO:
+            // if (question_object_id !== undefined && question_object_id !== null){
+            if (question_object_id){
+
+                // TODO: fetch question and it's data --> go from there (start with just the question)
+                console.log('question-id:', question_object_id);
+                // fetch_question_data
+
+                _setExistingQuestionData(question_object_id)
+
 
             } else {
 

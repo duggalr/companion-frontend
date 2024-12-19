@@ -3,10 +3,16 @@ import { useEffect } from "react";
 import useUserContext from "@/lib/hooks/useUserContext";
 import HeroNavBar from './components/Hero/HeroNavBar';
 import HeroPrimary from "./components/Hero/HeroPrimary";
+// import { UserContext } from "@auth0/nextjs-auth0/client";
+import { useUser } from "@auth0/nextjs-auth0/client";
+
 
 export default function Home() {
 
     const userContext = useUserContext();
+
+    const { user, isLoading, error } = useUser();
+    console.log('AUTH ZERO USER:', user);
 
     // Update page title
     useEffect(() => {
