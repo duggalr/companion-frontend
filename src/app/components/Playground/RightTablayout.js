@@ -1,6 +1,6 @@
 import { useState } from "react";
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faTerminal, faComments, faQuestion } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBook, faComments, faQuestion } from '@fortawesome/free-solid-svg-icons';
 // import useUserContext from "@/lib/hooks/useUserContext";
 import ProblemLayout from "@/app/components/Playground/ProblemLayout";
 import SubmissionLayout from "@/app/components/Playground/SubmissionLayout";
@@ -31,11 +31,11 @@ const RightTabLayout = ({ }) => {
                                 aria-current="page"
                                 onClick={() => setActiveTab("problem")}
                             >   
-                                {/* <FontAwesomeIcon 
-                                    icon={faQuestion}
+                                <FontAwesomeIcon 
+                                    icon={faBook}
                                     size="sm"
                                     className="pr-2 pl-0 text-gray-800 dark:text-gray-400"
-                                /> */}
+                                />
                                 Problem
                             </a>
             
@@ -46,11 +46,11 @@ const RightTabLayout = ({ }) => {
                                 className={`inline-block p-0 px-6 pb-2 pt-3 rounded-t-lg text-gray-600 dark:text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:hover:text-gray-300 cursor-pointer ${activeTab === "chat" ? "border-b-2 border-gray-300 text-gray-800 dark:text-blue-500 dark:border-blue-500 " : ""}`}
                                 onClick={() => setActiveTab("chat")}
                             >
-                                {/* <FontAwesomeIcon 
+                                <FontAwesomeIcon 
                                 icon={faComments}
                                 size="sm"
                                 className="pr-2 pl-0 text-gray-800 dark:text-gray-400"
-                                /> */}
+                                />
                                 Tutor
                             </a>
                         </li>
@@ -60,11 +60,11 @@ const RightTabLayout = ({ }) => {
                                 className={`inline-block p-0 px-6 pb-2 pt-3 rounded-t-lg text-gray-600 dark:text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:hover:text-gray-300 cursor-pointer ${activeTab === "submission" ? "border-b-2 border-gray-300 text-gray-800 dark:text-blue-500 dark:border-blue-500 " : ""}`}
                                 onClick={() => setActiveTab("submission")}
                             >
-                                {/* <FontAwesomeIcon 
+                                <FontAwesomeIcon 
                                 icon={faComments}
                                 size="sm"
                                 className="pr-2 pl-0 text-gray-800 dark:text-gray-400"
-                                /> */}
+                                />
                                 Submissions
                             </a>
                         </li>

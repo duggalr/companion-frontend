@@ -2,7 +2,13 @@ import handleAPIFetch from "../utils/handleAPIFetch";
 
 const API_BACKEND_URL = process.env.NEXT_PUBLIC_API_BACKEND_URL;
 
-export async function updateUserQuestion(anon_user_id: string, qid: string , qname: string, qtext: string) {
+export async function updateUserQuestion(
+    access_token: string,
+    anon_user_id: string,
+    qid: string,
+    qname: string,
+    qtext: string
+) {
 
     const endPointUrl = `${API_BACKEND_URL}/update_user_question`;
 
@@ -16,7 +22,7 @@ export async function updateUserQuestion(anon_user_id: string, qid: string , qna
     const apiResponse = await handleAPIFetch(
         endPointUrl,
         "POST",
-        null,
+        access_token,
         payload
     );
     return apiResponse;

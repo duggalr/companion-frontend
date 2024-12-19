@@ -6,6 +6,7 @@ import { playgroundReducer, PlaygroundAction } from "@/reducers/playgroundReduce
 import { getFromLocalStorage, saveToLocalStorage } from "@/lib/utils/localStorageUtils";
 import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomInitialPlaygroundQuestion';
 import { fetchQuestionData } from '@/lib/backend_api/fetchQuestionData';
+import addQIDParam from '@/lib/utils/addQidParam';
 
 // import useUserContext from "../lib/hooks/useUserContext";
 // import { PlaygroundState } from "./types";
@@ -37,12 +38,12 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const [state, dispatch] = useReducer(playgroundReducer, initialState);
-    
+
     const {isAuthenticated, userAccessToken} = useUserContext();
 
-    const addQIDParam = (current_qid: string) => {
-        window.history.pushState({}, '', `/playground?qid=${current_qid}`);
-    };
+    // const addQIDParam = (current_qid: string) => {
+    //     window.history.pushState({}, '', `/playground?qid=${current_qid}`);
+    // };
 
     const _setRandomQuestion = async () => {
         
@@ -111,6 +112,7 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
     const _setExistingQuestionData = async (question_object_id: string) => {
         
+        // TODO: review as this seems to be pulling the wrong data (start at dash)
         let question_data_response = await fetchQuestionData(
             question_object_id,
             userAccessToken
@@ -139,7 +141,6 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
     }
 
-
     // Load data from localStorage on initial load
     useEffect(() => {
 
@@ -157,9 +158,9 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
                 // TODO: fetch question and it's data --> go from there (start with just the question)
                 console.log('question-id:', question_object_id);
-                // fetch_question_data
 
-                _setExistingQuestionData(question_object_id)
+                // fetch_question_data
+                _setExistingQuestionData(question_object_id);
 
 
             } else {

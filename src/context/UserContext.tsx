@@ -81,7 +81,7 @@ export const InternalUserProvider = ({ children }: { children: ReactNode }) => {
                     'given_name': user['given_name'],
                     'family_name': user['family_name'],
                     'full_name': user['name'],
-                    'profile_picture_url': user['picture']                    
+                    'profile_picture_url': user['picture']
                 };
 
                 const user_valid_response = await validateAuthenticatedUser(

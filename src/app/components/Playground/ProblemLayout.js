@@ -11,6 +11,7 @@ import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/loca
 import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomInitialPlaygroundQuestion';
 import { updateUserQuestion } from '@/lib/backend_api/updateUserQuestion';
 import { saveUserCode } from "@/lib/backend_api/saveUserCode";
+import addQIDParam from '@/lib/utils/addQidParam';
 
 
 const ProblemLayout = ({ setActiveTab }) => {
@@ -20,36 +21,67 @@ const ProblemLayout = ({ setActiveTab }) => {
     const playgroundContext = usePlaygroundContext();
     let currentProblemState = playgroundContext.state;
 
-    const { isAuthenticated } = useUserContext();
+    const { isAuthenticated, userAccessToken } = useUserContext();
     const { state, dispatch } = usePlaygroundContext();
 
     const _handleShuffleQuestion = async () => {
-        let current_user_id = getFromLocalStorage('user_id');
-        let rnd_question_dict = await getRandomInitialPlaygroundQuestion(current_user_id);
-        console.log('Random Question Dict:', rnd_question_dict);
 
-        if (rnd_question_dict['success'] === true){
-
-            let rnd_q_data = rnd_question_dict['data'];
+        if (isAuthenticated) {
             
-            let tmp_d = {
-                question_id: rnd_q_data['question_id'],
-                name: rnd_q_data['name'],
-                question: rnd_q_data['text'],
-                input_output_list: rnd_q_data['example_io_list'],
-                code: rnd_q_data['starter_code'],
-            };
-            saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
+            let rnd_question_dict = await getRandomInitialPlaygroundQuestion(
+                null, userAccessToken
+            );
+            console.log('Random Question Dict:', rnd_question_dict);
 
-            dispatch({
-                type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: rnd_q_data['question_id'],
-                name: rnd_q_data['name'],
-                question: rnd_q_data['text'],
-                input_output_list: rnd_q_data['example_io_list'],
-                code: rnd_q_data['starter_code'],
-            });
+            if (rnd_question_dict['success'] === true){
 
+                const rnd_q_data = rnd_question_dict['data'];
+                console.log('data:', rnd_q_data);
+                
+                // Update URL Param
+                addQIDParam(rnd_q_data['question_id']);
+
+                dispatch({
+                    type: "SET_QUESTION_INPUT_OUTPUT",
+                    question_id: rnd_q_data['question_id'],
+                    name: rnd_q_data['name'],
+                    question: rnd_q_data['text'],
+                    input_output_list: rnd_q_data['example_io_list'],
+                    code: rnd_q_data['starter_code'],
+                });
+
+            }
+
+        } else {
+
+            let current_user_id = getFromLocalStorage('user_id');
+            let rnd_question_dict = await getRandomInitialPlaygroundQuestion(current_user_id);
+            console.log('Random Question Dict:', rnd_question_dict);
+
+            if (rnd_question_dict['success'] === true){
+
+                let rnd_q_data = rnd_question_dict['data'];
+                
+                let tmp_d = {
+                    question_id: rnd_q_data['question_id'],
+                    name: rnd_q_data['name'],
+                    question: rnd_q_data['text'],
+                    input_output_list: rnd_q_data['example_io_list'],
+                    code: rnd_q_data['starter_code'],
+                };
+                saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
+
+                dispatch({
+                    type: "SET_QUESTION_INPUT_OUTPUT",
+                    question_id: rnd_q_data['question_id'],
+                    name: rnd_q_data['name'],
+                    question: rnd_q_data['text'],
+                    input_output_list: rnd_q_data['example_io_list'],
+                    code: rnd_q_data['starter_code'],
+                });
+
+            }
+        
         }
 
     }
@@ -62,8 +94,8 @@ const ProblemLayout = ({ setActiveTab }) => {
     const [currentProblemIOList, setCurrentProblemIOList] = useState([]);
 
     useEffect(() => {
-
         console.log('PROBLEM STATE / QUESTIONS:', currentProblemState.input_output_list);
+
         setQuestionName(currentProblemState.name);
         setQuestionText(currentProblemState.question);
         setCurrentProblemIOList(currentProblemState.input_output_list);
@@ -92,8 +124,21 @@ const ProblemLayout = ({ setActiveTab }) => {
 
         if (isAuthenticated) {
 
-            // userAccessToken
-            // TODO:
+            let response_data = await updateUserQuestion(
+                userAccessToken,
+                null,
+                current_question_id,
+                current_q_name,
+                current_q_text
+            );
+
+            if (response_data['success'] === true){
+                let response_json_data = response_data['data'];
+                let example_io_list = JSON.parse(response_json_data['example_io_list']);
+    
+                setCurrentProblemIOList(example_io_list);
+                setInputOutputLoading(false);
+            }
 
         } else { 
     
@@ -270,7 +315,19 @@ const ProblemLayout = ({ setActiveTab }) => {
         _sendCodeExecutionRequest(current_user_code);
 
         // anon case - code saving
-        if (!isAuthenticated) {
+        if (isAuthenticated){
+
+            let payload = {
+                'user_id': null,
+                'question_id': state.question_id,
+                'code': current_user_code
+            }
+            saveUserCode(
+                userAccessToken,
+                payload
+            );
+
+        } else {
 
             dispatch({
                 type: "UPDATE_CODE_STATE",
@@ -289,8 +346,30 @@ const ProblemLayout = ({ setActiveTab }) => {
             }
             
             saveUserCode(null, payload);
-
+            
         }
+
+        // if (!isAuthenticated) {
+
+        //     dispatch({
+        //         type: "UPDATE_CODE_STATE",
+        //         code: current_user_code,
+        //     });
+
+        //     // _saveUserCodeInBackend(current_user_code);
+
+        //     let anon_user_id = getFromLocalStorage("user_id");
+        //     console.log('current-user-id:', anon_user_id);
+
+        //     let payload = {
+        //         'user_id': anon_user_id,
+        //         'question_id': state.question_id,
+        //         'code': current_user_code
+        //     }
+            
+        //     saveUserCode(null, payload);
+
+        // }
       
     };
 
@@ -346,7 +425,7 @@ const ProblemLayout = ({ setActiveTab }) => {
                                 value={questionName}
                                 onChange={(e) => _handleQuestionNameChange(e)}
                                 // className="bg-transparent border-b-2 border-gray-400 outline-none w-1/2 text-[16px]"
-                                className="bg-transparent text-[15px] border-b-2 border-gray-300 outline-none w-1/2"
+                                className="bg-transparent text-[15px] border-b-2 border-gray-300 outline-none w-3/4"
                                 autoFocus
                             />
 
@@ -365,12 +444,27 @@ const ProblemLayout = ({ setActiveTab }) => {
                                         <FontAwesomeIcon icon={faPencil} className="pr-1"/> 
                                         edit question
                                     </span>
-                                    <span
-                                        onClick={_handleShuffleQuestion}
-                                        className="text-[12px] text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-400 dark:hover:text-blue-400">
-                                        <FontAwesomeIcon icon={faShuffle} className="pr-1"/>
-                                        shuffle question
-                                    </span>
+                                    
+                                    {isAuthenticated ? (
+
+                                        <span
+                                            onClick={_handleShuffleQuestion}
+                                            className="text-[12px] text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-400 dark:hover:text-blue-400">
+                                            <FontAwesomeIcon icon={faShuffle} className="pr-1"/>
+                                            new question
+                                        </span>
+
+                                    ): (
+
+                                        <span
+                                            onClick={_handleShuffleQuestion}
+                                            className="text-[12px] text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-400 dark:hover:text-blue-400">
+                                            <FontAwesomeIcon icon={faShuffle} className="pr-1"/>
+                                            shuffle question
+                                        </span>
+
+                                    )}
+                                    
                                 </div>
                             
                             </>
@@ -448,7 +542,7 @@ const ProblemLayout = ({ setActiveTab }) => {
                                 </svg>
                                 <span className="sr-only">Loading...</span>
                             </div>
-                            <p className="mt-2 text-gray-600 dark:text-gray-400 text-sm">Loading examples...</p>
+                            <p className="mt-2 text-gray-600 dark:text-gray-400 text-sm">Generating new examples...</p>
                         </div>
 
                     ): (
