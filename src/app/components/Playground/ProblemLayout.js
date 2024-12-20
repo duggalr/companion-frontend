@@ -3,14 +3,14 @@ import { useEffect, useState } from "react";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencil, faShuffle, faPlay, faSpinner, faSave, faMessage } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
 import useUserContext from "@/lib/hooks/useUserContext";
 import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/localStorageUtils";
 // import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomInitialPlaygroundQuestion';
 import { updateUserQuestion } from '@/lib/backend_api/updateUserQuestion';
-import { saveUserCode } from "@/lib/backend_api/saveUserCode";
+// import { saveUserCode } from "@/lib/backend_api/saveUserCode";
 import addQIDParam from '@/lib/utils/addQidParam';
 import { _handleUserSaveCode } from "@/lib/utils/handleSaveUserCode";
 
@@ -305,7 +305,6 @@ const ProblemLayout = ({ setActiveTab }) => {
             userAccessToken,
             payload
         );
-        console.log('user_save_code_dict-NEW:', user_save_code_response_dict);
 
         if (isAuthenticated){
 

@@ -48,7 +48,7 @@ export default function HeroPrimary() {
         e.preventDefault();
 
         const user_email = currentLandingEmailRef.current;
-        const saveRes = await saveLandingPageEmailSubmission(user_email);
+        await saveLandingPageEmailSubmission(user_email);
 
         setCurrentLandingSaved(true);
         _getEmailSubCount();

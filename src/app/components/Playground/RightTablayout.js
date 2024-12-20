@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBook, faComments, faQuestion, faShuffle, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faComments, faShuffle, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { saveToLocalStorage, getFromLocalStorage, removeFromLocalStorage } from  '@/lib/utils/localStorageUtils';
 import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomInitialPlaygroundQuestion';
 import useUserContext from "@/lib/hooks/useUserContext";
@@ -9,7 +9,7 @@ import handleRandomQuestionSet from "@/lib/utils/handleRandomQuestionSet";
 import ProblemLayout from "@/app/components/Playground/ProblemLayout";
 import SubmissionLayout from "@/app/components/Playground/SubmissionLayout";
 import NewChatInterface from '@/app/components/Playground/NewChatInterface';
-import addQIDParam from '@/lib/utils/addQidParam';
+// import addQIDParam from '@/lib/utils/addQidParam';
 
 
 const RightTabLayout = ({ }) => {
@@ -68,7 +68,7 @@ const RightTabLayout = ({ }) => {
 
     };
 
-    const { state, dispatch } = usePlaygroundContext();
+    const { dispatch } = usePlaygroundContext();
 
     const _handleShuffleQuestion = async () => {
 
@@ -81,7 +81,6 @@ const RightTabLayout = ({ }) => {
             if (rnd_question_dict['success'] === true){
 
                 const rnd_q_data = rnd_question_dict['data'];
-                console.log('rnd_q_data:', rnd_q_data);
 
                 dispatch({
                     type: "SET_QUESTION_INPUT_OUTPUT",
@@ -98,7 +97,6 @@ const RightTabLayout = ({ }) => {
 
             let current_user_id = getFromLocalStorage('user_id');
             let rnd_question_set_response = await handleRandomQuestionSet(current_user_id);
-            console.log('rnd_question_set_response', rnd_question_set_response);
 
             dispatch({
                 type: "SET_QUESTION_INPUT_OUTPUT",

@@ -23,7 +23,7 @@ export const InternalUserProvider = ({ children }: { children: ReactNode }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userAccessToken, setUserAccessToken] = useState(null);
     const [loading, setLoading] = useState(true);
-    const { user, isLoading, error } = useUser();
+    const { user, isLoading } = useUser();
 
     const _handleAnonUserValidation = async () => {
 
@@ -72,7 +72,7 @@ export const InternalUserProvider = ({ children }: { children: ReactNode }) => {
         try {
             const user_access_token = await getUserAccessToken();
             if (user_access_token) {
-                let user_profile_information = {
+                const user_profile_information = {
                     'email': user['email'],
                     'email_verified': user['email_verified'],
                     'sub_id': user['sub'],

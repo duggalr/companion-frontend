@@ -75,7 +75,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
         } else {
 
-            let current_user_id = getFromLocalStorage("user_id");
+            const current_user_id = getFromLocalStorage("user_id");
             qdict = {
                 "user_id": current_user_id,
                 "question_id": state.question_id,
@@ -88,13 +88,12 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
         if (state.question_id === null){
 
-            let save_user_response = await saveUserQuestion(
+            const save_user_response = await saveUserQuestion(
                 userAccessToken,
                 qdict
             );
-            console.log('save_user_response', save_user_response);
     
-            let new_question_object_id = save_user_response['data']['question_id'];
+            const new_question_object_id = save_user_response['data']['question_id'];
     
             dispatch({
                 type: "SET_QUESTION_INPUT_OUTPUT",
@@ -142,14 +141,12 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             }
         }
 
-        let new_question_object_id = state.question_id;
-        console.log('new_question_object_id-NEW:', new_question_object_id);
+        const new_question_object_id = state.question_id;
         
-        let qid = await _handleGetUserQuestion(
+        const qid = await _handleGetUserQuestion(
             // new_question_object_id,
             // isAuthenticated
         );
-        console.log('QID-NEW:', qid);
 
         if (isAuthenticated){
 
@@ -240,7 +237,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     const _handleAuthenticatedChatMessageInitialization = async (question_object_id: string) => {
 
-        let user_chat_msg_list = await fetchChatMessages(
+        const user_chat_msg_list = await fetchChatMessages(
             userAccessToken,
             question_object_id
         );

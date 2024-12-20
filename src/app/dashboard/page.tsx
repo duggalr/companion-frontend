@@ -1,14 +1,9 @@
 "use client";
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import useUserContext from "@/lib/hooks/useUserContext";
 import TopNavBar from '@/app/components/Utils/TopNavBar';
 import DashboardLayout from '@/app/components/Dashboard/DashboardLayout';
-
-// import TopNavBar from '../components/Utils/TopNavBar';
-// import DashboardLayout from '../components/Dashboard/DashboardLayout';
-// import { UserContext } from '../../context/UserContext';
-// // import { validAuthenticatedUser } from '@/lib/api/checkAuthenticatedUser';
 
 
 export default function Dashboard() {

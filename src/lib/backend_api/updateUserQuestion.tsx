@@ -19,8 +19,6 @@ export async function updateUserQuestion(
         'question_text': qtext
     };
 
-    console.log('Q-UPDATE-PAYLOAD:', payload);
-
     const apiResponse = await handleAPIFetch(
         endPointUrl,
         "POST",

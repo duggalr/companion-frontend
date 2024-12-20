@@ -5,8 +5,6 @@ const API_BACKEND_URL = process.env.NEXT_PUBLIC_API_BACKEND_URL;
 export async function saveUserQuestion(accessToken, payload) {
 
     const endPointUrl = API_BACKEND_URL + '/save_user_question';
-    
-    console.log('SAVE USER CODE PAYLOAD:', payload);
 
     const apiResponse = await handleAPIFetch(
         endPointUrl,

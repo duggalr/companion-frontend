@@ -35,9 +35,9 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
         }
     }, [accessToken, userAuthenticated]);
 
-    const handleRename = (index) => {
-        setEditingIndex(index);
-    };
+    // const handleRename = (index) => {
+    //     setEditingIndex(index);
+    // };
 
     const handleInputChange = (e, index) => {
         const updatedFileNames = [...fileNames];

@@ -1,20 +1,13 @@
 import React, { createContext, useReducer, ReactNode, useEffect } from "react";
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import useUserContext from "@/lib/hooks/useUserContext";
 import { PlaygroundState } from "./types";
 import { playgroundReducer, PlaygroundAction } from "@/reducers/playgroundReducer";
-import { getFromLocalStorage, saveToLocalStorage } from "@/lib/utils/localStorageUtils";
+import { getFromLocalStorage } from "@/lib/utils/localStorageUtils";
 import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomInitialPlaygroundQuestion';
 import { fetchQuestionData } from '@/lib/backend_api/fetchQuestionData';
-import addQIDParam from '@/lib/utils/addQidParam';
 import handleRandomQuestionSet from "@/lib/utils/handleRandomQuestionSet";
-
-// import useUserContext from "../lib/hooks/useUserContext";
-// import { PlaygroundState } from "./types";
-// import { playgroundReducer, PlaygroundAction } from "../reducers/playgroundReducer";
-// // import { INITIAL_QUESTION_LIST } from "../lib/constants/initial_question_list";
-// import { getFromLocalStorage, saveToLocalStorage } from '../lib/utils/localStorageUtils';
-// import { getRandomInitialPlaygroundQuestion } from '../lib/api/getRandomInitialPlaygroundQuestion';
+// import addQIDParam from '@/lib/utils/addQidParam';
 
 
 interface PlaygroundContextType {
@@ -26,7 +19,7 @@ export const PlaygroundContext = createContext<PlaygroundContextType | undefined
 
 export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
     
-    const router = useRouter();
+    // const router = useRouter();
 
     const initialState: PlaygroundState = {
         question_id: "",
@@ -76,8 +69,7 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
             const current_user_id = await getFromLocalStorage('user_id');
 
-            let rnd_question_set_response = await handleRandomQuestionSet(current_user_id);
-            console.log('rnd_question_set_response', rnd_question_set_response);
+            const rnd_question_set_response = await handleRandomQuestionSet(current_user_id);
 
             if (rnd_question_set_response){
 
@@ -99,13 +91,13 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
     const _setExistingQuestionData = async (question_object_id: string) => {
         
         // TODO: review as this seems to be pulling the wrong data (start at dash)
-        let question_data_response = await fetchQuestionData(
+        const question_data_response = await fetchQuestionData(
             question_object_id,
             userAccessToken
         );
  
         if (question_data_response['success'] === true){
-            let qdata = question_data_response['data'];
+            const qdata = question_data_response['data'];
 
             dispatch({
                 type: "SET_QUESTION_INPUT_OUTPUT",
@@ -176,9 +168,6 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
             const current_pg_qdict = getFromLocalStorage('playground_question_dict');
             if (current_pg_qdict){
                 const current_pg_qdict_json = JSON.parse(current_pg_qdict);
-
-                console.log('current_pg_qdict_json;', current_pg_qdict_json);
-
                 dispatch({
                     type: "SET_QUESTION_INPUT_OUTPUT",
                     question_id: current_pg_qdict_json['question_id'],

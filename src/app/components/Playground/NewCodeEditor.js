@@ -4,7 +4,7 @@ import Editor from "@monaco-editor/react";
 import useUserContext from "@/lib/hooks/useUserContext";
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
 import { getFromLocalStorage, saveToLocalStorage } from "@/lib/utils/localStorageUtils";
-import { saveUserCode } from "@/lib/backend_api/saveUserCode";
+// import { saveUserCode } from "@/lib/backend_api/saveUserCode";
 import { _handleUserSaveCode } from "@/lib/utils/handleSaveUserCode";
 import addQIDParam from '@/lib/utils/addQidParam';
 
@@ -149,7 +149,6 @@ const NewCodeEditor = ({ }) => {
             userAccessToken,
             payload
         );
-        console.log('user_save_code_dict-NEW:', user_save_code_response_dict);
 
         if (isAuthenticated){
 

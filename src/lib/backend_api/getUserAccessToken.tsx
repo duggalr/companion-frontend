@@ -10,7 +10,7 @@ export async function getUserAccessToken(){
     )
 
     if ('accessToken' in res){
-        let access_token = res['accessToken'];
+        const access_token = res['accessToken'];
         return access_token;
     } else {
         return null;
