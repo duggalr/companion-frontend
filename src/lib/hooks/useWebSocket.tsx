@@ -237,33 +237,36 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     const _handleAuthenticatedChatMessageInitialization = async (question_object_id: string) => {
 
-        const user_chat_msg_list = await fetchChatMessages(
-            userAccessToken,
-            question_object_id
-        );
+        if (userAccessToken){
+            const user_chat_msg_list = await fetchChatMessages(
+                userAccessToken,
+                question_object_id
+            );
 
-        if (user_chat_msg_list['data'].length > 0){
+            if (user_chat_msg_list['data'].length > 0){
 
-            // const messageForBackend = {
-            //     parent_question_object_id: state.question_id,
-            //     current_problem_name: state.name,
-            //     current_problem_question: state.question,
-            //     text: current_user_message,
-            //     user_code: user_current_code,
-            //     all_user_messages_str: all_chat_messages_str,
-            //     sender: 'user',
-            //     type: 'user_message',
-            // };
-            setMessages(user_chat_msg_list['data']);
-
-        } else {
-
-            setMessages([{
-                text: `Welcome! 😄 I'm Companion, your personal programming tutor.
-
-If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
-                sender: "bot",
-            }]);
+                // const messageForBackend = {
+                //     parent_question_object_id: state.question_id,
+                //     current_problem_name: state.name,
+                //     current_problem_question: state.question,
+                //     text: current_user_message,
+                //     user_code: user_current_code,
+                //     all_user_messages_str: all_chat_messages_str,
+                //     sender: 'user',
+                //     type: 'user_message',
+                // };
+                setMessages(user_chat_msg_list['data']);
+    
+            } else {
+    
+                setMessages([{
+                    text: `Welcome! 😄 I'm Companion, your personal programming tutor.
+    
+    If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
+                    sender: "bot",
+                }]);
+    
+            }
 
         }
 
