@@ -71,7 +71,7 @@ export const InternalUserProvider = ({ children }: { children: ReactNode }) => {
 
         try {
             const user_access_token = await getUserAccessToken();
-            if (user_access_token) {
+            if (user_access_token && user) {
                 const user_profile_information = {
                     'email': user['email'],
                     'email_verified': user['email_verified'],
