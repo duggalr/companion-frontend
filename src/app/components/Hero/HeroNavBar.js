@@ -17,7 +17,7 @@ const pacifico_font = Pacifico({
 // { userAuthenticated }: HeroNavBarProps
 
 // export default function HeroNavBar({ userAuthenticated }: boolean): JSX.Element {
-export default function HeroNavBar(userAuthenticated){
+export default function HeroNavBar({ userAuthenticated }){
 
     const DISCORD_CHANNEL_URL = process.env.NEXT_PUBLIC_DISCORD_CHAT_URL;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
