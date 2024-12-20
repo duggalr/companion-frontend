@@ -141,7 +141,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             }
         }
 
-        const new_question_object_id = state.question_id;
+        // const new_question_object_id = state.question_id;
         
         const qid = await _handleGetUserQuestion(
             // new_question_object_id,

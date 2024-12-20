@@ -8,14 +8,12 @@ import { faPencil, faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
 import useUserContext from "@/lib/hooks/useUserContext";
 import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/localStorageUtils";
-// import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomInitialPlaygroundQuestion';
 import { updateUserQuestion } from '@/lib/backend_api/updateUserQuestion';
-// import { saveUserCode } from "@/lib/backend_api/saveUserCode";
 import addQIDParam from '@/lib/utils/addQidParam';
 import { _handleUserSaveCode } from "@/lib/utils/handleSaveUserCode";
 
 
-const ProblemLayout = ({ setActiveTab }) => {
+const ProblemLayout = ({ }) => {
 
     const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_API_BACKEND_URL;
 
@@ -24,66 +22,6 @@ const ProblemLayout = ({ setActiveTab }) => {
 
     const { isAuthenticated, userAccessToken } = useUserContext();
     const { state, dispatch } = usePlaygroundContext();
-
-    // const _handleShuffleQuestion = async () => {
-
-    //     if (isAuthenticated) {
-            
-    //         let rnd_question_dict = await getRandomInitialPlaygroundQuestion(
-    //             null, userAccessToken
-    //         );
-
-    //         if (rnd_question_dict['success'] === true){
-
-    //             const rnd_q_data = rnd_question_dict['data'];
-                
-    //             // Update URL Param
-    //             addQIDParam(rnd_q_data['question_id']);
-
-    //             dispatch({
-    //                 type: "SET_QUESTION_INPUT_OUTPUT",
-    //                 question_id: rnd_q_data['question_id'],
-    //                 name: rnd_q_data['name'],
-    //                 question: rnd_q_data['text'],
-    //                 input_output_list: rnd_q_data['example_io_list'],
-    //                 code: rnd_q_data['starter_code'],
-    //             });
-
-    //         }
-
-    //     } else {
-
-    //         let current_user_id = getFromLocalStorage('user_id');
-    //         let rnd_question_dict = await getRandomInitialPlaygroundQuestion(current_user_id);
-
-    //         if (rnd_question_dict['success'] === true){
-
-    //             let rnd_q_data = rnd_question_dict['data'];
-                
-    //             let tmp_d = {
-    //                 question_id: rnd_q_data['question_id'],
-    //                 name: rnd_q_data['name'],
-    //                 question: rnd_q_data['text'],
-    //                 input_output_list: rnd_q_data['example_io_list'],
-    //                 code: rnd_q_data['starter_code'],
-    //             };
-    //             saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
-
-    //             dispatch({
-    //                 type: "SET_QUESTION_INPUT_OUTPUT",
-    //                 question_id: rnd_q_data['question_id'],
-    //                 name: rnd_q_data['name'],
-    //                 question: rnd_q_data['text'],
-    //                 input_output_list: rnd_q_data['example_io_list'],
-    //                 code: rnd_q_data['starter_code'],
-    //             });
-
-    //         }
-        
-    //     }
-
-    // }
-
     const [editing, setEditing] = useState(false);
     const [questionName, setQuestionName] = useState("");
     const [questionText, setQuestionText] = useState("");
@@ -253,52 +191,6 @@ const ProblemLayout = ({ setActiveTab }) => {
         }
     };
 
-
-    // const _saveUserCodeInBackend = async (current_code) => {
-
-    //     let current_user_id = getFromLocalStorage("user_id");
-    //     let current_parent_playground_object_id = getFromLocalStorage("parent_playground_object_id");
-
-    //     // // TODO: need to update
-    //     // let user_id = localStorage.getItem("user_id");
-    //     // // let current_code_state = localStorage.getItem("user_generated_code");
-    //     // let user_programming_language = localStorage.getItem("user_programming_language");
-    //     // let current_code_state = JSON.parse(localStorage.getItem("user_generated_code_dict"))[user_programming_language];
-    //     // let current_parent_playground_object_id = localStorage.getItem("parent_playground_object_id");
-  
-    //     let payload;
-    //     if (current_parent_playground_object_id !== null){
-    //         payload = {
-    //             user_id: current_user_id,
-    //             programming_language: "python",
-    //             code_state: current_code,
-    //             parent_playground_object_id: current_parent_playground_object_id
-    //         };
-    //     } else {
-    //         payload = {
-    //             user_id: current_user_id,
-    //             programming_language: "python",
-    //             code_state: current_code,
-    //         };
-    //     }
-
-    //     let saveCodeRes = await saveUserRunCode(
-    //         null,
-    //         payload
-    //     );
-        
-    //     console.log('saved-code-response:', saveCodeRes);
-
-    //     if (saveCodeRes['status_code'] === 200){
-
-    //         let parent_playground_object_id = saveCodeRes['parent_playground_object_id'];
-    //         saveToLocalStorage("parent_playground_object_id", parent_playground_object_id);
-
-    //     }
-
-    // }
-
-
     const handleSaveCodeInternal = async (payload) => {
 
         let user_save_code_response_dict = await _handleUserSaveCode(
@@ -346,14 +238,6 @@ const ProblemLayout = ({ setActiveTab }) => {
     // Run Code
     const handleRun = () => {
 
-        // dispatch({
-        //     type: "SET_QUESTION_INPUT_OUTPUT",
-        //     name: current_q_name,
-        //     question: current_q_text,
-        //     input_output_list: model_resp_array,
-        //     code: currentProblemState.code
-        // });
-
         dispatch({
             type: "UPDATE_CONSOLE_OUTPUT",
             output: "loading..."
@@ -383,46 +267,12 @@ const ProblemLayout = ({ setActiveTab }) => {
         // anon case - code saving
         if (isAuthenticated){
 
-            // let payload = {
-            //     'user_id': null,
-            //     'question_id': state.question_id,
-            //     'question_name': state.name,
-            //     'question_text': state.question,
-            //     'example_input_output_list': state.input_output_list,
-            //     'code': current_user_code
-            // }
-
             payload['user_id'] = null;
             payload['code'] = current_user_code;
-            // saveUserCode(
-            //     userAccessToken,
-            //     payload
-            // );
 
             handleSaveCodeInternal(
                 payload
             )
-
-            // // TODO: start here by abstracting save-user-code (use the same in newcodeeditor and here; proceed from there)
-
-            // dispatch({
-            //     type: "SET_QUESTION_INPUT_OUTPUT",
-            //     question_id: question_object_id,
-            //     name: state.name,
-            //     question: state.question,
-            //     input_output_list: state.input_output_list,
-            //     code: codeRef.current
-            // });
-
-            // let tmp_d = {
-            //     question_id: question_object_id,
-            //     name: state.name,
-            //     question: state.question,
-            //     input_output_list: state.input_output_list,
-            //     code: codeRef.current
-            // };
-
-            // // TODO:  need to dispatch with new q-id just in case it wasn't before
 
         } else {
 
@@ -444,61 +294,8 @@ const ProblemLayout = ({ setActiveTab }) => {
             );
 
         }
-
-        // if (!isAuthenticated) {
-
-        //     dispatch({
-        //         type: "UPDATE_CODE_STATE",
-        //         code: current_user_code,
-        //     });
-
-        //     // _saveUserCodeInBackend(current_user_code);
-
-        //     let anon_user_id = getFromLocalStorage("user_id");
-        //     console.log('current-user-id:', anon_user_id);
-
-        //     let payload = {
-        //         'user_id': anon_user_id,
-        //         'question_id': state.question_id,
-        //         'code': current_user_code
-        //     }
-            
-        //     saveUserCode(null, payload);
-
-        // }
       
     };
-
-    // // Submit Code
-    // const submitCode = async () => {
-
-    //     console.log('submit code');
-    //     let current_parent_playground_object_id = getFromLocalStorage("parent_playground_object_id");
-    //     let current_user_code = currentProblemState.code;
-    //     let unique_question_id = currentProblemState.question_id;
-
-    //     // TODO: get current qid and then, start here
-
-    //     let d = {
-    //         'current_pg_object_id': current_parent_playground_object_id,
-    //         'current_user_code': current_user_code,
-    //         'unique_question_id': unique_question_id
-    //     }
-    //     // TODO:
-    //         // Submit to backend
-    //             // First save code
-    //             // Then implement function to execute tests
-    //             // Go from there
-
-    //     submitUserCode(d);
-    //     // TODO: get results and svae them in playground state --> redirect to submission-component and go from there
-
-    // }
-
-    // Chat with Tutor
-    const chatWithTutor = () => {
-        setActiveTab("chat");
-    }
 
     return (
 
@@ -627,33 +424,6 @@ const ProblemLayout = ({ setActiveTab }) => {
 
                     ): (
 
-                        // currentProblemIOList.map((item, idx) => {
-                        
-                        //     return (
-                        //         <div className="pt-4 pb-2 dark:text-gray-300" key={idx}>
-                        //             <p className="font-semibold pb-2 text-[15px]">Example {idx}:</p>
-                        //             <div className="relative flex pl-4">
-                        //                 <div className="absolute left-0 top-0 h-full w-[1.5px] bg-gray-400" />
-                        //                 <div>
-                        //                     <p className="pt-0 text-[14px]">
-                        //                         <span className="font-semibold pr-1">Input:</span>
-                        //                         {item.input}
-                        //                     </p>
-                        //                     <p className="pt-2 text-[14px]">
-                        //                         <span className="font-semibold pr-1">Output:</span>
-                        //                         {item.output}
-                        //                     </p>
-                        //                     <p className="pt-2 text-[14px]">
-                        //                         <span className="font-semibold pr-1">Explanation:</span>
-                        //                         {item.explanation}
-                        //                     </p>
-                        //                 </div>
-                        //             </div>
-                        //         </div>
-                        //     )
-    
-                        // })
-
                         currentProblemIOList.length > 0 ? (
                             currentProblemIOList.map((item, idx) => {
                                 return (
@@ -682,7 +452,7 @@ const ProblemLayout = ({ setActiveTab }) => {
                         ) : (
                         
                             <p className="px-1 pt-6 leading-7 text-[14px] text-gray-900 dark:text-gray-300">
-                                When you 'enter a new question' (by clicking the 'edit question' above), if applicable, expected input / output pairs will be generated and shown here...
+                                When you enter a new question (by clicking the edit question above), if applicable, expected input / output pairs will be generated and shown here...
                             </p>
                         )
     
