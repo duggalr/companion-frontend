@@ -29,7 +29,7 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
                 question: action.question,
                 input_output_list: action.input_output_list,
                 code: action.code,
-                console_output: state.console_output,                
+                console_output: state.console_output,
             }
         }
 

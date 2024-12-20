@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBook, faComments, faQuestion, faShuffle, faPlus } from '@fortawesome/free-solid-svg-icons';
 // import useUserContext from "@/lib/hooks/useUserContext";
-import { saveToLocalStorage, getFromLocalStorage } from  '@/lib/utils/localStorageUtils';
+import { saveToLocalStorage, getFromLocalStorage, removeFromLocalStorage } from  '@/lib/utils/localStorageUtils';
 import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomInitialPlaygroundQuestion';
 import useUserContext from "@/lib/hooks/useUserContext";
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
@@ -19,8 +19,45 @@ const RightTabLayout = ({ }) => {
     const {isAuthenticated, userAccessToken} = useUserContext();
 
     const _handleNewBlankQuestion = async () => {
-        window.history.pushState({}, '', `/playground?new=true`);
-        window.location.reload();
+        
+
+        if (isAuthenticated){
+
+            // TODO:
+
+        }
+        else {
+
+            window.history.pushState({}, '', `/playground?new=true`);
+            removeFromLocalStorage('playground_question_dict');
+
+            let tmp_d = {
+                question_id: null,
+                name: "Enter Question Name...",
+                question: "Enter your question text here (by pressing 'edit question')...",
+                input_output_list: [],
+                code: `def main():
+        raise notImplementedError
+    `,
+            };
+
+            saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
+            dispatch({
+                type: "SET_QUESTION_INPUT_OUTPUT",
+                question_id: null,
+                name: tmp_d['name'],
+                question: tmp_d['question'],
+                input_output_list: tmp_d['input_output_list'],
+                code: tmp_d['code'],
+            });
+
+            // delete messages in local storage
+            removeFromLocalStorage('user_chat_messages');
+
+            window.location.reload();
+
+        }
+
     };
 
     const { state, dispatch } = usePlaygroundContext();
@@ -65,11 +102,12 @@ const RightTabLayout = ({ }) => {
                 input_output_list: rnd_question_set_response['input_output_list'],
                 code: rnd_question_set_response['code'],
             });
-        
+
+            
+
         }
 
     }
-
 
     return (
       

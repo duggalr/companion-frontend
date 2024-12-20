@@ -501,12 +501,17 @@ const ProblemLayout = ({ setActiveTab }) => {
                         </p>
 
                     )}
-                    
- 
+
                     <div className="relative flex py-0 pt-4 pb-0 items-center">
                         <div className="flex-grow border-t border-gray-400"></div>
                         <span className="flex-shrink mx-4 text-gray-400 text-[15px]">Example I/O</span>
                         <div className="flex-grow border-t border-gray-400"></div>
+                    </div>
+                    
+                    <div className="text-center pb-0 pt-0 mb-0">
+                        <span className="text-[11px] text-gray-600 dark:text-gray-400">
+                            Note: below are AI generated input/output examples and may not be completely accurate.
+                        </span>
                     </div>
 
                     {inputOutputLoading ? (
@@ -536,32 +541,64 @@ const ProblemLayout = ({ setActiveTab }) => {
 
                     ): (
 
-                        currentProblemIOList.map((item, idx) => {
+                        // currentProblemIOList.map((item, idx) => {
                         
-                            return (
-                                <div className="pt-4 pb-2 dark:text-gray-300" key={idx}>
-                                    <p className="font-semibold pb-2 text-[15px]">Example {idx}:</p>
-                                    <div className="relative flex pl-4">
-                                        <div className="absolute left-0 top-0 h-full w-[1.5px] bg-gray-400" />
-                                        <div>
-                                            <p className="pt-0 text-[14px]">
-                                                <span className="font-semibold pr-1">Input:</span>
-                                                {item.input}
-                                            </p>
-                                            <p className="pt-2 text-[14px]">
-                                                <span className="font-semibold pr-1">Output:</span>
-                                                {item.output}
-                                            </p>
-                                            <p className="pt-2 text-[14px]">
-                                                <span className="font-semibold pr-1">Explanation:</span>
-                                                {item.explanation}
-                                            </p>
+                        //     return (
+                        //         <div className="pt-4 pb-2 dark:text-gray-300" key={idx}>
+                        //             <p className="font-semibold pb-2 text-[15px]">Example {idx}:</p>
+                        //             <div className="relative flex pl-4">
+                        //                 <div className="absolute left-0 top-0 h-full w-[1.5px] bg-gray-400" />
+                        //                 <div>
+                        //                     <p className="pt-0 text-[14px]">
+                        //                         <span className="font-semibold pr-1">Input:</span>
+                        //                         {item.input}
+                        //                     </p>
+                        //                     <p className="pt-2 text-[14px]">
+                        //                         <span className="font-semibold pr-1">Output:</span>
+                        //                         {item.output}
+                        //                     </p>
+                        //                     <p className="pt-2 text-[14px]">
+                        //                         <span className="font-semibold pr-1">Explanation:</span>
+                        //                         {item.explanation}
+                        //                     </p>
+                        //                 </div>
+                        //             </div>
+                        //         </div>
+                        //     )
+    
+                        // })
+
+                        currentProblemIOList.length > 0 ? (
+                            currentProblemIOList.map((item, idx) => {
+                                return (
+                                    <div className="pt-4 pb-2 dark:text-gray-300" key={idx}>
+                                        <p className="font-semibold pb-2 text-[15px]">Example {idx}:</p>
+                                        <div className="relative flex pl-4">
+                                            <div className="absolute left-0 top-0 h-full w-[1.5px] bg-gray-400" />
+                                            <div>
+                                                <p className="pt-0 text-[14px]">
+                                                    <span className="font-semibold pr-1">Input:</span>
+                                                    {item.input}
+                                                </p>
+                                                <p className="pt-2 text-[14px]">
+                                                    <span className="font-semibold pr-1">Output:</span>
+                                                    {item.output}
+                                                </p>
+                                                <p className="pt-2 text-[14px]">
+                                                    <span className="font-semibold pr-1">Explanation:</span>
+                                                    {item.explanation}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            )
-    
-                        })
+                                );
+                            })
+                        ) : (
+                        
+                            <p className="px-1 pt-6 leading-7 text-[14px] text-gray-900 dark:text-gray-300">
+                                When you 'enter a new question' (by clicking the 'edit question' above), if applicable, expected input / output pairs will be generated and shown here...
+                            </p>
+                        )
     
                     )}
 

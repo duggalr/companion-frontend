@@ -186,7 +186,6 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
                         code: current_pg_qdict_json['code'],
                     });
 
-
                 } else {
 
                     _setRandomQuestion();
