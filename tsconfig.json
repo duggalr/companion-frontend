@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/components/Playground/Layout.js", "src/lib/utils/localStorageUtils.js", "src/lib/utils/handleAPIFetch.js", "src/context/PlaygroundContext.js", "src/app/page.js", "src/lib/backend_api/saveUserCode.js", "src/app/api/get-access-token/route.js", "src/app/components/Dashboard/DashboardLayout.js", "src/lib/backend_api/validateAuthenticatedUser.js", "src/lib/utils/addQidParam.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/components/Playground/Layout.js", "src/lib/utils/localStorageUtils.js", "src/lib/utils/handleAPIFetch.js", "src/context/PlaygroundContext.js", "src/app/page.js", "src/lib/backend_api/saveUserCode.js", "src/app/api/get-access-token/route.js", "src/app/components/Dashboard/DashboardLayout.js", "src/lib/backend_api/validateAuthenticatedUser.js", "src/lib/utils/addQidParam.js", "src/app/components/Hero/HeroNavBar.js"],
   "exclude": ["node_modules"]
 }
