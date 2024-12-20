@@ -58,12 +58,12 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
                 const rnd_q_data = rnd_question_dict_response['data'];
                 
-                // Update URL Param
-                addQIDParam(rnd_q_data['question_id']);
+                // // Update URL Param
+                // addQIDParam(rnd_q_data['question_id']);
                 
                 dispatch({
                     type: "SET_QUESTION_INPUT_OUTPUT",
-                    question_id: rnd_q_data['question_id'],
+                    question_id: null,
                     name: rnd_q_data['name'],
                     question: rnd_q_data['text'],
                     input_output_list: rnd_q_data['example_io_list'],

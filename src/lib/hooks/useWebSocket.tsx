@@ -59,7 +59,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     }
 
-    const _handleGetUserQuestion = async (question_id, isAuthenticated) => {
+    const _handleGetUserQuestion = async (question_id: string | null, isAuthenticated: boolean) => {
 
         let qdict;
         if (isAuthenticated) {

@@ -5,6 +5,7 @@ import useUserContext from "@/lib/hooks/useUserContext";
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
 import { getFromLocalStorage, saveToLocalStorage } from "@/lib/utils/localStorageUtils";
 import { saveUserCode } from "@/lib/backend_api/saveUserCode";
+import { _handleUserSaveCode } from "@/lib/utils/handleSaveUserCode";
 
 
 const NewCodeEditor = ({ }) => {
@@ -110,36 +111,79 @@ const NewCodeEditor = ({ }) => {
     }, []);
 
 
-    const _handleUserSaveCode = async (user_access_token, payload) => {
+    // const _handleUserSaveCode = async (user_access_token, payload) => {
 
-        let saveCodeRes = await saveUserCode(
-            user_access_token,
+    //     let saveCodeRes = await saveUserCode(
+    //         user_access_token,
+    //         payload
+    //     );
+    //     console.log('SAVED-CODE-RES:', saveCodeRes);
+
+    //     let question_object_id = saveCodeRes['data']['question_object_id'];
+
+    //     dispatch({
+    //         type: "SET_QUESTION_INPUT_OUTPUT",
+    //         question_id: question_object_id,
+    //         name: state.name,
+    //         question: state.question,
+    //         input_output_list: state.input_output_list,
+    //         code: codeRef.current
+    //     });
+
+    //     let tmp_d = {
+    //         question_id: question_object_id,
+    //         name: state.name,
+    //         question: state.question,
+    //         input_output_list: state.input_output_list,
+    //         code: codeRef.current
+    //     };
+
+    //     saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
+
+    // };
+
+    const handleSaveCodeInternal = async (payload) => {
+
+        let user_save_code_dict = await _handleUserSaveCode(
+            userAccessToken,
             payload
         );
-        console.log('SAVED-CODE-RES:', saveCodeRes);
+        console.log('user_save_code_dict-NEW:', user_save_code_dict);
 
-        let question_object_id = saveCodeRes['data']['question_object_id'];
+        if (isAuthenticated){
 
-        dispatch({
-            type: "SET_QUESTION_INPUT_OUTPUT",
-            question_id: question_object_id,
-            name: state.name,
-            question: state.question,
-            input_output_list: state.input_output_list,
-            code: codeRef.current
-        });
+            dispatch({
+                type: "SET_QUESTION_INPUT_OUTPUT",
+                question_id: user_save_code_dict['question_id'],
+                name: user_save_code_dict['name'],
+                question: user_save_code_dict['question'],
+                input_output_list: user_save_code_dict['input_output_list'],
+                code: codeRef.current
+            });
+            
+        } else {
 
-        let tmp_d = {
-            question_id: question_object_id,
-            name: state.name,
-            question: state.question,
-            input_output_list: state.input_output_list,
-            code: codeRef.current
-        };
+            let tmp_d = {
+                question_id: user_save_code_dict['question_id'],
+                name: user_save_code_dict['name'],
+                question: user_save_code_dict['question'],
+                input_output_list: user_save_code_dict['input_output_list'],
+                code: codeRef.current
+            };
 
-        saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
+            dispatch({
+                type: "SET_QUESTION_INPUT_OUTPUT",
+                question_id: user_save_code_dict['question_id'],
+                name: user_save_code_dict['name'],
+                question: user_save_code_dict['question'],
+                input_output_list: user_save_code_dict['input_output_list'],
+                code: codeRef.current
+            });
+            saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
 
-    };
+        }
+        
+    }
 
     // Command/Ctrl+s event-listener to prevent default saving behavior
     useEffect(() => {
@@ -167,15 +211,19 @@ const NewCodeEditor = ({ }) => {
                     // //     'code': codeRef.current
                     // // };
                     
-                    // payload['user_id'] = null;
-                    // payload['code'] = codeRef.current;
+                    payload['user_id'] = null;
+                    payload['code'] = codeRef.current;
                     // saveUserCode(
                     //     userAccessToken,
                     //     payload
                     // )
 
-                    _handleUserSaveCode(
-                        userAccessToken,
+                    // _handleUserSaveCode(
+                    //     userAccessToken,
+                    //     payload
+                    // );
+
+                    handleSaveCodeInternal(
                         payload
                     );
 
@@ -199,8 +247,12 @@ const NewCodeEditor = ({ }) => {
                     //     payload
                     // );
 
-                    _handleUserSaveCode(
-                        null,
+                    // _handleUserSaveCode(
+                    //     null,
+                    //     payload
+                    // );
+
+                    handleSaveCodeInternal(
                         payload
                     );
 
