@@ -6,6 +6,7 @@ import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
 import { getFromLocalStorage, saveToLocalStorage } from "@/lib/utils/localStorageUtils";
 import { saveUserCode } from "@/lib/backend_api/saveUserCode";
 import { _handleUserSaveCode } from "@/lib/utils/handleSaveUserCode";
+import addQIDParam from '@/lib/utils/addQidParam';
 
 
 const NewCodeEditor = ({ }) => {
@@ -144,45 +145,47 @@ const NewCodeEditor = ({ }) => {
 
     const handleSaveCodeInternal = async (payload) => {
 
-        let user_save_code_dict = await _handleUserSaveCode(
+        let user_save_code_response_dict = await _handleUserSaveCode(
             userAccessToken,
             payload
         );
-        console.log('user_save_code_dict-NEW:', user_save_code_dict);
+        console.log('user_save_code_dict-NEW:', user_save_code_response_dict);
 
         if (isAuthenticated){
 
             dispatch({
                 type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: user_save_code_dict['question_id'],
-                name: user_save_code_dict['name'],
-                question: user_save_code_dict['question'],
-                input_output_list: user_save_code_dict['input_output_list'],
+                question_id: user_save_code_response_dict['question_id'],
+                name: state.name,
+                question: state.question,
+                input_output_list: state.input_output_list,
                 code: codeRef.current
             });
+
+            addQIDParam(user_save_code_response_dict['question_id']);
             
         } else {
 
             let tmp_d = {
-                question_id: user_save_code_dict['question_id'],
-                name: user_save_code_dict['name'],
-                question: user_save_code_dict['question'],
-                input_output_list: user_save_code_dict['input_output_list'],
+                question_id: user_save_code_response_dict['question_id'],
+                name: state.name,
+                question: state.question,
+                input_output_list: state.input_output_list,
                 code: codeRef.current
             };
 
             dispatch({
                 type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: user_save_code_dict['question_id'],
-                name: user_save_code_dict['name'],
-                question: user_save_code_dict['question'],
-                input_output_list: user_save_code_dict['input_output_list'],
+                question_id: user_save_code_response_dict['question_id'],
+                name: state.name,
+                question: state.question,
+                input_output_list: state.input_output_list,
                 code: codeRef.current
             });
             saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
 
         }
-        
+
     }
 
     // Command/Ctrl+s event-listener to prevent default saving behavior
@@ -202,6 +205,9 @@ const NewCodeEditor = ({ }) => {
                     'question_text': state.question,
                     'example_input_output_list': state.input_output_list,
                 };
+
+                dispatch({type: "UPDATE_CODE_STATE", code: codeRef.current});
+
                 if (isAuthenticated){
 
                     // // // TODO: modify this and go from there
@@ -239,8 +245,7 @@ const NewCodeEditor = ({ }) => {
                     // };
 
                     payload['user_id'] = anon_user_id;
-                    payload['code'] = codeRef.current;
-                    dispatch({type: "UPDATE_CODE_STATE", code: codeRef.current});
+                    payload['code'] = codeRef.current;                    
 
                     // saveUserCode(
                     //     null,

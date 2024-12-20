@@ -144,7 +144,28 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
             } else {
 
-                _setRandomQuestion();
+                // _setRandomQuestion();
+                const url_search_params = new URLSearchParams(window.location.search);
+                const new_question_value = url_search_params.get('new');
+                if (new_question_value === 'true'){
+
+                    dispatch({
+                        type: "SET_QUESTION_INPUT_OUTPUT",
+                        question_id: null,
+                        name: "Enter Question Name...",
+                        question: "Enter your question text here (by pressing 'edit question')...",
+                        input_output_list: [],
+                        code: `def main():
+    raise notImplementedError
+`,
+                    });
+
+                } else {
+
+                    _setRandomQuestion();
+
+                }
+
 
             }
 

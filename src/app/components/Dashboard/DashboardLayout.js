@@ -117,12 +117,12 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                                             </div>
                                         </div>
                                         <div className="flex flex-col items-start text-[13px] text-gray-900 dark:text-gray-400 tracking-wider">
-                                            <span
+                                            {/* <span
                                                 className="text-blue-400 hover:text-blue-600 dark:text-blue-500 hover:underline cursor-pointer mb-1"
                                                 onClick={() => handleRename(index)}
                                             >
                                                 Change File Name
-                                            </span>
+                                            </span> */}
                                             <div className="inline-flex items-center pt-1">
                                                 <FontAwesomeIcon icon={faClock} className="text-[12px] text-gray-400 pr-2" />
                                                 Last Updated: {dashboard_item.updated_date}
@@ -147,7 +147,6 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                 )}
             </div>
         </div>
-
 
     );
 

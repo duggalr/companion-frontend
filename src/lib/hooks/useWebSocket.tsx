@@ -59,7 +59,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     }
 
-    const _handleGetUserQuestion = async (question_id: string | null, isAuthenticated: boolean) => {
+    const _handleGetUserQuestion = async () => {
 
         let qdict;
         if (isAuthenticated) {
@@ -86,39 +86,45 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
         }
 
-        let save_user_response = await saveUserQuestion(
-            userAccessToken,
-            qdict
-        );
-        console.log('save_user_response', save_user_response);
+        if (state.question_id === null){
 
-        let new_question_object_id = save_user_response['data']['question_id'];
-
-        dispatch({
-            type: "SET_QUESTION_INPUT_OUTPUT",
-            question_id: new_question_object_id,
-            name: state.name,
-            question: state.question,
-            input_output_list: state.input_output_list,
-            code: state.code
-        });
-
-        if (!isAuthenticated){
-            
-            // TODO:
-            const pg_question_dict = {
+            let save_user_response = await saveUserQuestion(
+                userAccessToken,
+                qdict
+            );
+            console.log('save_user_response', save_user_response);
+    
+            let new_question_object_id = save_user_response['data']['question_id'];
+    
+            dispatch({
+                type: "SET_QUESTION_INPUT_OUTPUT",
                 question_id: new_question_object_id,
                 name: state.name,
                 question: state.question,
                 input_output_list: state.input_output_list,
                 code: state.code
-            }
+            });
+    
+            if (!isAuthenticated){
 
-            saveToLocalStorage('playground_question_dict', JSON.stringify(pg_question_dict));
+                const pg_question_dict = {
+                    question_id: new_question_object_id,
+                    name: state.name,
+                    question: state.question,
+                    input_output_list: state.input_output_list,
+                    code: state.code
+                }
+                saveToLocalStorage('playground_question_dict', JSON.stringify(pg_question_dict));
+    
+            }
+    
+            return new_question_object_id;
+
+        } else {
+
+            return state.question_id;
 
         }
-
-        return new_question_object_id;
 
     }
     
@@ -140,18 +146,14 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         console.log('new_question_object_id-NEW:', new_question_object_id);
         
         let qid = await _handleGetUserQuestion(
-            new_question_object_id,
-            isAuthenticated
+            // new_question_object_id,
+            // isAuthenticated
         );
-
         console.log('QID-NEW:', qid);
 
-        // TODO:
-            // save message in backend
         if (isAuthenticated){
 
             const user_current_code = state.code;
-
             const messageForBackend = {
                 parent_question_object_id: qid,
                 current_problem_name: state.name,
@@ -171,7 +173,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
             // let current_user_id = getFromLocalStorage("user_id");
             const user_current_code = state.code;
-
             const messageForBackend = {
                 parent_question_object_id: qid,
                 current_problem_name: state.name,

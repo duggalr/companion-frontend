@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBook, faComments, faQuestion, faShuffle, faPlus } from '@fortawesome/free-solid-svg-icons';
-// import useUserContext from "@/lib/hooks/useUserContext";
 import { saveToLocalStorage, getFromLocalStorage, removeFromLocalStorage } from  '@/lib/utils/localStorageUtils';
 import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomInitialPlaygroundQuestion';
 import useUserContext from "@/lib/hooks/useUserContext";
@@ -10,6 +9,7 @@ import handleRandomQuestionSet from "@/lib/utils/handleRandomQuestionSet";
 import ProblemLayout from "@/app/components/Playground/ProblemLayout";
 import SubmissionLayout from "@/app/components/Playground/SubmissionLayout";
 import NewChatInterface from '@/app/components/Playground/NewChatInterface';
+import addQIDParam from '@/lib/utils/addQidParam';
 
 
 const RightTabLayout = ({ }) => {
@@ -20,26 +20,35 @@ const RightTabLayout = ({ }) => {
 
     const _handleNewBlankQuestion = async () => {
         
+        let tmp_d = {
+            question_id: null,
+            name: "Enter Question Name...",
+            question: "Enter your question text here (by pressing 'edit question')...",
+            input_output_list: [],
+            code: `def main():
+    raise notImplementedError
+`,
+        };
 
         if (isAuthenticated){
 
             // TODO:
+            window.history.pushState({}, '', `/playground?new=true`);
+            dispatch({
+                type: "SET_QUESTION_INPUT_OUTPUT",
+                question_id: null,
+                name: tmp_d['name'],
+                question: tmp_d['question'],
+                input_output_list: tmp_d['input_output_list'],
+                code: tmp_d['code'],
+            });
+            window.location.reload();
 
         }
         else {
 
             window.history.pushState({}, '', `/playground?new=true`);
             removeFromLocalStorage('playground_question_dict');
-
-            let tmp_d = {
-                question_id: null,
-                name: "Enter Question Name...",
-                question: "Enter your question text here (by pressing 'edit question')...",
-                input_output_list: [],
-                code: `def main():
-        raise notImplementedError
-    `,
-            };
 
             saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
             dispatch({
@@ -53,7 +62,6 @@ const RightTabLayout = ({ }) => {
 
             // delete messages in local storage
             removeFromLocalStorage('user_chat_messages');
-
             window.location.reload();
 
         }
@@ -73,13 +81,11 @@ const RightTabLayout = ({ }) => {
             if (rnd_question_dict['success'] === true){
 
                 const rnd_q_data = rnd_question_dict['data'];
-                
-                // Update URL Param
-                addQIDParam(rnd_q_data['question_id']);
+                console.log('rnd_q_data:', rnd_q_data);
 
                 dispatch({
                     type: "SET_QUESTION_INPUT_OUTPUT",
-                    question_id: rnd_q_data['question_id'],
+                    question_id: null,
                     name: rnd_q_data['name'],
                     question: rnd_q_data['text'],
                     input_output_list: rnd_q_data['example_io_list'],

@@ -144,6 +144,8 @@ const ProblemLayout = ({ setActiveTab }) => {
                     input_output_list: example_io_list,
                     code: currentProblemState.code
                 });
+                
+                addQIDParam(response_json_data['unique_question_id']);
 
             }
 
@@ -299,40 +301,42 @@ const ProblemLayout = ({ setActiveTab }) => {
 
     const handleSaveCodeInternal = async (payload) => {
 
-        let user_save_code_dict = await _handleUserSaveCode(
+        let user_save_code_response_dict = await _handleUserSaveCode(
             userAccessToken,
             payload
         );
-        console.log('user_save_code_dict-NEW:', user_save_code_dict);
+        console.log('user_save_code_dict-NEW:', user_save_code_response_dict);
 
         if (isAuthenticated){
 
             dispatch({
                 type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: user_save_code_dict['question_id'],
-                name: user_save_code_dict['name'],
-                question: user_save_code_dict['question'],
-                input_output_list: user_save_code_dict['input_output_list'],
-                code: codeRef.current
+                question_id: user_save_code_response_dict['question_id'],
+                name: state.name,
+                question: state.question,
+                input_output_list: state.input_output_list,
+                code: state.code
             });
             
+            addQIDParam(user_save_code_response_dict['question_id']);
+
         } else {
 
             let tmp_d = {
-                question_id: user_save_code_dict['question_id'],
-                name: user_save_code_dict['name'],
-                question: user_save_code_dict['question'],
-                input_output_list: user_save_code_dict['input_output_list'],
-                code: codeRef.current
+                question_id: user_save_code_response_dict['question_id'],
+                name: state.name,
+                question: state.question,
+                input_output_list: state.input_output_list,
+                code: state.code
             };
 
             dispatch({
                 type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: user_save_code_dict['question_id'],
-                name: user_save_code_dict['name'],
-                question: user_save_code_dict['question'],
-                input_output_list: user_save_code_dict['input_output_list'],
-                code: codeRef.current
+                question_id: user_save_code_response_dict['question_id'],
+                name: state.name,
+                question: state.question,
+                input_output_list: state.input_output_list,
+                code: state.code
             });
             saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
 
@@ -371,6 +375,11 @@ const ProblemLayout = ({ setActiveTab }) => {
             'question_text': state.question,
             'example_input_output_list': state.input_output_list,
         }
+
+        dispatch({
+            type: "UPDATE_CODE_STATE",
+            code: current_user_code,
+        });
 
         // anon case - code saving
         if (isAuthenticated){
@@ -417,11 +426,6 @@ const ProblemLayout = ({ setActiveTab }) => {
             // // TODO:  need to dispatch with new q-id just in case it wasn't before
 
         } else {
-
-            dispatch({
-                type: "UPDATE_CODE_STATE",
-                code: current_user_code,
-            });
 
             // _saveUserCodeInBackend(current_user_code);
 
