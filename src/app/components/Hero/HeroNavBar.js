@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Pacifico } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCode } from "@fortawesome/free-solid-svg-icons";
+import { faCode, faUserPlus, faArrowRightFromBracket, faSquareCaretRight } from "@fortawesome/free-solid-svg-icons";
 import ThemeToggle from "@/app/components/Utils/ThemeToggle";
 
 
@@ -16,7 +16,8 @@ const pacifico_font = Pacifico({
 // }
 // { userAuthenticated }: HeroNavBarProps
 
-export default function HeroNavBar(): JSX.Element {
+// export default function HeroNavBar({ userAuthenticated }: boolean): JSX.Element {
+export default function HeroNavBar(userAuthenticated){
 
     const DISCORD_CHANNEL_URL = process.env.NEXT_PUBLIC_DISCORD_CHAT_URL;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -64,17 +65,68 @@ export default function HeroNavBar(): JSX.Element {
                     > */}
                     <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-zinc-950 md:dark:bg-zinc-950">
 
+                        {/* Dashboard */}
+                        {(userAuthenticated) ? (
+
+                            <li>
+                                <a
+                                    href="/dashboard"
+                                    className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] hover mr-2 font-normal"
+                                >
+                                    <FontAwesomeIcon icon={faSquareCaretRight} className="text-black pr-2 dark:text-white w-4 h-4" />
+                                    Dashboard
+                                </a>
+                            </li>
+
+                        ) : (
+
+                            <li>
+                                <a
+                                    href="/playground"
+                                    className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] font-normal"
+                                >
+                                    <FontAwesomeIcon
+                                        icon={faCode}
+                                        className="mr-2"
+                                    />{" "} Playground
+                                </a>
+                            </li>
+
+                        )}
+
+                        {/* Login */}
+                        {(!userAuthenticated) ? (
+                            <li>
+                                <a
+                                    href="/api/auth/login"
+                                    className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] hover mr-0 font-normal"
+                                >
+                                    <FontAwesomeIcon icon={faUserPlus} className="text-black pr-2 dark:text-white w-4 h-4" />
+                                    Signup or Login
+                                </a>
+                            </li>
+                        ) : (
+                            <li>
+                                <a
+                                    href="/api/auth/logout"
+                                    className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] hover mr-0 font-normal"
+                                >
+                                    <FontAwesomeIcon icon={faArrowRightFromBracket} className="text-black pr-2 dark:text-white w-4 h-4" />
+                                    Logout
+                                </a>
+                            </li>
+                        )}
 
                         <li>
-                            <a
-                                href="/playground"
-                                className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] font-normal"
-                            >
-                                <FontAwesomeIcon
-                                    icon={faCode}
-                                    className="mr-2"
-                                />{" "} Playground
-                            </a>
+                            {/* <a
+                                href="/api/auth/login"
+                                className="flex py-3 items-center text-gray-800 hover:text-gray-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] mr-0 font-normal"
+                            > */}
+                                {/* | */}
+                            {/* </a> */}
+                            <span className="flex py-3 items-center">
+                                |
+                            </span>
                         </li>
 
                         <li>

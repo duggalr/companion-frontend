@@ -49,7 +49,8 @@ export default async function handleAPIFetch(endpoint_url, method, access_token,
                     headers: {
                         Authorization: `Bearer ${access_token}`,
                         "Content-Type": "application/json"
-                    }
+                    },
+                    body: JSON.stringify({})
                 });
 
             } else {
@@ -58,7 +59,8 @@ export default async function handleAPIFetch(endpoint_url, method, access_token,
                     method: method,
                     headers: {
                         "Content-Type": "application/json"
-                    }
+                    },
+                    body: JSON.stringify({})
                 });
 
             }
@@ -66,8 +68,6 @@ export default async function handleAPIFetch(endpoint_url, method, access_token,
         }
         
         if (!apiResponse.ok) {
-            // console.error(`Error: ${apiResponse.statusText}`);
-            // return null;
             return {
                 'success': false,
                 'error_message': apiResponse.statusText

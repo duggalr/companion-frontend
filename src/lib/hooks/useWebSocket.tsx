@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import useUserContext from "./useUserContext";
 import { usePlaygroundContext } from "./usePlaygroundContext";
 import { getFromLocalStorage, saveToLocalStorage } from "../utils/localStorageUtils";
+import { fetchChatMessages } from "@/lib/backend_api/fetchChatMessages";
+import { saveUserQuestion } from "@/lib/backend_api/saveUserQuestion";
 // import { saveUserCode } from "../backend_api/saveUserCode";
 // // import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/localStorageUtils";
 // import { getFromLocalStorage, saveToLocalStorage } from "../utils/localStorageUtils";
@@ -37,8 +39,8 @@ export const useWebSocket = (url: string) => {
     const [isLoading, setIsLoading] = useState(false);
 
     // User Context
-    const {isAuthenticated} = useUserContext();
-    const { state } = usePlaygroundContext();
+    const {isAuthenticated, userAccessToken} = useUserContext();
+    const { state, dispatch } = usePlaygroundContext();
 
     const _handleResetChatMessages = async () => {
         setMessages([{
@@ -52,16 +54,80 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     const _sendMessage = async (payload: MessagePayload) => {
 
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-            console.log("SENDING PAYLOAD:", payload);
             wsRef.current.send(JSON.stringify(payload));
+        }
+
+    }
+
+    const _handleGetUserQuestion = async () => {
+
+        let qdict;
+        if (isAuthenticated) {
+
+            qdict = {
+                "user_id": null,
+                "question_id": state.question_id,
+                "question_name": state.name,
+                "question_text": state.question,
+                "example_input_output_list": state.input_output_list
+            }
+
+
+        } else {
+
+            const current_user_id = getFromLocalStorage("user_id");
+            qdict = {
+                "user_id": current_user_id,
+                "question_id": state.question_id,
+                "question_name": state.name,
+                "question_text": state.question,
+                "example_input_output_list": state.input_output_list
+            }
+
+        }
+
+        if (state.question_id === null){
+
+            const save_user_response = await saveUserQuestion(
+                userAccessToken,
+                qdict
+            );
+    
+            const new_question_object_id = save_user_response['data']['question_id'];
+    
+            dispatch({
+                type: "SET_QUESTION_INPUT_OUTPUT",
+                question_id: new_question_object_id,
+                name: state.name,
+                question: state.question,
+                input_output_list: state.input_output_list,
+                code: state.code
+            });
+    
+            if (!isAuthenticated){
+
+                const pg_question_dict = {
+                    question_id: new_question_object_id,
+                    name: state.name,
+                    question: state.question,
+                    input_output_list: state.input_output_list,
+                    code: state.code
+                }
+                saveToLocalStorage('playground_question_dict', JSON.stringify(pg_question_dict));
+    
+            }
+    
+            return new_question_object_id;
+
+        } else {
+
+            return state.question_id;
+
         }
 
     }
     
     const _handleUserMessageSend = async (current_user_message: string) => {
-
-        console.log('current_user_message:', current_user_message);
-        console.log('messages-length:', messages.length);
 
         accumulatedMessageRef.current = "";
 
@@ -75,19 +141,18 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             }
         }
 
-        console.log('ACCUMLATED MESSAGE STRING:', accumulatedMessageRef.current);
-        console.log('all-msg_string:', all_chat_messages_str)
+        // const new_question_object_id = state.question_id;
+        
+        const qid = await _handleGetUserQuestion(
+            // new_question_object_id,
+            // isAuthenticated
+        );
 
         if (isAuthenticated){
-            // TODO:
-        }
-        else {
 
-            // let current_user_id = getFromLocalStorage("user_id");
             const user_current_code = state.code;
-
             const messageForBackend = {
-                parent_question_object_id: state.question_id,
+                parent_question_object_id: qid,
                 current_problem_name: state.name,
                 current_problem_question: state.question,
                 text: current_user_message,
@@ -100,70 +165,25 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             setMessages((messages) => [...messages, messageForBackend]);
             _sendMessage(messageForBackend);
 
+        }
+        else {
+
             // let current_user_id = getFromLocalStorage("user_id");
-            // let current_parent_playground_object_id = getFromLocalStorage("parent_playground_object_id");
-            // let user_current_code = state.code;
-            // let current_problem_name = state.name;
-            // let current_problem_question = state.question;
+            const user_current_code = state.code;
+            const messageForBackend = {
+                parent_question_object_id: qid,
+                current_problem_name: state.name,
+                current_problem_question: state.question,
+                text: current_user_message,
+                user_code: user_current_code,
+                example_input_output_list: state.input_output_list,
+                all_user_messages_str: all_chat_messages_str,
+                sender: 'user',
+                type: 'user_message',
+            };
 
-            // if (current_parent_playground_object_id === null){
-
-            //     let save_pg_object_payload = {
-            //         user_id: current_user_id,
-            //         programming_language: "python",
-            //         code_state: user_current_code,
-            //     };
-
-            //     let saveCodeRes = await saveUserRunCode(
-            //         null,
-            //         save_pg_object_payload
-            //     );                
-            //     console.log('saved-code-response:', saveCodeRes);
-
-            //     let new_parent_pg_object_id;
-            //     if (saveCodeRes['status_code'] === 200){
-            //         new_parent_pg_object_id = saveCodeRes['parent_playground_object_id'];
-            //         saveToLocalStorage("parent_playground_object_id", new_parent_pg_object_id);
-            //     }
-
-                // let messageForBackend = {
-                //     parent_playground_object_id: new_parent_pg_object_id,
-
-                //     current_problem_name: current_problem_name,
-                //     current_problem_question: current_problem_question,
-
-                //     text: current_user_message,
-                //     user_code: user_current_code,
-                //     all_user_messages_str: all_chat_messages_str,
-                //     sender: 'user',
-                //     type: 'user_message',
-                //     // complete: true
-                // };
-                
-                // setMessages((messages) => [...messages, messageForBackend]);
-                // _sendMessage(messageForBackend);
-      
-            // } 
-            // else {
-
-            //     let messageForBackend = {
-            //         parent_playground_object_id: current_parent_playground_object_id,
-
-            //         current_problem_name: current_problem_name,
-            //         current_problem_question: current_problem_question,
-
-            //         text: current_user_message,
-            //         user_code: user_current_code,
-            //         all_user_messages_str: all_chat_messages_str,
-            //         sender: 'user',
-            //         type: 'user_message',
-            //         // complete: true
-            //     };
-                
-            //     setMessages((messages) => [...messages, messageForBackend]);
-            //     _sendMessage(messageForBackend);
-
-            // }
+            setMessages((messages) => [...messages, messageForBackend]);
+            _sendMessage(messageForBackend);
 
         }
 
@@ -215,6 +235,43 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     }, [url]);
 
 
+    const _handleAuthenticatedChatMessageInitialization = async (question_object_id: string) => {
+
+        if (userAccessToken){
+            const user_chat_msg_list = await fetchChatMessages(
+                userAccessToken,
+                question_object_id
+            );
+
+            if (user_chat_msg_list['data'].length > 0){
+
+                // const messageForBackend = {
+                //     parent_question_object_id: state.question_id,
+                //     current_problem_name: state.name,
+                //     current_problem_question: state.question,
+                //     text: current_user_message,
+                //     user_code: user_current_code,
+                //     all_user_messages_str: all_chat_messages_str,
+                //     sender: 'user',
+                //     type: 'user_message',
+                // };
+                setMessages(user_chat_msg_list['data']);
+    
+            } else {
+    
+                setMessages([{
+                    text: `Welcome! 😄 I'm Companion, your personal programming tutor.
+    
+    If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
+                    sender: "bot",
+                }]);
+    
+            }
+
+        }
+
+    }
+
     useEffect(() => {
 
         // TODO:
@@ -222,6 +279,23 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
         if (isAuthenticated){
             // TODO:
+                // fetch messages for the question (qid)
+            const url_search_params = new URLSearchParams(window.location.search);
+            const question_object_id = url_search_params.get('qid');
+
+            if (question_object_id){
+                _handleAuthenticatedChatMessageInitialization(
+                    question_object_id
+                )
+            } else {
+                setMessages([{
+                    text: `Welcome! 😄 I'm Companion, your personal programming tutor.
+
+If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
+                    sender: "bot",
+                }]);
+            }
+         
         }
         else {
             
@@ -232,7 +306,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
             // Fetch Messages
             const user_chat_messages = getFromLocalStorage("user_chat_messages");
-            console.log('user_chat_messages:', user_chat_messages);
 
             if (user_chat_messages === null || user_chat_messages.length === 0 || user_chat_messages === undefined) {
 
@@ -247,7 +320,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             else{
 
                 const chat_msg_list = JSON.parse(user_chat_messages);
-                console.log('parsed-chat_msg_list:', chat_msg_list);
                 setMessages(chat_msg_list);
 
             }

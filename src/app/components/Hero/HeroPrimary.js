@@ -46,11 +46,9 @@ export default function HeroPrimary() {
 
     const _handleLPFormSubmit = async (e) => {
         e.preventDefault();
-        console.log('current-email:', currentLandingEmailRef.current);
 
         const user_email = currentLandingEmailRef.current;
-        const saveRes = await saveLandingPageEmailSubmission(user_email);
-        console.log('save-res:', saveRes);
+        await saveLandingPageEmailSubmission(user_email);
 
         setCurrentLandingSaved(true);
         _getEmailSubCount();
@@ -69,6 +67,7 @@ export default function HeroPrimary() {
 
     const _getEmailSubCount = async () => {
         const total_count_response = await getLPEmailSubmissionCount();
+
         if (total_count_response['success'] == true){
             setEmailSubmissionCount(total_count_response['number_of_email_submissions']);
         }
@@ -308,7 +307,7 @@ export default function HeroPrimary() {
                             <li className="flex justify-between items-center border-b pb-4 text-[17px]">
                                 <StandardLink 
                                     uri="https://medium.com/@drahul2820/companion-update-upcoming-mit-course-release-47bd9714b0a4"
-                                    text="Companion: Update and Upcoming MIT Course Release"
+                                    text="📰 Companion: Update and Upcoming MIT Course Release"
                                     new_tab={true}
                                 />
                                 <span className="text-gray-500 text-sm">Dec 16, 2024</span>

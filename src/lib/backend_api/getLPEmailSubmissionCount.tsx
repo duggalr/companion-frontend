@@ -7,7 +7,7 @@ export async function getLPEmailSubmissionCount() {
     const endPointUrl = API_BACKEND_URL + '/get_number_of_lp_email_submissions';
     const apiResponse = await handleAPIFetch(
         endPointUrl,
-        "GET",
+        "POST",
         null,
         null
     );

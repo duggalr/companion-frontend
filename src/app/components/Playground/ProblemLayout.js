@@ -3,57 +3,25 @@ import { useEffect, useState } from "react";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencil, faShuffle, faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
 import useUserContext from "@/lib/hooks/useUserContext";
 import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/localStorageUtils";
-import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomInitialPlaygroundQuestion';
 import { updateUserQuestion } from '@/lib/backend_api/updateUserQuestion';
-import { saveUserCode } from "@/lib/backend_api/saveUserCode";
+import addQIDParam from '@/lib/utils/addQidParam';
+import { _handleUserSaveCode } from "@/lib/utils/handleSaveUserCode";
 
 
-const ProblemLayout = ({ setActiveTab }) => {
+const ProblemLayout = ({ }) => {
 
     const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_API_BACKEND_URL;
 
     const playgroundContext = usePlaygroundContext();
     let currentProblemState = playgroundContext.state;
 
-    const { isAuthenticated } = useUserContext();
+    const { isAuthenticated, userAccessToken } = useUserContext();
     const { state, dispatch } = usePlaygroundContext();
-
-    const _handleShuffleQuestion = async () => {
-        let current_user_id = getFromLocalStorage('user_id');
-        let rnd_question_dict = await getRandomInitialPlaygroundQuestion(current_user_id);
-        console.log('Random Question Dict:', rnd_question_dict);
-
-        if (rnd_question_dict['success'] === true){
-
-            let rnd_q_data = rnd_question_dict['data'];
-            
-            let tmp_d = {
-                question_id: rnd_q_data['question_id'],
-                name: rnd_q_data['name'],
-                question: rnd_q_data['text'],
-                input_output_list: rnd_q_data['example_io_list'],
-                code: rnd_q_data['starter_code'],
-            };
-            saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
-
-            dispatch({
-                type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: rnd_q_data['question_id'],
-                name: rnd_q_data['name'],
-                question: rnd_q_data['text'],
-                input_output_list: rnd_q_data['example_io_list'],
-                code: rnd_q_data['starter_code'],
-            });
-
-        }
-
-    }
-
     const [editing, setEditing] = useState(false);
     const [questionName, setQuestionName] = useState("");
     const [questionText, setQuestionText] = useState("");
@@ -63,7 +31,6 @@ const ProblemLayout = ({ setActiveTab }) => {
 
     useEffect(() => {
 
-        console.log('PROBLEM STATE / QUESTIONS:', currentProblemState.input_output_list);
         setQuestionName(currentProblemState.name);
         setQuestionText(currentProblemState.question);
         setCurrentProblemIOList(currentProblemState.input_output_list);
@@ -92,23 +59,50 @@ const ProblemLayout = ({ setActiveTab }) => {
 
         if (isAuthenticated) {
 
-            // userAccessToken
-            // TODO:
+            let response_data = await updateUserQuestion(
+                userAccessToken,
+                null,
+                current_question_id,
+                current_q_name,
+                current_q_text
+            );
+
+            if (response_data['success'] === true){
+                let response_json_data = response_data['data'];
+                let example_io_list = JSON.parse(response_json_data['example_io_list']);
+    
+                setCurrentProblemIOList(example_io_list);
+                setInputOutputLoading(false);
+
+                dispatch({
+                    type: "SET_QUESTION_INPUT_OUTPUT",
+                    question_id: response_json_data['unique_question_id'],
+                    name: response_json_data['question_name'],
+                    question: response_json_data['question_text'],
+                    input_output_list: example_io_list,
+                    code: currentProblemState.code
+                });
+                
+                addQIDParam(response_json_data['unique_question_id']);
+
+            }
 
         } else { 
     
             let current_anon_user_id = getFromLocalStorage("user_id");
-            console.log('current_anon_user_id:', current_anon_user_id);
-            
+
             // TODO:
             let response_data = await updateUserQuestion(
-                current_anon_user_id, current_question_id, current_q_name, current_q_text
+                null,
+                current_anon_user_id,
+                current_question_id,
+                current_q_name,
+                current_q_text
             );
-            console.log('response_data:', response_data);
-    
+
             // let response_data = await generateQuestionTestCases(current_q_name, current_q_text);
             // // console.log('response_data:', response_data);
-    
+
             if (response_data['success'] === true){
                 let response_json_data = response_data['data'];
                 let example_io_list = JSON.parse(response_json_data['example_io_list']);
@@ -197,61 +191,52 @@ const ProblemLayout = ({ setActiveTab }) => {
         }
     };
 
+    const handleSaveCodeInternal = async (payload) => {
 
-    // const _saveUserCodeInBackend = async (current_code) => {
+        let user_save_code_response_dict = await _handleUserSaveCode(
+            userAccessToken,
+            payload
+        );
 
-    //     let current_user_id = getFromLocalStorage("user_id");
-    //     let current_parent_playground_object_id = getFromLocalStorage("parent_playground_object_id");
+        if (isAuthenticated){
 
-    //     // // TODO: need to update
-    //     // let user_id = localStorage.getItem("user_id");
-    //     // // let current_code_state = localStorage.getItem("user_generated_code");
-    //     // let user_programming_language = localStorage.getItem("user_programming_language");
-    //     // let current_code_state = JSON.parse(localStorage.getItem("user_generated_code_dict"))[user_programming_language];
-    //     // let current_parent_playground_object_id = localStorage.getItem("parent_playground_object_id");
-  
-    //     let payload;
-    //     if (current_parent_playground_object_id !== null){
-    //         payload = {
-    //             user_id: current_user_id,
-    //             programming_language: "python",
-    //             code_state: current_code,
-    //             parent_playground_object_id: current_parent_playground_object_id
-    //         };
-    //     } else {
-    //         payload = {
-    //             user_id: current_user_id,
-    //             programming_language: "python",
-    //             code_state: current_code,
-    //         };
-    //     }
+            dispatch({
+                type: "SET_QUESTION_INPUT_OUTPUT",
+                question_id: user_save_code_response_dict['question_id'],
+                name: state.name,
+                question: state.question,
+                input_output_list: state.input_output_list,
+                code: state.code
+            });
+            
+            addQIDParam(user_save_code_response_dict['question_id']);
 
-    //     let saveCodeRes = await saveUserRunCode(
-    //         null,
-    //         payload
-    //     );
+        } else {
+
+            let tmp_d = {
+                question_id: user_save_code_response_dict['question_id'],
+                name: state.name,
+                question: state.question,
+                input_output_list: state.input_output_list,
+                code: state.code
+            };
+
+            dispatch({
+                type: "SET_QUESTION_INPUT_OUTPUT",
+                question_id: user_save_code_response_dict['question_id'],
+                name: state.name,
+                question: state.question,
+                input_output_list: state.input_output_list,
+                code: state.code
+            });
+            saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
+
+        }
         
-    //     console.log('saved-code-response:', saveCodeRes);
-
-    //     if (saveCodeRes['status_code'] === 200){
-
-    //         let parent_playground_object_id = saveCodeRes['parent_playground_object_id'];
-    //         saveToLocalStorage("parent_playground_object_id", parent_playground_object_id);
-
-    //     }
-
-    // }
+    }
 
     // Run Code
     const handleRun = () => {
-
-        // dispatch({
-        //     type: "SET_QUESTION_INPUT_OUTPUT",
-        //     name: current_q_name,
-        //     question: current_q_text,
-        //     input_output_list: model_resp_array,
-        //     code: currentProblemState.code
-        // });
 
         dispatch({
             type: "UPDATE_CONSOLE_OUTPUT",
@@ -263,68 +248,54 @@ const ProblemLayout = ({ setActiveTab }) => {
 
         // // let current_user_code = codeStateTmpRef.current;
         let current_user_code = currentProblemState.code;
-    
-        console.log('current code:', current_user_code);
 
         // send request to run code
         _sendCodeExecutionRequest(current_user_code);
 
-        // anon case - code saving
-        if (!isAuthenticated) {
+        let payload = {
+            'question_id': state.question_id,
+            'question_name': state.name,
+            'question_text': state.question,
+            'example_input_output_list': state.input_output_list,
+        }
 
-            dispatch({
-                type: "UPDATE_CODE_STATE",
-                code: current_user_code,
-            });
+        dispatch({
+            type: "UPDATE_CODE_STATE",
+            code: current_user_code,
+        });
+
+        // anon case - code saving
+        if (isAuthenticated){
+
+            payload['user_id'] = null;
+            payload['code'] = current_user_code;
+
+            handleSaveCodeInternal(
+                payload
+            )
+
+        } else {
 
             // _saveUserCodeInBackend(current_user_code);
 
             let anon_user_id = getFromLocalStorage("user_id");
-            console.log('current-user-id:', anon_user_id);
+            // let payload = {
+            //     'user_id': anon_user_id,
+            //     'question_id': state.question_id,
+            //     'code': current_user_code
+            // }
 
-            let payload = {
-                'user_id': anon_user_id,
-                'question_id': state.question_id,
-                'code': current_user_code
-            }
-            
-            saveUserCode(null, payload);
+            payload['user_id'] = anon_user_id;
+            payload['code'] = current_user_code;
+            // saveUserCode(null, payload);
+
+            handleSaveCodeInternal(
+                payload
+            );
 
         }
       
     };
-
-    // // Submit Code
-    // const submitCode = async () => {
-
-    //     console.log('submit code');
-    //     let current_parent_playground_object_id = getFromLocalStorage("parent_playground_object_id");
-    //     let current_user_code = currentProblemState.code;
-    //     let unique_question_id = currentProblemState.question_id;
-
-    //     // TODO: get current qid and then, start here
-
-    //     let d = {
-    //         'current_pg_object_id': current_parent_playground_object_id,
-    //         'current_user_code': current_user_code,
-    //         'unique_question_id': unique_question_id
-    //     }
-    //     // TODO:
-    //         // Submit to backend
-    //             // First save code
-    //             // Then implement function to execute tests
-    //             // Go from there
-
-    //     submitUserCode(d);
-    //     // TODO: get results and svae them in playground state --> redirect to submission-component and go from there
-
-    // }
-
-    // Chat with Tutor
-    const chatWithTutor = () => {
-        console.log('set-active', setActiveTab)
-        setActiveTab("chat");
-    }
 
     return (
 
@@ -346,7 +317,7 @@ const ProblemLayout = ({ setActiveTab }) => {
                                 value={questionName}
                                 onChange={(e) => _handleQuestionNameChange(e)}
                                 // className="bg-transparent border-b-2 border-gray-400 outline-none w-1/2 text-[16px]"
-                                className="bg-transparent text-[15px] border-b-2 border-gray-300 outline-none w-1/2"
+                                className="bg-transparent text-[15px] border-b-2 border-gray-300 outline-none w-3/4"
                                 autoFocus
                             />
 
@@ -365,12 +336,7 @@ const ProblemLayout = ({ setActiveTab }) => {
                                         <FontAwesomeIcon icon={faPencil} className="pr-1"/> 
                                         edit question
                                     </span>
-                                    <span
-                                        onClick={_handleShuffleQuestion}
-                                        className="text-[12px] text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-400 dark:hover:text-blue-400">
-                                        <FontAwesomeIcon icon={faShuffle} className="pr-1"/>
-                                        shuffle question
-                                    </span>
+                                    
                                 </div>
                             
                             </>
@@ -418,12 +384,17 @@ const ProblemLayout = ({ setActiveTab }) => {
                         </p>
 
                     )}
-                    
- 
+
                     <div className="relative flex py-0 pt-4 pb-0 items-center">
                         <div className="flex-grow border-t border-gray-400"></div>
                         <span className="flex-shrink mx-4 text-gray-400 text-[15px]">Example I/O</span>
                         <div className="flex-grow border-t border-gray-400"></div>
+                    </div>
+                    
+                    <div className="text-center pb-0 pt-0 mb-0">
+                        <span className="text-[11px] text-gray-600 dark:text-gray-400">
+                            Note: below are AI generated input/output examples and may not be completely accurate.
+                        </span>
                     </div>
 
                     {inputOutputLoading ? (
@@ -448,42 +419,47 @@ const ProblemLayout = ({ setActiveTab }) => {
                                 </svg>
                                 <span className="sr-only">Loading...</span>
                             </div>
-                            <p className="mt-2 text-gray-600 dark:text-gray-400 text-sm">Loading examples...</p>
+                            <p className="mt-2 text-gray-600 dark:text-gray-400 text-sm">Generating new examples...</p>
                         </div>
 
                     ): (
 
-                        currentProblemIOList.map((item, idx) => {
-                        
-                            return (
-                                <div className="pt-4 pb-2 dark:text-gray-300" key={idx}>
-                                    <p className="font-semibold pb-2 text-[15px]">Example {idx}:</p>
-                                    <div className="relative flex pl-4">
-                                        <div className="absolute left-0 top-0 h-full w-[1.5px] bg-gray-400" />
-                                        <div>
-                                            <p className="pt-0 text-[14px]">
-                                                <span className="font-semibold pr-1">Input:</span>
-                                                {item.input}
-                                            </p>
-                                            <p className="pt-2 text-[14px]">
-                                                <span className="font-semibold pr-1">Output:</span>
-                                                {item.output}
-                                            </p>
-                                            <p className="pt-2 text-[14px]">
-                                                <span className="font-semibold pr-1">Explanation:</span>
-                                                {item.explanation}
-                                            </p>
+                        currentProblemIOList.length > 0 ? (
+                            currentProblemIOList.map((item, idx) => {
+                                return (
+                                    <div className="pt-4 pb-2 dark:text-gray-300" key={idx}>
+                                        <p className="font-semibold pb-2 text-[15px]">Example {idx}:</p>
+                                        <div className="relative flex pl-4">
+                                            <div className="absolute left-0 top-0 h-full w-[1.5px] bg-gray-400" />
+                                            <div>
+                                                <p className="pt-0 text-[14px]">
+                                                    <span className="font-semibold pr-1">Input:</span>
+                                                    {item.input}
+                                                </p>
+                                                <p className="pt-2 text-[14px]">
+                                                    <span className="font-semibold pr-1">Output:</span>
+                                                    {item.output}
+                                                </p>
+                                                <p className="pt-2 text-[14px]">
+                                                    <span className="font-semibold pr-1">Explanation:</span>
+                                                    {item.explanation}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            )
-    
-                        })
+                                );
+                            })
+                        ) : (
+                        
+                            <p className="px-1 pt-6 leading-7 text-[14px] text-gray-900 dark:text-gray-300">
+                                When you enter a new question (by clicking the edit question above), if applicable, expected input / output pairs will be generated and shown here...
+                            </p>
+                        )
     
                     )}
 
                     
-                    <div className="space-x-2 pt-10">
+                    <div className="space-x-3 pt-8">
 
                         {/* Run Code Button */}
                         <button
@@ -499,18 +475,28 @@ const ProblemLayout = ({ setActiveTab }) => {
                             )}
                             {isRunLoading ? "Running..." : "Run Code"}
                         </button>
-                        
+
+                        {/* Save Code Button */}
+                        {/* <button
+                            disabled={isRunLoading}
+                            className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all 
+                                ${isRunLoading ? "bg-gray-500 cursor-not-allowed" : "bg-green-700 hover:bg-green-500 text-white"}`}
+                            >
+                            <FontAwesomeIcon icon={faSave} className="text-white pr-2" />
+                            Save Code
+                        </button> */}
+
                         {/* TODO: on feedback click -> route to tutor with message populated */}
                         {/* <Button
                             // onClick={submitCode}
                         >Get Feedback</Button> */}
                         
-                        <Button
+                        {/* <Button
                             onClick={chatWithTutor}
                             // className="bg-black text-white"
                         >
                             Chat with Tutor
-                        </Button>
+                        </Button> */}
 
                         <Button
                             // onClick={submitCode}
@@ -519,6 +505,12 @@ const ProblemLayout = ({ setActiveTab }) => {
                         >
                             Run Test Cases (coming soon...)
                         </Button>
+                    </div>
+
+                    <div className="mt-1">
+                    <span className="text-[11.5px] text-gray-600 dark:text-gray-500">
+                        Shortcut: (Ctrl / Cmd) + S to save code
+                    </span>
                     </div>
 
                 </div>

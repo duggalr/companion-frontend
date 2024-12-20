@@ -1,7 +1,7 @@
 import ThemeToggle from './ThemeToggle';
 import { Pacifico } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSquareCaretRight, faCode, faHome } from "@fortawesome/free-solid-svg-icons";
+import { faSquareCaretRight, faCode, faHome, faArrowRightFromBracket, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import useUserContext from '../../../lib/hooks/useUserContext';
 
 const pacifico_font = Pacifico({
@@ -30,9 +30,9 @@ export default function TopNavBar ({ }) {
             </li>
 
             <div className="ml-auto lg:flex items-center space-x-8 hidden">
-
+                
                 {/* Dashboard */}
-                {isAuthenticated && (
+                {isAuthenticated ? (
                     <li>
                         <a
                             href="/dashboard"
@@ -42,17 +42,17 @@ export default function TopNavBar ({ }) {
                             Dashboard
                         </a>
                     </li>
+                ): (
+                    <li>
+                        <a
+                        href="/"
+                        className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-0"
+                        >
+                            <FontAwesomeIcon icon={faHome} className="text-gray-700 pr-2 dark:text-white w-4 h-4" />
+                            Home
+                        </a>
+                    </li>
                 )}
-
-                <li>
-                    <a
-                    href="/"
-                    className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-0"
-                    >
-                        <FontAwesomeIcon icon={faHome} className="text-gray-700 pr-2 dark:text-white w-4 h-4" />
-                        Home
-                    </a>
-                </li>
 
                 {/* Playground */}
                 <li>
@@ -77,7 +77,7 @@ export default function TopNavBar ({ }) {
                 </li> */}
 
                 {/* If user is authenticated, show Dashboard and Logout */}
-                {/* {isAuthenticated ? (
+                {isAuthenticated ? (
                     <>
                         <li>
                             <a
@@ -102,7 +102,7 @@ export default function TopNavBar ({ }) {
                             </a>
                         </li>
                     </>
-                )} */}
+                )}
 
                 <ThemeToggle />
 
