@@ -121,19 +121,22 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                     </div> */}
 
                     {/* Timeline */}
-                    <ol class="relative border-s border-gray-200 dark:border-gray-700">                  
+                    <ol className="relative border-s border-gray-200 dark:border-gray-700">                  
                         
                         {MIT_COURSE_OUTLINE.map((item) => (
 
-                            <li class="mb-6 ms-4">
-                                <div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                                {/* <time class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">Lecture 1</time> */}
+                            <li
+                                className="mb-6 ms-4"
+                                key={item.id}
+                            >
+                                <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                                {/* <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">Lecture 1</time> */}
                                 <a href={`/course/introduction-to-programming/${item.lecture_number}`} className="cursor-pointer">
-                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-500">
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-500">
                                         {item.name}
                                     </h3>
                                 </a>
-                                <p class="mb-4 pt-1 text-[15px] font-normal text-gray-500 dark:text-gray-400">
+                                <p className="mb-4 pt-1 text-[15px] font-normal text-gray-500 dark:text-gray-400">
                                     {item.description}
                                 </p>
                             </li>

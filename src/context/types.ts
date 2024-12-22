@@ -10,6 +10,7 @@ export interface PlaygroundState {
     input_output_list: QuestionInputOutputPair[];
     code: string;
     console_output: string | null;
+    lecture_question: boolean | null;
 }
 
 export type PlaygroundAction =

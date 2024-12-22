@@ -5,7 +5,7 @@ import { PlaygroundState, QuestionInputOutputPair } from '@/context/types';
 import { saveToLocalStorage } from '@/lib/utils/localStorageUtils';
 
 export type PlaygroundAction =
-    | {type: "SET_QUESTION_INPUT_OUTPUT"; question_id: string | null, name: string, question: string, input_output_list: QuestionInputOutputPair[], code: string}
+    | {type: "SET_QUESTION_INPUT_OUTPUT"; question_id: string | null, name: string, question: string, input_output_list: QuestionInputOutputPair[], code: string, lecture_question: boolean | null}
     | {type: "UPDATE_CODE_STATE"; code: string}
     | {type: "UPDATE_CONSOLE_OUTPUT"; output: string}
 
@@ -23,6 +23,7 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
             //     code: action.code,
             // };
             // saveToLocalStorage('playground_question_dict', JSON.stringify(d));s
+            
             return {
                 question_id: action.question_id,
                 name: action.name,
@@ -30,6 +31,7 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
                 input_output_list: action.input_output_list,
                 code: action.code,
                 console_output: state.console_output,
+                lecture_question: action.lecture_question,
             }
         }
 

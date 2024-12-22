@@ -21,7 +21,6 @@ export default function LectureHomePage({ lecture_number }) {
     return (
 
         // <div className="flex flex-col max-5xl">
-
         //     <div className="min-w-4xl max-w-4xl relative">
 
         <div className="min-h-screen flex justify-center pt-4">
@@ -159,7 +158,8 @@ export default function LectureHomePage({ lecture_number }) {
                                 
                                 <li className="text-[15px]">
                                     <a
-                                        href=""
+                                        // TODO: implement
+                                        href="/playground?lesson_quid=6c6d35ab-b8a1-4b9f-89be-2d85cd7a05fa"  // --> then, fetch/create question in backend --> pushURLState to created question
                                         className='font-normal text-blue-600 dark:text-blue-500 hover:underline'
                                     >
                                         Exercise: Calculate and Print the Total

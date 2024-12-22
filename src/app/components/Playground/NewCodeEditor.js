@@ -78,6 +78,7 @@ const NewCodeEditor = ({ }) => {
             }
         });
 
+        // TODO: 
         // Set the initial theme based on the localStorage value
         const currentTheme = localStorage.getItem('theme') || 'light';
         monaco.editor.setTheme(currentTheme === 'dark' ? 'minimalistDark' : 'minimalistLight');
@@ -158,10 +159,13 @@ const NewCodeEditor = ({ }) => {
                 name: state.name,
                 question: state.question,
                 input_output_list: state.input_output_list,
-                code: codeRef.current
+                code: codeRef.current,
+                lecture_question: state.lecture_question
             });
 
-            addQIDParam(user_save_code_response_dict['question_id']);
+            if (state.lecture_question != true){
+                addQIDParam(user_save_code_response_dict['question_id']);
+            }
             
         } else {
 
@@ -203,6 +207,7 @@ const NewCodeEditor = ({ }) => {
                     'question_name': state.name,
                     'question_text': state.question,
                     'example_input_output_list': state.input_output_list,
+                    'lecture_question': state.lecture_question
                 };
 
                 dispatch({type: "UPDATE_CODE_STATE", code: codeRef.current});

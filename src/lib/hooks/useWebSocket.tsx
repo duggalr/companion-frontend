@@ -53,6 +53,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     const _sendMessage = async (payload: MessagePayload) => {
 
+        console.log('PAYLOAD-WEBSOCKET:', payload);
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
             wsRef.current.send(JSON.stringify(payload));
         }
@@ -69,9 +70,9 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 "question_id": state.question_id,
                 "question_name": state.name,
                 "question_text": state.question,
-                "example_input_output_list": state.input_output_list
+                "example_input_output_list": state.input_output_list,
+                'lecture_question': state.lecture_question
             }
-
 
         } else {
 
@@ -81,7 +82,8 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 "question_id": state.question_id,
                 "question_name": state.name,
                 "question_text": state.question,
-                "example_input_output_list": state.input_output_list
+                "example_input_output_list": state.input_output_list,
+                'lecture_question': state.lecture_question
             }
 
         }
@@ -101,7 +103,8 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 name: state.name,
                 question: state.question,
                 input_output_list: state.input_output_list,
-                code: state.code
+                code: state.code,
+                lecture_question: state.lecture_question
             });
     
             if (!isAuthenticated){
@@ -143,12 +146,18 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
         // const new_question_object_id = state.question_id;
         
-        const qid = await _handleGetUserQuestion(
-            // new_question_object_id,
-            // isAuthenticated
-        );
+        // TODO: 
+            // handle chat for lecture questions; proceed from there and finalize the basic run/save/chat-functionality for lecture-question 
+            // complete submission functionality <-- critical for today
 
-        if (isAuthenticated){
+        let qid;
+        if (state.lecture_question === true){
+            qid = state.question_id;
+        } else {
+            qid = await _handleGetUserQuestion();
+        }
+
+        if (isAuthenticated) {
 
             const user_current_code = state.code;
             const messageForBackend = {
@@ -158,6 +167,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 text: current_user_message,
                 user_code: user_current_code,
                 all_user_messages_str: all_chat_messages_str,
+                lecture_question: state.lecture_question,
                 sender: 'user',
                 type: 'user_message',
             };
@@ -178,6 +188,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 user_code: user_current_code,
                 example_input_output_list: state.input_output_list,
                 all_user_messages_str: all_chat_messages_str,
+                lecture_question: state.lecture_question,
                 sender: 'user',
                 type: 'user_message',
             };
@@ -195,6 +206,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     //     }
     // }, []);
 
+    // TODO:
     useEffect(() => {
 
         const socket = new WebSocket(url);
@@ -240,8 +252,11 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         if (userAccessToken){
             const user_chat_msg_list = await fetchChatMessages(
                 userAccessToken,
-                question_object_id
+                question_object_id,
+                state.lecture_question
             );
+
+            console.log('user_chat_msg_list:', user_chat_msg_list);
 
             if (user_chat_msg_list['data'].length > 0){
 
@@ -281,9 +296,17 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             // TODO:
                 // fetch messages for the question (qid)
             const url_search_params = new URLSearchParams(window.location.search);
+            const lesson_question_object_id = url_search_params.get('lesson_quid');
             const question_object_id = url_search_params.get('qid');
 
-            if (question_object_id){
+            if (lesson_question_object_id){
+
+                console.log('lesson question id:', lesson_question_object_id);
+                _handleAuthenticatedChatMessageInitialization(
+                    lesson_question_object_id
+                )
+
+            } else if (question_object_id){
                 _handleAuthenticatedChatMessageInitialization(
                     question_object_id
                 )

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencil, faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faPlay, faSpinner, faCheck } from "@fortawesome/free-solid-svg-icons";
 
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
 import useUserContext from "@/lib/hooks/useUserContext";
@@ -206,10 +206,13 @@ const ProblemLayout = ({ }) => {
                 name: state.name,
                 question: state.question,
                 input_output_list: state.input_output_list,
-                code: state.code
+                code: state.code,
+                lecture_question: state.lecture_question
             });
             
-            addQIDParam(user_save_code_response_dict['question_id']);
+            if (state.lecture_question != true){
+                addQIDParam(user_save_code_response_dict['question_id']);
+            }
 
         } else {
 
@@ -257,6 +260,7 @@ const ProblemLayout = ({ }) => {
             'question_name': state.name,
             'question_text': state.question,
             'example_input_output_list': state.input_output_list,
+            'lecture_question': state.lecture_question
         }
 
         dispatch({
@@ -269,6 +273,8 @@ const ProblemLayout = ({ }) => {
 
             payload['user_id'] = null;
             payload['code'] = current_user_code;
+
+            console.log('payload-NEW:', payload);
 
             handleSaveCodeInternal(
                 payload
@@ -498,19 +504,33 @@ const ProblemLayout = ({ }) => {
                             Chat with Tutor
                         </Button> */}
 
-                        <Button
-                            // onClick={submitCode}
-                            disabled={true} // Disable the button
-                            className="bg-gray-400 text-gray-700 cursor-not-allowed" // Add disabled styles
-                        >
-                            Run Test Cases (coming soon...)
-                        </Button>
+                        {state.lecture_question ? (
+
+                            <Button
+                                className="w-[130px] py-2 text-[14px] text-white font-medium rounded-xl transition-all bg-green-400 hover:bg-green-500"
+                            >
+                                {/* <FontAwesomeIcon icon={faCheck} className="text-white" /> */}
+                                Submit Solution
+                            </Button>
+
+                        ): (
+
+                            <Button
+                                // onClick={submitCode}
+                                disabled={true} // Disable the button
+                                className="bg-gray-400 text-gray-700 cursor-not-allowed" // Add disabled styles
+                            >
+                                Run Test Cases (coming soon...)
+                            </Button>
+
+                        )}
+
                     </div>
 
                     <div className="mt-1">
-                    <span className="text-[11.5px] text-gray-600 dark:text-gray-500">
-                        Shortcut: (Ctrl / Cmd) + S to save code
-                    </span>
+                        <span className="text-[11.5px] text-gray-600 dark:text-gray-500">
+                            Shortcut: (Ctrl / Cmd) + S to save code
+                        </span>
                     </div>
 
                 </div>
