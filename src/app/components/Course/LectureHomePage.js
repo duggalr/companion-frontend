@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import HeroVideoDialog from "@/components/ui/hero-video-dialog";
 
 
-export default function LectureHomePage({ lecture_number }) {
+export default function LectureHomePage({ lecture_number, lectureData, lectureExerciseData }) {
 
     const router = useRouter();
     const [activeTab, setActiveTab] = useState('lecture_video');
+
+    // const [isLoading, setIsLoading] = useState(true);
 
     const handleGoBack = () => {
 
@@ -17,6 +19,35 @@ export default function LectureHomePage({ lecture_number }) {
         }
 
     };
+
+    // // TODO:
+    //     // Display lecture data here
+
+    // let [lectureData, setLectureData] = useState(null);
+
+    // const _handleLectureDataFetch = async () => {
+
+    //     let lecture_data_res = await fetchLectureData(lecture_number);
+    //     console.log('lecture_data:', lecture_data_res);
+
+    //     // TODO: set and display
+    //     if (lecture_data_res['success'] === true){
+
+    //         let lect_data = lecture_data_res['lecture_data'];
+    //         console.log('lect_data', lect_data);
+    //         setLectureData(lect_data);
+
+    //     }
+
+    // }
+
+    // useEffect(() => {
+    
+    //     if (accessToken) {
+    //         _handleLectureDataFetch();
+    //     }
+
+    // }, [accessToken, userAuthenticated]);
 
     return (
 
@@ -52,10 +83,11 @@ export default function LectureHomePage({ lecture_number }) {
 
                 <div className="space-y-4 pt-8">
                     <h1 className="text-3xl font-bold">
-                        Lecture 1 - Introduction to Programming
+                        Lecture {lectureData.number}: { lectureData.name }
                     </h1>
                     <p className="text-gray-500">
-                        Introduction to Python: knowledge, machines, objects, types, variables, bindings, IDEs
+                        {/* Introduction to Python: knowledge, machines, objects, types, variables, bindings, IDEs */}
+                        {lectureData.description}
                     </p>
                 </div>
 
@@ -93,18 +125,21 @@ export default function LectureHomePage({ lecture_number }) {
                             className="relative mt-4"
                         >
                             <HeroVideoDialog
-                            className="dark:hidden block"
-                            animationStyle="from-center"
-                            videoSrc="https://www.youtube.com/embed/xAcTmDO6NTI"
-                            thumbnailSrc="https://i.ytimg.com/vi/xAcTmDO6NTI/maxresdefault.jpg"
-                            thumbnailAlt="Companion AI Demo"
+                                className="dark:hidden block"
+                                animationStyle="from-center"                                
+                                videoSrc={lectureData.embed_video_url}
+                                thumbnailSrc={lectureData.thumbnail_image_url}
+                                // videoSrc="https://www.youtube.com/embed/xAcTmDO6NTI"
+                                // thumbnailSrc="https://i.ytimg.com/vi/xAcTmDO6NTI/maxresdefault.jpg"
                             />
                             <HeroVideoDialog
-                            className="hidden dark:block"
-                            animationStyle="from-center"
-                            videoSrc="https://www.youtube.com/embed/xAcTmDO6NTI"
-                            thumbnailSrc="https://i.ytimg.com/vi/xAcTmDO6NTI/maxresdefault.jpg"
-                            thumbnailAlt="Companion AI Demo"
+                                className="hidden dark:block"
+                                animationStyle="from-center"
+                                videoSrc={lectureData.embed_video_url}
+                                thumbnailSrc={lectureData.thumbnail_image_url}
+                                // videoSrc="https://www.youtube.com/embed/xAcTmDO6NTI"
+                                // thumbnailSrc="https://i.ytimg.com/vi/xAcTmDO6NTI/maxresdefault.jpg"
+                                // thumbnailAlt="Companion AI Demo"
                             />
                         </div>
                     )
@@ -125,23 +160,23 @@ export default function LectureHomePage({ lecture_number }) {
 
                                 <li className="text-[15px]">
                                     <a 
-                                        href="https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/resources/mit6_100l_f22_lec01_pdf/"
+                                        href={lectureData.notes_url}
                                         className='font-normal text-blue-600 dark:text-blue-500 hover:underline'
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
-                                        Lecture 1: Introduction
+                                        Lecture Notes
                                     </a>
                                 </li>
 
                                 <li className="text-[15px]">
                                     <a
-                                        href="https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/resources/mit6_100l_f22_lec01_code_py/"
+                                        href={lectureData.code_url}
                                         className='font-normal text-blue-600 dark:text-blue-500 hover:underline'
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
-                                        Lecture 1: Code
+                                        Lecture Code
                                     </a>
                                 </li>
 
@@ -158,11 +193,11 @@ export default function LectureHomePage({ lecture_number }) {
                                 
                                 <li className="text-[15px]">
                                     <a
-                                        // TODO: implement
-                                        href="/playground?lesson_quid=6c6d35ab-b8a1-4b9f-89be-2d85cd7a05fa"  // --> then, fetch/create question in backend --> pushURLState to created question
+                                        // href="/playground?lesson_quid=6c6d35ab-b8a1-4b9f-89be-2d85cd7a05fa"  // --> then, fetch/create question in backend --> pushURLState to created question
+                                        href={`/playground?lesson_quid=${lectureExerciseData.id}`}
                                         className='font-normal text-blue-600 dark:text-blue-500 hover:underline'
                                     >
-                                        Exercise: Calculate and Print the Total
+                                        {lectureExerciseData.name}
                                     </a>
                                 </li>
 

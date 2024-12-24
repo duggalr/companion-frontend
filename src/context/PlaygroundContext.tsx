@@ -147,7 +147,7 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
                 question_id: qid,
                 name: qdata['name'],
                 question: qdata['exercise'],
-                input_output_list: JSON.parse(qdata['input_output_list']),
+                input_output_list: qdata['input_output_list'],
                 code: qdata['user_code'],
                 lecture_question: true
             });

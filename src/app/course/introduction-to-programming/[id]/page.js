@@ -1,17 +1,70 @@
 "use client";
+import { useEffect, useState } from 'react';
 import TopNavBar from '@/app/components/Utils/TopNavBar';
 import LectureHomePage from '@/app/components/Course/LectureHomePage';
+import useUserContext from "@/lib/hooks/useUserContext";
+import LoadingScreen from '@/app/components/ui/Loading';
+import { fetchLectureData } from '@/lib/backend_api/fetchLectureData';
+
 
 export default function LectureHomeLayout ({ params }) {
 
+    const { isAuthenticated, userAccessToken } = useUserContext();
+
     let lecture_number = params.id;
     console.log('lecture_number:', lecture_number);
+
+    const [isLoading, setIsLoading] = useState(true);
+    let [lectureData, setLectureData] = useState(null);
+    let [lectureExerciseData, setLectureExerciseData] = useState(null);
+    
+    // handle-lecture-data-fetch
+    const _handleLectureDataFetch = async () => {
+
+        let lecture_data_res = await fetchLectureData(lecture_number);
+        console.log('lecture_data:', lecture_data_res);
+
+        // TODO: set and display
+        if (lecture_data_res['success'] === true){
+
+            let lect_data = lecture_data_res['lecture_data'];
+            let lect_exercise_data = lecture_data_res['exercise_data'];
+            console.log('lect_data', lect_data);
+            console.log('lect_exercise_data', lect_exercise_data);
+
+            setLectureData(lect_data);
+            setLectureExerciseData(lect_exercise_data);
+            setIsLoading(false);
+
+        }
+
+    }
+
+    // initial-load
+    useEffect(() => {
+    
+        if (userAccessToken) {
+            _handleLectureDataFetch();
+        }
+
+    }, [userAccessToken, isAuthenticated]);
+
+
+    if (isLoading){
+        return <LoadingScreen />;
+    }
 
     return (
 
         <main>
             <TopNavBar/>
-            <LectureHomePage lecture_number={lecture_number}/>
+            <LectureHomePage 
+                // accessToken={userAccessToken}
+                // userAuthenticated={isAuthenticated}
+                lecture_number={lecture_number}
+                lectureData={lectureData}
+                lectureExerciseData={lectureExerciseData}
+            />
         </main>
 
     );

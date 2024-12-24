@@ -12,19 +12,40 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
     const [editingIndex, setEditingIndex] = useState(null);
     const [fileNames, setFileNames] = useState([]);
 
+    const [courseLectureList, setCourseLectureList] = useState([]);
+
     const _handleFetchDashboardData = async () => {
         setDashboardDataLoading(true);
 
         let dashboard_data = await fetchDashboardData(accessToken);
+        console.log('dashboard_data:', dashboard_data)
+        
+        if (dashboard_data['success'] === true){
 
-        if (dashboard_data?.playground_object_list?.length > 0) {
-            setDashboardDataList(dashboard_data.playground_object_list);
+            // Set Course Lecture data
+            setCourseLectureList(dashboard_data.lecture_objects_list);
+
+            // Set Dashboard Data
+            setDashboardDataList(dashboard_data.playground_object_list);            
 
             // Initialize file names
             setFileNames(dashboard_data.playground_object_list.map(item => item.code_file_name));
-        } else {
-            console.warn("No dashboard data available or failed to fetch data");
+
         }
+
+        // if (dashboard_data?.playground_object_list?.length > 0) {
+        //     // Set Dashboard Data
+        //     setDashboardDataList(dashboard_data.playground_object_list);
+
+        //     // Initialize file names
+        //     setFileNames(dashboard_data.playground_object_list.map(item => item.code_file_name));
+
+        //     // Set Course Lecture data
+        //     setCourseLectureList(dashboard_data.lecture_objects_list);
+
+        // } else {
+        //     console.warn("No dashboard data available or failed to fetch data");
+        // }
 
         setDashboardDataLoading(false);
     };
@@ -61,16 +82,16 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
     };
 
 
-    // const [activeTab, setActiveTab] = useState("tab1");
+    // // const [activeTab, setActiveTab] = useState("tab1");
 
-    const MIT_COURSE_OUTLINE = [
-        {
-            id: '1324f143-0086-4811-8093-194115d0697c',
-            lecture_number: 1,
-            name: 'Lecture 1: Introduction',
-            description: 'Introduction to Python: knowledge, machines, objects, types, variables, bindings, IDEs',
-        }
-    ]
+    // const MIT_COURSE_OUTLINE = [
+    //     {
+    //         id: '1324f143-0086-4811-8093-194115d0697c',
+    //         lecture_number: 1,
+    //         name: 'Lecture 1: Introduction',
+    //         description: 'Introduction to Python: knowledge, machines, objects, types, variables, bindings, IDEs',
+    //     }
+    // ]
 
     return (
 
@@ -123,7 +144,7 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                     {/* Timeline */}
                     <ol className="relative border-s border-gray-200 dark:border-gray-700">                  
                         
-                        {MIT_COURSE_OUTLINE.map((item) => (
+                        {courseLectureList.map((item) => (
 
                             <li
                                 className="mb-6 ms-4"
@@ -131,7 +152,7 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                             >
                                 <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
                                 {/* <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">Lecture 1</time> */}
-                                <a href={`/course/introduction-to-programming/${item.lecture_number}`} className="cursor-pointer">
+                                <a href={`/course/introduction-to-programming/${item.number}`} className="cursor-pointer">
                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-500">
                                         {item.name}
                                     </h3>
@@ -297,8 +318,6 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
         //        )}
 
         //    </div>
-
-
 
 
     );
