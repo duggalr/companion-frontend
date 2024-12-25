@@ -41,23 +41,23 @@ import { handleSolutionSubmit } from "@/lib/backend_api/handleSolutionSubmit";
 //     },
 // ];
 
-const mockSubmissions = [
-    {
-      submissionNumber: 1,
-      date: "2024-12-21 14:30",
-      status: "Pass",
-    },
-    {
-      submissionNumber: 2,
-      date: "2024-12-22 10:15",
-      status: "Fail",
-    },
-    {
-      submissionNumber: 3,
-      date: "2024-12-23 08:45",
-      status: "Pass",
-    },
-];
+// const mockSubmissions = [
+//     {
+//       submissionNumber: 1,
+//       date: "2024-12-21 14:30",
+//       status: "Pass",
+//     },
+//     {
+//       submissionNumber: 2,
+//       date: "2024-12-22 10:15",
+//       status: "Fail",
+//     },
+//     {
+//       submissionNumber: 3,
+//       date: "2024-12-23 08:45",
+//       status: "Pass",
+//     },
+// ];
 
 const SubmissionLayout = ({}) => {
 
@@ -111,25 +111,66 @@ const SubmissionLayout = ({}) => {
         console.log('solutionSubmitRes:', solutionSubmitRes);
 
         if (solutionSubmitRes['success'] === true){
-            
+
             let output_solution_data = solutionSubmitRes['data'];
             let all_test_cases_passed = output_solution_data['all_tests_passed'];
             let program_result_list = output_solution_data['result_list'];
             let ai_feedback_response = output_solution_data['ai_response'];
 
+
+            // let user_code_submission_history_objects = output_solution_data['']
+            let old_user_code_submission_list = currentProblemState.user_code_submission_history_objects;
+            old_user_code_submission_list.push({
+                'lc_submission_history_object_id': output_solution_data['lc_submission_history_object_id'],
+                'lc_submission_history_object_created': output_solution_data['lc_submission_history_object_created'],
+                'lc_submission_history_object_boolean_result': output_solution_data['lc_submission_history_object_boolean_result'],
+                'lc_submission_history_code': output_solution_data['lc_submission_history_code'],
+            });
+
+            console.log('old_user_code_submission_list-NEW:', old_user_code_submission_list);
+
             // TODO: add this to the submission state
-            
+
             playgroundDispatch({
                 type: "UPDATE_SUBMISSION_RESULTS",
 
                 all_test_cases_passed: all_test_cases_passed,
                 program_output_result: program_result_list,
-                ai_tutor_feedback: ai_feedback_response
+                ai_tutor_feedback: ai_feedback_response,
+                user_code_submission_history_objects: old_user_code_submission_list
             });
 
         }
 
     }
+
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedViewCode, setSelectedViewCode] = useState(null);
+
+    const _handleViewCodeClick = async (object_id) => {
+
+        console.log('OBJECT ID:', object_id);
+        
+        let current_sub_hist_objects = currentProblemState.user_code_submission_history_objects;
+        let current_selected_code = "";
+        for (let i=0; i <= current_sub_hist_objects.length-1; i ++){
+            let sub_hist_dict = current_sub_hist_objects[i];
+            // console.log(sub_hist_dict)
+            if (sub_hist_dict['lc_submission_history_object_id'] == object_id){
+                console.log('sub-hist-dict:', sub_hist_dict);
+                current_selected_code = sub_hist_dict['lc_submission_history_code'];
+            }
+        }
+
+        setSelectedViewCode(current_selected_code);
+        setIsModalOpen(true);
+
+    }
+
+    const closeModal = () => {
+        setIsModalOpen(false); // Hide the modal
+    };
 
     useEffect(() => {
 
@@ -144,6 +185,7 @@ const SubmissionLayout = ({}) => {
         
     }, []);
 
+   
     return (
 
         // <div className="p-4 bg-gray-900 min-h-screen text-white">
@@ -167,6 +209,8 @@ const SubmissionLayout = ({}) => {
                     Submit
                 </button> */}
             </div>
+
+            {/* TODO: add submission history and render and add submission history functionaltiy */}
 
             <div className="mb-6">
                 <h2 className="text-base font-semibold">
@@ -331,37 +375,52 @@ const SubmissionLayout = ({}) => {
                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
-                            <th scope="col" class="px-6 py-3">
+                            {/* <th scope="col" class="px-6 py-3">
                                 #
-                            </th>
+                            </th> */}
                             <th scope="col" class="px-6 py-3">
                                 Date
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Status
                             </th>
+                            <th scope="col" class="px-6 py-3">
+                                Code
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
 
-                        {mockSubmissions.map((submission, index) => (
-                            <tr
-                                key={index}
-                                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                            >
-                                <td className="p-3">{submission.submissionNumber}</td>
-                                <td className="p-3">{submission.date}</td>
-                                <td
-                                className={`p-3 ${
-                                    submission.status === "Pass"
-                                    ? "text-green-400"
-                                    : "text-red-400"
-                                }`}
+                       {currentProblemState.user_code_submission_history_objects.length > 0 ? (
+                            currentProblemState.user_code_submission_history_objects.map((submission, index) => (
+                                <tr
+                                    key={index}
+                                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                                 >
-                                {submission.status}
+                                    {/* <td className="p-3">{submission.lc_submission_history_object_id}</td> */}
+                                    <td className="p-3">{submission.lc_submission_history_object_created}</td>
+                                    <td
+                                        className={`p-3 ${
+                                            submission.lc_submission_history_object_boolean_result === true
+                                                ? "text-green-400"
+                                                : "text-red-400"
+                                        }`}
+                                    >
+                                        {submission.lc_submission_history_object_boolean_result.toString()}
+                                    </td>
+                                    <td className="p-3" onClick={() => _handleViewCodeClick(submission.lc_submission_history_object_id)}>
+                                        View Code
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="3" className="text-center p-3">
+                                    No submissions have been submitted.
                                 </td>
                             </tr>
-                        ))}
+                        )}
+
 
                         {/* <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -399,6 +458,29 @@ const SubmissionLayout = ({}) => {
                          */}
                     </tbody>
                 </table>
+
+
+                {/* Modal */}
+                {isModalOpen && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                        <div className="bg-white rounded-lg shadow-lg p-6 w-1/3">
+                            <h2 className="text-lg font-semibold mb-4">View Code</h2>
+                            {/* <p className="text-sm text-gray-600">
+                                {selectedViewCode}
+                            </p> */}
+                            <pre className="text-sm text-gray-600 bg-gray-100 p-4 rounded overflow-x-auto">
+                                {selectedViewCode}
+                            </pre>
+                            <button
+                                onClick={closeModal}
+                                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                )}
+
             </div>
 
         </div>

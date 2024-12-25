@@ -8,11 +8,11 @@ import { saveToLocalStorage } from '@/lib/utils/localStorageUtils';
 type TestCase = { [key: string]: any };
 
 export type PlaygroundAction =
-    | {type: "SET_QUESTION_INPUT_OUTPUT"; question_id: string | null, name: string, question: string, input_output_list: QuestionInputOutputPair[], code: string, lecture_question: boolean | null, test_case_list: TestCase | TestCase[] | [], all_test_cases_passed: boolean | null, program_output_result: [], ai_tutor_feedback: null}
+    | {type: "SET_QUESTION_INPUT_OUTPUT"; question_id: string | null, name: string, question: string, input_output_list: QuestionInputOutputPair[], code: string, lecture_question: boolean | null, test_case_list: TestCase | TestCase[] | [], all_test_cases_passed: boolean | null, program_output_result: [], ai_tutor_feedback: null, user_code_submission_history_objects: []}
     | {type: "UPDATE_CODE_STATE"; code: string}
     | {type: "UPDATE_CONSOLE_OUTPUT"; output: string}
     | {type: "UPDATE_TEST_CASE_LIST"; test_case_list: TestCase | TestCase[] | []}
-    | {type: "UPDATE_SUBMISSION_RESULTS"; all_test_cases_passed: boolean, program_output_result: [], ai_tutor_feedback: string}
+    | {type: "UPDATE_SUBMISSION_RESULTS"; all_test_cases_passed: boolean, program_output_result: [], ai_tutor_feedback: string, user_code_submission_history_objects: []}
 
 // Reducer logic
 export const playgroundReducer = (state: PlaygroundState, action: PlaygroundAction): PlaygroundState => {
@@ -40,7 +40,9 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
                 test_case_list: action.test_case_list,                
                 all_test_cases_passed: action.all_test_cases_passed,
                 program_output_result: action.program_output_result,
-                ai_tutor_feedback: action.ai_tutor_feedback
+                ai_tutor_feedback: action.ai_tutor_feedback,
+
+                user_code_submission_history_objects: action.user_code_submission_history_objects
             }
         }
 
@@ -59,7 +61,8 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
 
                 all_test_cases_passed: action.all_test_cases_passed,
                 program_output_result: action.program_output_result,
-                ai_tutor_feedback: action.ai_tutor_feedback
+                ai_tutor_feedback: action.ai_tutor_feedback,
+                user_code_submission_history_objects: action.user_code_submission_history_objects
             }
 
         }

@@ -18,6 +18,8 @@ export interface PlaygroundState {
     all_test_cases_passed: boolean | null;
     program_output_result: [];
     ai_tutor_feedback: string | null;
+
+    user_code_submission_history_objects: []
 }
 
 export type PlaygroundAction =

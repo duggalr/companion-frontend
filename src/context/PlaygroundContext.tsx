@@ -159,7 +159,9 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
                 test_case_list: qdata['test_case_list'],
                 all_test_cases_passed: null,
                 program_output_result: [],
-                ai_tutor_feedback: null
+                ai_tutor_feedback: null,
+
+                user_code_submission_history_objects: qdata['user_code_submission_history_objects']
             });
 
         }
