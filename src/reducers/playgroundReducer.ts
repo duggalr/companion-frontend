@@ -4,11 +4,15 @@
 import { PlaygroundState, QuestionInputOutputPair } from '@/context/types';
 import { saveToLocalStorage } from '@/lib/utils/localStorageUtils';
 
+// TODO: start here by setting the testcase state and proceed from there to implementing the submission functionality
+type TestCase = { [key: string]: any };
+
 export type PlaygroundAction =
-    | {type: "SET_QUESTION_INPUT_OUTPUT"; question_id: string | null, name: string, question: string, input_output_list: QuestionInputOutputPair[], code: string, lecture_question: boolean | null}
+    | {type: "SET_QUESTION_INPUT_OUTPUT"; question_id: string | null, name: string, question: string, input_output_list: QuestionInputOutputPair[], code: string, lecture_question: boolean | null, test_case_list: TestCase | TestCase[] | [], all_test_cases_passed: boolean | null, program_output_result: [], ai_tutor_feedback: null}
     | {type: "UPDATE_CODE_STATE"; code: string}
     | {type: "UPDATE_CONSOLE_OUTPUT"; output: string}
-
+    | {type: "UPDATE_TEST_CASE_LIST"; test_case_list: TestCase | TestCase[] | []}
+    | {type: "UPDATE_SUBMISSION_RESULTS"; all_test_cases_passed: boolean, program_output_result: [], ai_tutor_feedback: string}
 
 // Reducer logic
 export const playgroundReducer = (state: PlaygroundState, action: PlaygroundAction): PlaygroundState => {
@@ -31,9 +35,35 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
                 input_output_list: action.input_output_list,
                 code: action.code,
                 console_output: state.console_output,
+
                 lecture_question: action.lecture_question,
+                test_case_list: action.test_case_list,                
+                all_test_cases_passed: action.all_test_cases_passed,
+                program_output_result: action.program_output_result,
+                ai_tutor_feedback: action.ai_tutor_feedback
             }
         }
+
+
+        case "UPDATE_TEST_CASE_LIST": {
+
+            return {...state, test_case_list: action.test_case_list};
+
+        }
+
+
+        case "UPDATE_SUBMISSION_RESULTS": {
+
+            return {
+                ...state,
+
+                all_test_cases_passed: action.all_test_cases_passed,
+                program_output_result: action.program_output_result,
+                ai_tutor_feedback: action.ai_tutor_feedback
+            }
+
+        }
+
 
         // case "SET_RANDOM_INITIAL_QUESTION": {
 

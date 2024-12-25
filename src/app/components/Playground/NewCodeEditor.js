@@ -160,7 +160,8 @@ const NewCodeEditor = ({ }) => {
                 question: state.question,
                 input_output_list: state.input_output_list,
                 code: codeRef.current,
-                lecture_question: state.lecture_question
+                lecture_question: state.lecture_question,
+                test_case_list: state.test_case_list
             });
 
             if (state.lecture_question != true){

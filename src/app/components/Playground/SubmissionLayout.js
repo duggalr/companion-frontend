@@ -1,41 +1,45 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX, faCheck } from "@fortawesome/free-solid-svg-icons";
+import useUserContext from "@/lib/hooks/useUserContext";
+import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
+// import { useSubmissionContext } from "@/lib/hooks/useSubmissionContext";
+import { handleSolutionSubmit } from "@/lib/backend_api/handleSolutionSubmit";
 
 
-const testCases = [
-    {
-        id: 1,
-        input: "Lorem ipsum input data for test case 1...",
-        expectedOutput: "Lorem ipsum expected output for test case 1...",
-        userOutput: "Lorem ipsum user program output for test case 1...",
-    },
-    {
-        id: 2,
-        input: "Lorem ipsum input data for test case 2...",
-        expectedOutput: "Lorem ipsum expected output for test case 2...",
-        userOutput: "Lorem ipsum user program output for test case 2...",
-    },
-    {
-        id: 3,
-        input: "Lorem ipsum input data for test case 3...",
-        expectedOutput: "Lorem ipsum expected output for test case 3...",
-        userOutput: "Lorem ipsum user program output for test case 3...",
-    },
-    {
-        id: 4,
-        input: "Lorem ipsum input data for test case 4...",
-        expectedOutput: "Lorem ipsum expected output for test case 4...",
-        userOutput: "Lorem ipsum user program output for test case 4...",
-    },
-    {
-        id: 5,
-        input: "Lorem ipsum input data for test case 5...",
-        expectedOutput: "Lorem ipsum expected output for test case 5...",
-        userOutput: "Lorem ipsum user program output for test case 5...",
-    },
-];
+// const testCases = [
+//     {
+//         id: 1,
+//         input: "Lorem ipsum input data for test case 1...",
+//         expectedOutput: "Lorem ipsum expected output for test case 1...",
+//         userOutput: "Lorem ipsum user program output for test case 1...",
+//     },
+//     {
+//         id: 2,
+//         input: "Lorem ipsum input data for test case 2...",
+//         expectedOutput: "Lorem ipsum expected output for test case 2...",
+//         userOutput: "Lorem ipsum user program output for test case 2...",
+//     },
+//     {
+//         id: 3,
+//         input: "Lorem ipsum input data for test case 3...",
+//         expectedOutput: "Lorem ipsum expected output for test case 3...",
+//         userOutput: "Lorem ipsum user program output for test case 3...",
+//     },
+//     {
+//         id: 4,
+//         input: "Lorem ipsum input data for test case 4...",
+//         expectedOutput: "Lorem ipsum expected output for test case 4...",
+//         userOutput: "Lorem ipsum user program output for test case 4...",
+//     },
+//     {
+//         id: 5,
+//         input: "Lorem ipsum input data for test case 5...",
+//         expectedOutput: "Lorem ipsum expected output for test case 5...",
+//         userOutput: "Lorem ipsum user program output for test case 5...",
+//     },
+// ];
 
 const mockSubmissions = [
     {
@@ -53,7 +57,7 @@ const mockSubmissions = [
       date: "2024-12-23 08:45",
       status: "Pass",
     },
-  ];
+];
 
 const SubmissionLayout = ({}) => {
 
@@ -61,7 +65,25 @@ const SubmissionLayout = ({}) => {
         // if course question --> show the submission page + handle logic
         // else --> show the coming soon page
 
+    const { isAuthenticated, userAccessToken } = useUserContext();
+
     const [currentTestCase, setCurrentTestCase] = useState(0);
+    // const {playgroundState, playgroundDispatch} = usePlaygroundContext();
+    const playgroundContext = usePlaygroundContext();
+    let currentProblemState = playgroundContext.state;
+    let playgroundDispatch = playgroundContext.dispatch;
+    
+    console.log('currentProblemState-NEW:', currentProblemState);
+    // console.log('tmp-new:', currentProblemState.all_test_cases_passed);
+    console.log('tmp-new-two:', currentProblemState.ai_tutor_feedback);
+    // console.log('tmp-new-three:', currentProblemState.program_output_result, currentProblemState.program_output_result.length);
+
+    // const [submissionState, submissionDispatch] = useSubmissionContext();
+    // console.log('submissionState:', submissionState);
+
+    const testCaseList = currentProblemState['test_case_list'];
+    // console.log('pg-state-NEW:', playgroundState);
+    // console.log('test-case-list:', testCaseList);
 
     const handlePrevious = () => {
         if (currentTestCase > 0) {
@@ -70,10 +92,57 @@ const SubmissionLayout = ({}) => {
     };
     
     const handleNext = () => {
-        if (currentTestCase < testCases.length - 1) {
+        if (currentTestCase < testCaseList.length - 1) {
             setCurrentTestCase((prev) => prev + 1);
         }
     };
+
+    const _handleSubmitButtonClick = async () => {
+
+        let lecture_qid = currentProblemState.question_id;
+        let code = currentProblemState.code;
+        console.log("HANDLE SUBMIT BUTTON CLICK:", lecture_qid, code);
+
+        let solutionSubmitRes = await handleSolutionSubmit(
+            userAccessToken,
+            lecture_qid,
+            code
+        );
+        console.log('solutionSubmitRes:', solutionSubmitRes);
+
+        if (solutionSubmitRes['success'] === true){
+            
+            let output_solution_data = solutionSubmitRes['data'];
+            let all_test_cases_passed = output_solution_data['all_tests_passed'];
+            let program_result_list = output_solution_data['result_list'];
+            let ai_feedback_response = output_solution_data['ai_response'];
+
+            // TODO: add this to the submission state
+            
+            playgroundDispatch({
+                type: "UPDATE_SUBMISSION_RESULTS",
+
+                all_test_cases_passed: all_test_cases_passed,
+                program_output_result: program_result_list,
+                ai_tutor_feedback: ai_feedback_response
+            });
+
+        }
+
+    }
+
+    useEffect(() => {
+
+        // TODO:
+            // we have the quid
+                // show testcases
+            // define submit test-case function in the context
+                // set state to have test-case result loading and navigate to the test-case tab if not already there
+            // implement that logic and return the results in dict
+                // set state with test-results
+                    // set loading to false and show the test-results
+        
+    }, []);
 
     return (
 
@@ -89,6 +158,7 @@ const SubmissionLayout = ({}) => {
                 </h1>
                 <Button
                     className="w-[130px] py-4 mr-2 mt-1 text-[14px] text-white font-medium rounded-xl transition-all bg-green-400 hover:bg-green-500"
+                    onClick={_handleSubmitButtonClick}
                 >
                     Submit Solution
                 </Button>
@@ -102,11 +172,21 @@ const SubmissionLayout = ({}) => {
                 <h2 className="text-base font-semibold">
                     AI Tutor Feedback
                 </h2>
-                 <p className="px-0 pt-4 tracking-6 text-[14px] text-gray-800 dark:text-gray-300">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
-                    interdum, metus non consectetur gravida, ex libero cursus nisl, vel
-                    pharetra mi velit sed urna.
-                </p>
+
+                {currentProblemState.ai_tutor_feedback !== null ? (
+
+                    <p className="px-0 pt-4 tracking-6 text-[14px] text-gray-800 dark:text-gray-300">
+                        {currentProblemState.ai_tutor_feedback}
+                    </p>
+
+                ): (
+
+                    <p className="px-0 pt-4 tracking-6 text-[14px] text-gray-800 dark:text-gray-300">
+                        Submit your solution to get feedback from the AI Tutor.
+                    </p>
+
+                )}
+                
             </div>
 
 
@@ -114,9 +194,23 @@ const SubmissionLayout = ({}) => {
                 Test Cases
             </h2>
 
-            <p className="px-0 pt-4 tracking-6 text-[14px] text-gray-800 dark:text-gray-300">
+            {currentProblemState.all_test_cases_passed === true ? (
+                <p className="px-0 pt-4 tracking-6 text-[14px] text-gray-800 dark:text-gray-300">
+                    All Test Cases Passed. <FontAwesomeIcon icon={faCheck} className="pr-1 text-green-600 text-[15px] ml-1"/> 
+                </p>
+            ) : currentProblemState.all_test_cases_passed === false ? (
+                <p className="px-0 pt-4 tracking-6 text-[14px] text-gray-800 dark:text-gray-300">
+                    Test Cases Did Not Pass. <FontAwesomeIcon icon={faX} className="pr-1 text-red-600 text-[15px] ml-1"/> 
+                </p>
+            ) : currentProblemState.all_test_cases_passed === null ?? (
+                <div>
+                    Submit your solution to determine if test cases have passed.
+                </div>
+            )}
+
+            {/* <p className="px-0 pt-4 tracking-6 text-[14px] text-gray-800 dark:text-gray-300">
                 All Test Cases Passed. <FontAwesomeIcon icon={faCheck} className="pr-1 text-green-600 text-[15px] ml-1"/> 
-            </p>
+            </p> */}
 
             <div className="bg-gray-800 p-5 pb-10 rounded-lg shadow mb-6 mt-4">
 
@@ -133,17 +227,17 @@ const SubmissionLayout = ({}) => {
                     </button>
 
                     <span className="text-[15px] text-gray-400 tracking-wide pr-4">
-                        Test Case {currentTestCase + 1}/{testCases.length}
+                        Test Case {currentTestCase + 1}/{testCaseList.length}
                     </span>
 
                     <button
                         className={`text-gray-400 hover:text-gray-200 text-sm ${
-                        currentTestCase === testCases.length - 1
+                        currentTestCase === testCaseList.length - 1
                             ? "opacity-50 cursor-not-allowed"
                             : ""
                         }`}
                         onClick={handleNext}
-                        disabled={currentTestCase === testCases.length - 1}
+                        disabled={currentTestCase === testCaseList.length - 1}
                     >
                         Next →
                     </button>
@@ -155,7 +249,8 @@ const SubmissionLayout = ({}) => {
                     <div>
                         <h3 className="font-semibold text-sm text-gray-300 mb-1">Input</h3>
                         <pre className="bg-gray-700 text-sm p-3 rounded-lg text-gray-200">
-                        {testCases[currentTestCase].input}
+                        {testCaseList[currentTestCase].input}
+                        {/* TODO: add input */}
                         </pre>
                     </div>
 
@@ -164,7 +259,7 @@ const SubmissionLayout = ({}) => {
                         Expected Output
                         </h3>
                         <pre className="bg-gray-700 text-sm p-3 rounded-lg text-gray-200">
-                        {testCases[currentTestCase].expectedOutput}
+                        {testCaseList[currentTestCase].output}
                         </pre>
                     </div>
 
@@ -173,7 +268,17 @@ const SubmissionLayout = ({}) => {
                         User Program Output
                         </h3>
                         <pre className="bg-gray-700 text-sm p-3 rounded-lg text-gray-200">
-                        {testCases[currentTestCase].userOutput}
+
+                            {/* {currentProblemState.program_output_result.length > 0 ?? (
+                                currentProblemState.program_output_result[currentTestCase]
+                            )} */}
+
+                            {currentProblemState.program_output_result.length > 0 
+                                ? currentProblemState.program_output_result[currentTestCase].program_output
+                                : ""}
+
+                        {/* {testCases[currentTestCase].userOutput} */}
+                        {/* TODO: add user output */}
                         </pre>
                     </div>
 
@@ -239,15 +344,6 @@ const SubmissionLayout = ({}) => {
                     </thead>
                     <tbody>
 
-                        {/* TODO:
-                            - with full concentration:
-                                - get full submission functionality completed / tested / finalized
-                                - from there --> plan out next steps
-                                    - testing to ensure all current lecture exercises work
-                                    - finalizing entire UI (generate similar questions, etc.)
-                                    - getting all lecture exercises in UI and test <-- push this to production and email all the registered people
-                        */}
-
                         {mockSubmissions.map((submission, index) => (
                             <tr
                                 key={index}
@@ -304,7 +400,6 @@ const SubmissionLayout = ({}) => {
                     </tbody>
                 </table>
             </div>
-
 
         </div>
 

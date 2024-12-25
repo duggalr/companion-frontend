@@ -29,8 +29,13 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
         input_output_list: [],
         code: "",
         console_output: null,
-        lecture_question: null
+        lecture_question: null,
+        test_case_list: [],
         // pg_object_id: null
+
+        // submission feedback
+        program_output_result: [],
+        ai_tutor_feedback: ''
     };
 
     const [state, dispatch] = useReducer(playgroundReducer, initialState);
@@ -149,7 +154,12 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
                 question: qdata['exercise'],
                 input_output_list: qdata['input_output_list'],
                 code: qdata['user_code'],
-                lecture_question: true
+                
+                lecture_question: true,
+                test_case_list: qdata['test_case_list'],
+                all_test_cases_passed: null,
+                program_output_result: [],
+                ai_tutor_feedback: null
             });
 
         }
@@ -169,7 +179,7 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
             const lesson_question_object_id = url_search_params.get('lesson_quid');
             const question_object_id = url_search_params.get('qid');
         
-            if (lesson_question_object_id){
+            if (lesson_question_object_id) {
 
                 console.log('lesson question id:', lesson_question_object_id);
                 // TODO: fetch_lesson_question_data
