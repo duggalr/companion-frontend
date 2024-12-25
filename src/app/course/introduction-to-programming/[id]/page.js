@@ -43,15 +43,18 @@ export default function LectureHomeLayout ({ params }) {
     // initial-load
     useEffect(() => {
     
-        if (userAccessToken) {
-            _handleLectureDataFetch();
-        }
+        // if (userAccessToken) {
+        //     _handleLectureDataFetch();
+        // } else {            
+        // }
+
+        _handleLectureDataFetch();
 
     }, [userAccessToken, isAuthenticated]);
 
 
     if (isLoading){
-        return <LoadingScreen />;
+        return <h1>Loading...</h1>;
     }
 
     return (

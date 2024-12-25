@@ -1,24 +1,43 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faVideo, faNoteSticky } from "@fortawesome/free-solid-svg-icons";
 import HeroVideoDialog from "@/components/ui/hero-video-dialog";
 
 
 export default function LectureHomePage({ lecture_number, lectureData, lectureExerciseData }) {
+
+    const MIN_LECTURE_NUMBER = 1;
+    const MAX_LECTURE_NUMBER = 6;
 
     const router = useRouter();
     const [activeTab, setActiveTab] = useState('lecture_video');
 
     // const [isLoading, setIsLoading] = useState(true);
 
+    // const handleGoBack = () => {
+
+    //     if (window.history?.length && window.history.length > 1) {
+    //         router.back();
+    //     } else {
+    //         router.replace("/");
+    //     }
+
+    // };
+
+    // TODO:
     const handleGoBack = () => {
-
-        if (window.history?.length && window.history.length > 1) {
-            router.back();
-        } else {
-            router.replace("/");
+        if (lecture_number > MIN_LECTURE_NUMBER) {
+            router.push(`?page=${lecture_number - 1}`);
         }
-
     };
+
+    const handleGoNext = () => {
+        if (lecture_number <= MAX_LECTURE_NUMBER) {
+            router.push(`?page=${lecture_number + 1}`);
+        }
+    };
+
 
     // // TODO:
     //     // Display lecture data here
@@ -56,13 +75,13 @@ export default function LectureHomePage({ lecture_number, lectureData, lectureEx
 
         <div className="min-h-screen flex justify-center pt-4">
 
-            <div className="absolute left-0 pl-[265px]">
+            {/* <div className="absolute left-0 pl-[265px]">
                 <a
                     onClick={(e) => {
                         e.preventDefault();
-                        handleGoBack();
+                        // handleGoBack();
                     }}
-                    className="cursor-pointer font-normal text-blue-600 dark:text-blue-400 hover:underline"
+                    className="cursor-pointer font-normal text-blue-600 dark:text-blue-400 hover:underline text-[14px]"
                 >
                 {"<- "}Back
                 </a>
@@ -73,11 +92,53 @@ export default function LectureHomePage({ lecture_number, lectureData, lectureEx
                     onClick={(e) => {
                         e.preventDefault();
                     }}
-                    className="cursor-pointer font-normal text-blue-600 dark:text-blue-400 hover:underline"
+                    className="cursor-pointer font-normal text-blue-600 dark:text-blue-400 hover:underline text-[14px]"
                 >
                 Next{" ->"}
                 </a>
-            </div>
+            </div> */}
+
+
+            {lecture_number == 1 && (
+                <div className="absolute left-0 pl-[265px]">
+                    <a
+                        className="cursor-pointer font-normal text-blue-600 dark:text-blue-400 hover:underline text-[14px]"
+                        href='/dashboard'
+                    >
+                        Home
+                    </a>
+                </div>
+            )}
+
+            {lecture_number > MIN_LECTURE_NUMBER && (
+                <div className="absolute left-0 pl-[265px]">
+                    <a
+                        // onClick={(e) => {
+                        //     e.preventDefault();
+                        //     handleGoBack();
+                        // }}
+                        className="cursor-pointer font-normal text-blue-600 dark:text-blue-400 hover:underline text-[14px]"
+                        href={`/course/introduction-to-programming/${parseInt(lecture_number)-1}`}
+                    >
+                        {"<- "}Back
+                    </a>
+                </div>
+            )}
+
+            {lecture_number < MAX_LECTURE_NUMBER && (
+                <div className="absolute right-0 text-right pr-[265px]">
+                    <a
+                        // onClick={(e) => {
+                        //     e.preventDefault();
+                        //     handleGoNext();
+                        // }}
+                        className="cursor-pointer font-normal text-blue-600 dark:text-blue-400 hover:underline text-[14px]"
+                        href={`/course/introduction-to-programming/${parseInt(lecture_number)+1}`}
+                    >
+                        Next{" ->"}
+                    </a>
+                </div>
+            )}
 
             <div className="w-full max-w-4xl pt-2">
 
@@ -102,6 +163,7 @@ export default function LectureHomePage({ lecture_number, lectureData, lectureEx
                         } focus:outline-none cursor-pointer`}
                         onClick={() => setActiveTab('lecture_video')}
                     >
+                        <FontAwesomeIcon icon={faVideo} className="pr-2" />
                         Lecture Video
                     </span>
 
@@ -114,6 +176,7 @@ export default function LectureHomePage({ lecture_number, lectureData, lectureEx
                         } focus:outline-none cursor-pointer`}
                         onClick={() => setActiveTab('note_exercise')}
                     >
+                        <FontAwesomeIcon icon={faNoteSticky} className="pr-2" />
                         Notes & Exercises
                     </span>
 
@@ -156,10 +219,10 @@ export default function LectureHomePage({ lecture_number, lectureData, lectureEx
                                 Notes
                             </h1>
 
-                            <ul className="space-y-2">
+                            <ul className="space-y-2 pl-4">
 
-                                <li className="text-[15px]">
-                                    <a 
+                                <li className="text-[15px] list-disc">
+                                    <a
                                         href={lectureData.notes_url}
                                         className='font-normal text-blue-600 dark:text-blue-500 hover:underline'
                                         target="_blank"
@@ -169,7 +232,7 @@ export default function LectureHomePage({ lecture_number, lectureData, lectureEx
                                     </a>
                                 </li>
 
-                                <li className="text-[15px]">
+                                <li className="text-[15px] list-disc">
                                     <a
                                         href={lectureData.code_url}
                                         className='font-normal text-blue-600 dark:text-blue-500 hover:underline'
@@ -182,16 +245,15 @@ export default function LectureHomePage({ lecture_number, lectureData, lectureEx
 
                             </ul>
 
-
                             <h1
                                 className="text-lg font-semibold mb-4 mt-6"
                             >
                                 Lecture Exercises
                             </h1>
 
-                            <ul className="space-y-4">
+                            <ul className="space-y-4 pl-4">
                                 
-                                <li className="text-[15px]">
+                                <li className="text-[15px] list-disc">
                                     <a
                                         // href="/playground?lesson_quid=6c6d35ab-b8a1-4b9f-89be-2d85cd7a05fa"  // --> then, fetch/create question in backend --> pushURLState to created question
                                         href={`/playground?lesson_quid=${lectureExerciseData.id}`}

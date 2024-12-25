@@ -309,11 +309,89 @@ const ProblemLayout = ({ }) => {
     
             <MathJax>
 
-                <div className="p-2 pl-4 pt-4">
+                <div className="p-2 pl-4 pt-2">
 
-                    {/* <Button>Random Question</Button> */}
+                    <div className="mt-1 flex justify-between items-center  border-b-[1px] border-gray-300  w-full">
 
-                    <div className="flex items-center justify-between pb-2">
+                        {/* Save Code Text */}
+                        <div className="mt-0">
+                            <span className="text-[11.5px] text-gray-600 dark:text-gray-500">
+                                Shortcut: (Ctrl / Cmd) + S to save code
+                            </span>
+                        </div>
+
+                        {/* Button Div */}
+                        <div className="space-x-2 text-right pb-2">
+                            
+                            {/* Run Code Button */}
+                            {(isAuthenticated === true) ? (
+
+                                <button
+                                    onClick={handleRun}
+                                    disabled={isRunLoading}
+                                    className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all 
+                                        ${isRunLoading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+                                    >
+                                    {isRunLoading ? (
+                                        <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faPlay} className="text-white pr-2" />
+                                    )}
+                                    {isRunLoading ? "Running..." : "Run Code"}
+                                </button>
+
+                                ): (
+
+                                <button
+                                    onClick={handleRun}
+                                    disabled={true}
+                                    className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all bg-gray-400 cursor-not-allowed`}
+                                    >
+                                    {isRunLoading ? (
+                                        <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faPlay} className="text-white pr-2" />
+                                    )}
+                                    {isRunLoading ? "Running..." : "Run Code"}
+                                </button>
+                            
+                                )
+                            }
+                        
+                            {state.lecture_question ? (
+
+                                isAuthenticated ? (
+                                    <Button
+                                    className="w-[130px] py-2 text-[14px] text-white font-medium rounded-xl transition-all bg-green-400 hover:bg-green-500"
+                                    onClick={handleSubmit} // Add your submit handler here
+                                    >
+                                        Submit Solution
+                                    </Button>
+                                ) : (
+                                    <Button
+                                    className="w-[130px] py-2 text-[14px] text-white font-medium rounded-xl transition-all bg-gray-400 cursor-not-allowed"
+                                    disabled
+                                    >
+                                        Submit Solution
+                                    </Button>
+                                )
+
+                            ): (
+
+                                <Button
+                                    disabled={true}
+                                    className="bg-gray-400 text-gray-700 cursor-not-allowed" // Add disabled styles
+                                >
+                                    Run Test Cases (coming soon...)
+                                </Button>
+
+                            )}
+
+                        </div>
+
+                    </div>
+                    
+                    <div className="flex items-center justify-between pb-2 mt-4">
                         
                         {editing ? (
 
@@ -463,75 +541,6 @@ const ProblemLayout = ({ }) => {
                         )
     
                     )}
-
-                    
-                    <div className="space-x-3 pt-8">
-
-                        {/* Run Code Button */}
-                        <button
-                            onClick={handleRun}
-                            disabled={isRunLoading}
-                            className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all 
-                                ${isRunLoading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
-                            >
-                            {isRunLoading ? (
-                                <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
-                            ) : (
-                                <FontAwesomeIcon icon={faPlay} className="text-white pr-2" />
-                            )}
-                            {isRunLoading ? "Running..." : "Run Code"}
-                        </button>
-
-                        {/* Save Code Button */}
-                        {/* <button
-                            disabled={isRunLoading}
-                            className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all 
-                                ${isRunLoading ? "bg-gray-500 cursor-not-allowed" : "bg-green-700 hover:bg-green-500 text-white"}`}
-                            >
-                            <FontAwesomeIcon icon={faSave} className="text-white pr-2" />
-                            Save Code
-                        </button> */}
-
-                        {/* TODO: on feedback click -> route to tutor with message populated */}
-                        {/* <Button
-                            // onClick={submitCode}
-                        >Get Feedback</Button> */}
-                        
-                        {/* <Button
-                            onClick={chatWithTutor}
-                            // className="bg-black text-white"
-                        >
-                            Chat with Tutor
-                        </Button> */}
-
-                        {state.lecture_question ? (
-
-                            <Button
-                                className="w-[130px] py-2 text-[14px] text-white font-medium rounded-xl transition-all bg-green-400 hover:bg-green-500"
-                            >
-                                {/* <FontAwesomeIcon icon={faCheck} className="text-white" /> */}
-                                Submit Solution
-                            </Button>
-
-                        ): (
-
-                            <Button
-                                // onClick={submitCode}
-                                disabled={true} // Disable the button
-                                className="bg-gray-400 text-gray-700 cursor-not-allowed" // Add disabled styles
-                            >
-                                Run Test Cases (coming soon...)
-                            </Button>
-
-                        )}
-
-                    </div>
-
-                    <div className="mt-1">
-                        <span className="text-[11.5px] text-gray-600 dark:text-gray-500">
-                            Shortcut: (Ctrl / Cmd) + S to save code
-                        </span>
-                    </div>
 
                 </div>
 

@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import Link from 'next/link';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faClock, faLaptopCode } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faClock, faLaptopCode, faSchool, faBook } from "@fortawesome/free-solid-svg-icons";
 import { fetchDashboardData } from "@/lib/backend_api/fetchDashboardData";
+import { fetchDashboardCourseHomeData } from "@/lib/backend_api/fetchDashboardCourseHomeData";
+import { getFromLocalStorage } from "@/lib/utils/localStorageUtils";
 
 
 const DashboardLayout = ({ accessToken, userAuthenticated }) => {
@@ -50,9 +52,37 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
         setDashboardDataLoading(false);
     };
 
+
+    const _handleFetchCourseData = async () => {
+
+        setDashboardDataLoading(true);
+
+        // let dashboard_data = await fetchDashboardData(accessToken);
+        // console.log('dashboard_data:', dashboard_data)
+
+        let current_anon_user_id = getFromLocalStorage("user_id");
+
+        let course_data_response = await fetchDashboardCourseHomeData(
+            current_anon_user_id,
+            accessToken
+        );
+        console.log('course-data:', course_data_response);
+
+        if (course_data_response['success'] === true){
+
+            let data = course_data_response['lecture_objects_list'];
+            setCourseLectureList(data);
+
+        }
+
+    }
+
     useEffect(() => {
-        if (accessToken) {
+        if (accessToken && userAuthenticated === true) {
             _handleFetchDashboardData();
+        } else {
+            // TODO:
+            _handleFetchCourseData();
         }
     }, [accessToken, userAuthenticated]);
 
@@ -97,63 +127,48 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
 
         // bg-gray-900 text-white
 
-        <div className="min-h-screen flex justify-center pt-8">
+        <div className="min-h-screen flex justify-center pt-12">
 
             <div className="w-full max-w-4xl">
-                <div className="flex border-b border-gray-700">
 
-                    <span className="">
-                        MIT 6.100L Course
+                {/* Tab List */}
+                <div className="flex border-b border-gray-700 pb-2">
+
+                    <span className="text-[16px] pr-2 cursor-pointer">
+                        <FontAwesomeIcon icon={faBook} className="pr-1"/> MIT 6.100L Course
                     </span>
 
-                    <span className="px-6">
-                        Your Code Files
-                    </span>
+                    {userAuthenticated ? (
+                        <span className="px-6 text-[16px]">
+                            <FontAwesomeIcon icon={faLaptopCode} className="pr-1"/>
+                            Your Code Files
+                        </span>
+                    ): (
+                        <span className="px-6 text-[16px] text-gray-400 cursor-not-allowed opacity-50">
+                            <FontAwesomeIcon icon={faLaptopCode} className="pr-1"/>
+                            Your Code Files
+                        </span>
+                    )}
 
-                    {/* {["tab1", "tab2", "tab3"].map((tab) => (
-                        <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`px-4 py-2 text-sm font-medium border-b-2 ${
-                            activeTab === tab
-                            ? "text-blue-500 border-blue-500"
-                            : "border-transparent hover:text-blue-400"
-                        } focus:outline-none`}
-                        >
-                        {tab.toUpperCase()}
-                        </button>
-                    ))} */}
-                    {/* <button
-                        key="course_tab"
-                        // ${
-                        //     activeTab === tab
-                        //     ? "text-blue-500 border-blue-500"
-                        //     : "border-transparent hover:text-blue-400"
-                        // }
-                        className={`px-4 py-2 text-sm font-medium border-b-1 focus:outline-none`}
-                        >
-                        MIT 6.100L Course
-                    </button> */}
                 </div>
 
-                <div className="mt-6">
-                    {/* <div>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tab 1 content goes here.</p>
-                    </div> */}
+                <div className="mt-8">
 
                     {/* Timeline */}
                     <ol className="relative border-s border-gray-200 dark:border-gray-700">                  
-                        
                         {courseLectureList.map((item) => (
-
                             <li
-                                className="mb-6 ms-4"
+                                className="mb-8 ms-4"
                                 key={item.id}
                             >
                                 <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                                {/* <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">Lecture 1</time> */}
-                                <a href={`/course/introduction-to-programming/${item.number}`} className="cursor-pointer">
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-500">
+                                <a 
+                                    href={`/course/introduction-to-programming/${item.number}`} 
+                                    className="cursor-pointer"
+                                >
+                                    <h3 
+                                        className="inline text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-500"
+                                    >
                                         {item.name}
                                     </h3>
                                 </a>
@@ -161,76 +176,13 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                                     {item.description}
                                 </p>
                             </li>
-
                         ))}
-
-                        {/* <li class="mb-6 ms-4">
-                            <div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                            <time class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">Lecture 1</time>
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                                Lecture 1: Introduction
-                            </h3>
-                            <p class="mb-4 pt-1 text-[15px] font-normal text-gray-500 dark:text-gray-400">
-                                Introduction to Python: knowledge, machines, objects, types, variables, bindings, IDEs
-                            </p>
-                        </li> */}
-
-                        {/* <li class="mb-6 ms-4">
-                            <div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                                Lecture 2: Strings, Input/Output, Branching
-                            </h3>
-                            <p class="mb-4 pt-1 text-[15px] font-normal text-gray-500 dark:text-gray-400">
-                                Core Elements of Programs: strings, input/output, f-strings, operators, branching, indentation
-                            </p>
-                        </li>
-
-                        <li class="mb-6 ms-4">
-                            <div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                                Lecture 3: Iteration
-                            </h3>
-                            <p class="mb-4 pt-1 text-[15px] font-normal text-gray-500 dark:text-gray-400">
-                                Program Flow: control flow, loops
-                            </p>
-                        </li> */}
-                        
-
-                        {/* <li class="mb-10 ms-4">
-                            <div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                            <time class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">March 2022</time>
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Marketing UI design in Figma</h3>
-                            <p class="text-base font-normal text-gray-500 dark:text-gray-400">All of the pages and components are first designed in Figma and we keep a parity between the two versions even as we update the project.</p>
-                        </li>
-                        <li class="ms-4">
-                            <div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                            <time class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">April 2022</time>
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">E-Commerce UI code in Tailwind CSS</h3>
-                            <p class="text-base font-normal text-gray-500 dark:text-gray-400">Get started with dozens of web components and interactive elements built on top of Tailwind CSS.</p>
-                        </li> */}
                     </ol>
 
                 </div>
 
-                {/* <div className="mt-6">
-                {activeTab === "tab1" && (
-                    <div>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tab 1 content goes here.</p>
-                    </div>
-                )}
-                {activeTab === "tab2" && (
-                    <div>
-                    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tab 2 content here.</p>
-                    </div>
-                )}
-                {activeTab === "tab3" && (
-                    <div>
-                    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris. Tab 3 content here.</p>
-                    </div>
-                )}
-                </div> */}
-
             </div>
+
         </div>
 
 

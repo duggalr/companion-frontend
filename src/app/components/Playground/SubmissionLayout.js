@@ -4,86 +4,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX, faCheck } from "@fortawesome/free-solid-svg-icons";
 import useUserContext from "@/lib/hooks/useUserContext";
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
-// import { useSubmissionContext } from "@/lib/hooks/useSubmissionContext";
 import { handleSolutionSubmit } from "@/lib/backend_api/handleSolutionSubmit";
 
 
-// const testCases = [
-//     {
-//         id: 1,
-//         input: "Lorem ipsum input data for test case 1...",
-//         expectedOutput: "Lorem ipsum expected output for test case 1...",
-//         userOutput: "Lorem ipsum user program output for test case 1...",
-//     },
-//     {
-//         id: 2,
-//         input: "Lorem ipsum input data for test case 2...",
-//         expectedOutput: "Lorem ipsum expected output for test case 2...",
-//         userOutput: "Lorem ipsum user program output for test case 2...",
-//     },
-//     {
-//         id: 3,
-//         input: "Lorem ipsum input data for test case 3...",
-//         expectedOutput: "Lorem ipsum expected output for test case 3...",
-//         userOutput: "Lorem ipsum user program output for test case 3...",
-//     },
-//     {
-//         id: 4,
-//         input: "Lorem ipsum input data for test case 4...",
-//         expectedOutput: "Lorem ipsum expected output for test case 4...",
-//         userOutput: "Lorem ipsum user program output for test case 4...",
-//     },
-//     {
-//         id: 5,
-//         input: "Lorem ipsum input data for test case 5...",
-//         expectedOutput: "Lorem ipsum expected output for test case 5...",
-//         userOutput: "Lorem ipsum user program output for test case 5...",
-//     },
-// ];
-
-// const mockSubmissions = [
-//     {
-//       submissionNumber: 1,
-//       date: "2024-12-21 14:30",
-//       status: "Pass",
-//     },
-//     {
-//       submissionNumber: 2,
-//       date: "2024-12-22 10:15",
-//       status: "Fail",
-//     },
-//     {
-//       submissionNumber: 3,
-//       date: "2024-12-23 08:45",
-//       status: "Pass",
-//     },
-// ];
-
 const SubmissionLayout = ({}) => {
 
-    // TODO:
-        // if course question --> show the submission page + handle logic
-        // else --> show the coming soon page
-
     const { isAuthenticated, userAccessToken } = useUserContext();
-
     const [currentTestCase, setCurrentTestCase] = useState(0);
-    // const {playgroundState, playgroundDispatch} = usePlaygroundContext();
     const playgroundContext = usePlaygroundContext();
     let currentProblemState = playgroundContext.state;
     let playgroundDispatch = playgroundContext.dispatch;
-    
-    console.log('currentProblemState-NEW:', currentProblemState);
-    // console.log('tmp-new:', currentProblemState.all_test_cases_passed);
-    console.log('tmp-new-two:', currentProblemState.ai_tutor_feedback);
-    // console.log('tmp-new-three:', currentProblemState.program_output_result, currentProblemState.program_output_result.length);
-
-    // const [submissionState, submissionDispatch] = useSubmissionContext();
-    // console.log('submissionState:', submissionState);
-
     const testCaseList = currentProblemState['test_case_list'];
-    // console.log('pg-state-NEW:', playgroundState);
-    // console.log('test-case-list:', testCaseList);
+    console.log('currentProblemState-NEW:', currentProblemState);
+    console.log('tmp-new-two:', currentProblemState.ai_tutor_feedback);
 
     const handlePrevious = () => {
         if (currentTestCase > 0) {
@@ -174,18 +107,25 @@ const SubmissionLayout = ({}) => {
 
     useEffect(() => {
 
-        // TODO:
-            // we have the quid
-                // show testcases
-            // define submit test-case function in the context
-                // set state to have test-case result loading and navigate to the test-case tab if not already there
-            // implement that logic and return the results in dict
-                // set state with test-results
-                    // set loading to false and show the test-results
-        
     }, []);
 
-   
+
+    if (currentProblemState.lecture_question === false){
+        return (
+            <div className="p-2 pl-4 pt-4">
+
+                <h1 className="font-semibold text-[17px] mr-2">
+                    Submissions
+                </h1>
+
+                <p className="pt-4 leading-7 text-[14px] text-gray-600 dark:text-gray-300">
+                    Submissions with dynamically generated tests are coming soon to the playground...
+                </p>
+
+            </div>
+        )
+    }
+
     return (
 
         // <div className="p-4 bg-gray-900 min-h-screen text-white">
@@ -330,45 +270,9 @@ const SubmissionLayout = ({}) => {
 
             </div>
 
-
             <h2 className="text-base font-semibold pt-0 pb-4">
                 Submission History
             </h2>
-
-            {/* Submission History Table */}
-            {/* <div className="bg-gray-800 p-4 rounded-lg shadow">
-                <table className="w-full text-left border-collapse">
-                <thead>
-                    <tr className="bg-gray-700 text-gray-300">
-                    <th className="p-3">#</th>
-                    <th className="p-3">Date</th>
-                    <th className="p-3">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {mockSubmissions.map((submission, index) => (
-                    <tr
-                        key={index}
-                        className={`${
-                        index % 2 === 0 ? "bg-gray-800" : "bg-gray-600"
-                        }`}
-                    >
-                        <td className="p-3">{submission.submissionNumber}</td>
-                        <td className="p-3">{submission.date}</td>
-                        <td
-                        className={`p-3 ${
-                            submission.status === "Pass"
-                            ? "text-green-400"
-                            : "text-red-400"
-                        }`}
-                        >
-                        {submission.status}
-                        </td>
-                    </tr>
-                    ))}
-                </tbody>
-                </table>
-            </div> */}
 
             {/* Submission History Table */}
             <div class="relative overflow-x-auto ">
@@ -420,42 +324,6 @@ const SubmissionLayout = ({}) => {
                                 </td>
                             </tr>
                         )}
-
-
-                        {/* <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                Apple MacBook Pro 17"
-                            </th>
-                            <td class="px-6 py-4">
-                                Silver
-                            </td>
-                            <td class="px-6 py-4">
-                                Laptop
-                            </td>
-                        </tr>
-                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                Microsoft Surface Pro
-                            </th>
-                            <td class="px-6 py-4">
-                                White
-                            </td>
-                            <td class="px-6 py-4">
-                                Laptop PC
-                            </td>
-                        </tr>
-                        <tr class="bg-white dark:bg-gray-800">
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                Magic Mouse 2
-                            </th>
-                            <td class="px-6 py-4">
-                                Black
-                            </td>
-                            <td class="px-6 py-4">
-                                Accessories
-                            </td>
-                        </tr>
-                         */}
                     </tbody>
                 </table>
 
@@ -484,24 +352,8 @@ const SubmissionLayout = ({}) => {
             </div>
 
         </div>
-
-        // <div className="p-2 pl-4 pt-4">
-
-            // <h1 className="font-semibold text-[17px] mr-2">
-            //     Submissions
-            // </h1>
-
-            // <p className="pt-4 leading-7 text-[14px] text-gray-600 dark:text-gray-300">
-            //     Submissions with dynamically generated tests are coming soon to the playground...
-            // </p>
-
-            // <p className="pt-2 leading-7 text-[14px] text-gray-600 dark:text-gray-300">
-            //     Currently, this feature is implemented in the <a href="#" className="cursor-pointer text-blue-500 hover:text-blue-400">course (todo)</a>.
-            // </p> 
-
-        // </div>
         
-    )
+    );
 
 }
 
