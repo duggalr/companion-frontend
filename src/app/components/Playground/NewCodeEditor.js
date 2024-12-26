@@ -161,7 +161,13 @@ const NewCodeEditor = ({ }) => {
                 input_output_list: state.input_output_list,
                 code: codeRef.current,
                 lecture_question: state.lecture_question,
-                test_case_list: state.test_case_list
+                test_case_list: state.test_case_list,
+              
+                // submission feedback
+                all_test_cases_passed: state.all_test_cases_passed,
+                program_output_result: state.program_output_result,
+                ai_tutor_feedback: state.ai_tutor_feedback,
+                user_code_submission_history_objects: state.user_code_submission_history_objects
             });
 
             if (state.lecture_question != true){
@@ -184,7 +190,15 @@ const NewCodeEditor = ({ }) => {
                 name: state.name,
                 question: state.question,
                 input_output_list: state.input_output_list,
-                code: codeRef.current
+                code: codeRef.current,
+                lecture_question: state.lecture_question,
+                test_case_list: state.test_case_list,
+
+                // submission feedback
+                all_test_cases_passed: state.all_test_cases_passed,
+                program_output_result: state.program_output_result,
+                ai_tutor_feedback: state.ai_tutor_feedback,
+                user_code_submission_history_objects: state.user_code_submission_history_objects
             });
             saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
 

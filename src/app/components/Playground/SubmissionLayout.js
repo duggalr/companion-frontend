@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faX, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faX, faCheck, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import useUserContext from "@/lib/hooks/useUserContext";
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
 import { handleSolutionSubmit } from "@/lib/backend_api/handleSolutionSubmit";
@@ -30,8 +30,12 @@ const SubmissionLayout = ({}) => {
         }
     };
 
+
+    const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+
     const _handleSubmitButtonClick = async () => {
 
+        setIsSubmitLoading(true);
         let lecture_qid = currentProblemState.question_id;
         let code = currentProblemState.code;
         console.log("HANDLE SUBMIT BUTTON CLICK:", lecture_qid, code);
@@ -53,7 +57,7 @@ const SubmissionLayout = ({}) => {
 
             // let user_code_submission_history_objects = output_solution_data['']
             let old_user_code_submission_list = currentProblemState.user_code_submission_history_objects;
-            old_user_code_submission_list.push({
+            old_user_code_submission_list.unshift({
                 'lc_submission_history_object_id': output_solution_data['lc_submission_history_object_id'],
                 'lc_submission_history_object_created': output_solution_data['lc_submission_history_object_created'],
                 'lc_submission_history_object_boolean_result': output_solution_data['lc_submission_history_object_boolean_result'],
@@ -72,6 +76,8 @@ const SubmissionLayout = ({}) => {
                 ai_tutor_feedback: ai_feedback_response,
                 user_code_submission_history_objects: old_user_code_submission_list
             });
+
+            setIsSubmitLoading(false);
 
         }
 
@@ -110,7 +116,7 @@ const SubmissionLayout = ({}) => {
     }, []);
 
 
-    if (currentProblemState.lecture_question === false){
+    if (currentProblemState.lecture_question !== true){
         return (
             <div className="p-2 pl-4 pt-4">
 
@@ -131,26 +137,53 @@ const SubmissionLayout = ({}) => {
         // <div className="p-4 bg-gray-900 min-h-screen text-white">
         <div className="p-4 min-h-screen mb-8">
             
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-6 border-b-[1px] border-gray-300 pb-2">
                 {/* <h1 className="font-semibold text-xl">
                     Submissions
                 </h1> */}
                 <h1 className="font-semibold text-[17px] mr-2">
                     Submissions
+                    <span className="text-gray-500 text-[11px] pl-2 pt-1 font-normal">
+                        (submissions will take about 10-15 seconds to run...)
+                    </span>
                 </h1>
-                <Button
-                    className="w-[130px] py-4 mr-2 mt-1 text-[14px] text-white font-medium rounded-xl transition-all bg-green-400 hover:bg-green-500"
-                    onClick={_handleSubmitButtonClick}
-                >
-                    Submit Solution
-                </Button>
+
+                {/* TODO: start here by disabling it; proceed from there to finalizing everything in anon and auth */}
+
+                {isAuthenticated ? (
+
+                    <Button
+                        disabled={isSubmitLoading}    
+                        className="w-[130px] py-4 mr-2 mt-1 text-[14px] text-white font-medium rounded-xl transition-all bg-green-400 hover:bg-green-500"
+                        onClick={_handleSubmitButtonClick}
+                    >
+                        {isSubmitLoading ? (
+                            <>
+                                <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                Running...
+                            </>
+                        ) : (
+                            <>
+                                <FontAwesomeIcon className="text-white pr-2" />
+                                Submit Solution
+                            </>
+                        )}
+                    </Button>
+                    
+                ) : (
+                    <button
+                        className="w-[130px] py-2 mr-2 mt-1 text-[14px] text-white font-medium rounded-xl transition-all bg-gray-400 cursor-not-allowed"
+                        disabled={true}
+                    >
+                        Submit Solution
+                    </button>
+                )}
+
 
                 {/* <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded shadow">
                     Submit
                 </button> */}
             </div>
-
-            {/* TODO: add submission history and render and add submission history functionaltiy */}
 
             <div className="mb-6">
                 <h2 className="text-base font-semibold">
@@ -159,15 +192,18 @@ const SubmissionLayout = ({}) => {
 
                 {currentProblemState.ai_tutor_feedback !== null ? (
 
-                    <p className="px-0 pt-4 tracking-6 text-[14px] text-gray-800 dark:text-gray-300">
+                    <p className="px-0 pt-4 tracking-6 text-[14px] text-gray-800 dark:text-gray-300 leading-7">
                         {currentProblemState.ai_tutor_feedback}
                     </p>
 
                 ): (
 
-                    <p className="px-0 pt-4 tracking-6 text-[14px] text-gray-800 dark:text-gray-300">
+                    <p className="px-0 pt-4 tracking-6 text-[14px] text-gray-500 dark:text-gray-600">
                         Submit your solution to get feedback from the AI Tutor.
                     </p>
+                    // <p className="px-0 pt-4 tracking-6 text-[14px] text-gray-800 dark:text-gray-300 leading-7">
+                    //     Your solution has passed all test cases successfully, which is excellent! This indicates that your implementation of the formula `(a + b) * c` is correct and produces the expected outputs for various inputs, including edge cases. To enhance the clarity of your code, consider adding comments that explain the purpose of each variable and the overall calculation. Although your solution is straightforward, you might also explore using functions to encapsulate this logic, making it reusable and improving the organization of your code. For example, you could define a function like `calculate_total(a, b, c)` that returns the total. Keep up the great work, and continue to look for opportunities to refactor and document your code for better readability!
+                    // </p>
 
                 )}
                 
@@ -179,7 +215,7 @@ const SubmissionLayout = ({}) => {
             </h2>
 
             {currentProblemState.all_test_cases_passed === true ? (
-                <p className="px-0 pt-4 tracking-6 text-[14px] text-gray-800 dark:text-gray-300">
+                <p className="px-0 pt-4 tracking-6 text-[14px] text-gray-800 dark:text-gray-300 font-semibold">
                     All Test Cases Passed. <FontAwesomeIcon icon={faCheck} className="pr-1 text-green-600 text-[15px] ml-1"/> 
                 </p>
             ) : currentProblemState.all_test_cases_passed === false ? (
@@ -249,7 +285,7 @@ const SubmissionLayout = ({}) => {
 
                     <div>
                         <h3 className="font-semibold text-sm text-gray-300 mb-1">
-                        User Program Output
+                        Your Program Output
                         </h3>
                         <pre className="bg-gray-700 text-sm p-3 rounded-lg text-gray-200">
 
@@ -275,20 +311,20 @@ const SubmissionLayout = ({}) => {
             </h2>
 
             {/* Submission History Table */}
-            <div class="relative overflow-x-auto ">
+            <div class="relative overflow-x-auto">
                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             {/* <th scope="col" class="px-6 py-3">
                                 #
                             </th> */}
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col" class="px-2 py-3">
                                 Date
                             </th>
-                            <th scope="col" class="px-6 py-3">
-                                Status
+                            <th scope="col" class="px-2 py-3">
+                                Passed
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col" class="px-2 py-3">
                                 Code
                             </th>
                         </tr>
@@ -312,7 +348,10 @@ const SubmissionLayout = ({}) => {
                                     >
                                         {submission.lc_submission_history_object_boolean_result.toString()}
                                     </td>
-                                    <td className="p-3" onClick={() => _handleViewCodeClick(submission.lc_submission_history_object_id)}>
+                                    <td 
+                                        className="p-3 hover:text-blue-500 hover:font-semibold cursor-pointer"
+                                        onClick={() => _handleViewCodeClick(submission.lc_submission_history_object_id)}
+                                    >
                                         View Code
                                     </td>
                                 </tr>
@@ -320,7 +359,7 @@ const SubmissionLayout = ({}) => {
                         ) : (
                             <tr>
                                 <td colSpan="3" className="text-center p-3">
-                                    No submissions have been submitted.
+                                    No submissions have been made.
                                 </td>
                             </tr>
                         )}
@@ -332,19 +371,19 @@ const SubmissionLayout = ({}) => {
                 {isModalOpen && (
                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                         <div className="bg-white rounded-lg shadow-lg p-6 w-1/3">
-                            <h2 className="text-lg font-semibold mb-4">View Code</h2>
+                            <h2 className="text-lg font-semibold mb-4">Code</h2>
                             {/* <p className="text-sm text-gray-600">
                                 {selectedViewCode}
                             </p> */}
                             <pre className="text-sm text-gray-600 bg-gray-100 p-4 rounded overflow-x-auto">
                                 {selectedViewCode}
                             </pre>
-                            <button
+                            <Button
                                 onClick={closeModal}
-                                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                className="mt-4 px-4 py-2 bg-black text-white rounded hover:bg-blue-600"
                             >
                                 Close
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 )}

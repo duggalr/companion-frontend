@@ -184,7 +184,7 @@ const RightTabLayout = ({ }) => {
                 
             <div className="flex-grow overflow-y-scroll no-scrollbar">
                 
-                {activeTab === "problem" && <ProblemLayout/>}
+                {activeTab === "problem" && <ProblemLayout setActiveTab={setActiveTab} />}
 
                 {activeTab === "chat" && <NewChatInterface/>}
 

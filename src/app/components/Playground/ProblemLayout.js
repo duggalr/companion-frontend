@@ -11,9 +11,10 @@ import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/loca
 import { updateUserQuestion } from '@/lib/backend_api/updateUserQuestion';
 import addQIDParam from '@/lib/utils/addQidParam';
 import { _handleUserSaveCode } from "@/lib/utils/handleSaveUserCode";
+import { handleSolutionSubmit } from "@/lib/backend_api/handleSolutionSubmit";
 
 
-const ProblemLayout = ({ }) => {
+const ProblemLayout = ({ setActiveTab }) => {
 
     const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_API_BACKEND_URL;
 
@@ -76,11 +77,22 @@ const ProblemLayout = ({ }) => {
 
                 dispatch({
                     type: "SET_QUESTION_INPUT_OUTPUT",
+                    
                     question_id: response_json_data['unique_question_id'],
                     name: response_json_data['question_name'],
                     question: response_json_data['question_text'],
                     input_output_list: example_io_list,
-                    code: currentProblemState.code
+                    code: currentProblemState.code,
+                    console_output: null,
+                    lecture_question: false,
+                    test_case_list: [],
+            
+                    // submission feedback
+                    all_test_cases_passed: null,
+                    program_output_result: [],
+                    ai_tutor_feedback: null,
+                    user_code_submission_history_objects: []
+
                 });
                 
                 addQIDParam(response_json_data['unique_question_id']);
@@ -121,11 +133,21 @@ const ProblemLayout = ({ }) => {
 
                 dispatch({
                     type: "SET_QUESTION_INPUT_OUTPUT",
+
                     question_id: response_json_data['unique_question_id'],
                     name: response_json_data['question_name'],
                     question: response_json_data['question_text'],
                     input_output_list: example_io_list,
-                    code: currentProblemState.code
+                    code: currentProblemState.code,
+                    console_output: null,
+                    lecture_question: false,
+                    test_case_list: [],
+            
+                    // submission feedback
+                    all_test_cases_passed: null,
+                    program_output_result: [],
+                    ai_tutor_feedback: null,
+                    user_code_submission_history_objects: [],
                 });
 
             }
@@ -303,6 +325,61 @@ const ProblemLayout = ({ }) => {
       
     };
 
+
+    const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+
+    const _handleSubmitButtonClick = async () => {
+
+        setIsSubmitLoading(true);
+        let lecture_qid = currentProblemState.question_id;
+        let code = currentProblemState.code;
+        console.log("HANDLE SUBMIT BUTTON CLICK:", lecture_qid, code);
+
+        let solutionSubmitRes = await handleSolutionSubmit(
+            userAccessToken,
+            lecture_qid,
+            code
+        );
+        console.log('solutionSubmitRes:', solutionSubmitRes);
+
+        if (solutionSubmitRes['success'] === true){
+
+            let output_solution_data = solutionSubmitRes['data'];
+            let all_test_cases_passed = output_solution_data['all_tests_passed'];
+            let program_result_list = output_solution_data['result_list'];
+            let ai_feedback_response = output_solution_data['ai_response'];
+
+
+            // let user_code_submission_history_objects = output_solution_data['']
+            let old_user_code_submission_list = currentProblemState.user_code_submission_history_objects;
+            old_user_code_submission_list.push({
+                'lc_submission_history_object_id': output_solution_data['lc_submission_history_object_id'],
+                'lc_submission_history_object_created': output_solution_data['lc_submission_history_object_created'],
+                'lc_submission_history_object_boolean_result': output_solution_data['lc_submission_history_object_boolean_result'],
+                'lc_submission_history_code': output_solution_data['lc_submission_history_code'],
+            });
+
+            console.log('old_user_code_submission_list-NEW:', old_user_code_submission_list);
+
+            
+            dispatch({
+                type: "UPDATE_SUBMISSION_RESULTS",
+
+                all_test_cases_passed: all_test_cases_passed,
+                program_output_result: program_result_list,
+                ai_tutor_feedback: ai_feedback_response,
+                user_code_submission_history_objects: old_user_code_submission_list
+            });
+
+            setIsSubmitLoading(false);
+            console.log('setActiveTab', setActiveTab);
+            setActiveTab("submission");
+
+        }
+
+    }
+
+
     return (
 
         <MathJaxContext>
@@ -362,10 +439,21 @@ const ProblemLayout = ({ }) => {
 
                                 isAuthenticated ? (
                                     <Button
-                                    className="w-[130px] py-2 text-[14px] text-white font-medium rounded-xl transition-all bg-green-400 hover:bg-green-500"
-                                    onClick={handleSubmit} // Add your submit handler here
+                                        disabled={isSubmitLoading}    
+                                        className="w-[130px] py-4 mr-2 mt-1 text-[14px] text-white font-medium rounded-xl transition-all bg-green-400 hover:bg-green-500"
+                                        onClick={_handleSubmitButtonClick}
                                     >
-                                        Submit Solution
+                                        {isSubmitLoading ? (
+                                            <>
+                                                <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                                Running...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <FontAwesomeIcon className="text-white pr-2" />
+                                                Submit Solution
+                                            </>
+                                        )}
                                     </Button>
                                 ) : (
                                     <Button
