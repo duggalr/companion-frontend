@@ -126,7 +126,6 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
     return (
 
         // bg-gray-900 text-white
-
         <div className="min-h-screen flex justify-center pt-12">
 
             <div className="w-full max-w-4xl">
@@ -161,7 +160,12 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                                 className="mb-8 ms-4"
                                 key={item.id}
                             >
-                                <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                                {(item.lecture_passed === true) ? (
+                                    <div className="absolute w-3 h-3 bg-green-500 rounded-full mt-1.5 -start-1.5 border border-green dark:border-gray-900 dark:bg-gray-700"></div>
+                                ): (
+                                    <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                                )}
+                                
                                 <a 
                                     href={`/course/introduction-to-programming/${item.number}`} 
                                     className="cursor-pointer"
