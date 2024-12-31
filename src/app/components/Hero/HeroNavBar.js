@@ -26,7 +26,7 @@ export default function HeroNavBar({ userAuthenticated }){
 
         <nav className="bg-white border-gray-200 dark:bg-zinc-950">
             
-            <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+            <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto pt-3">
 
                 <h1 className={`${pacifico_font.className} scroll-m-20 text-[26px] font-normal tracking-widest flex items-center text-zinc-900 dark:text-gray-200`}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" className="w-8 h-8 pr-2 fill-zinc-900 dark:fill-white">
