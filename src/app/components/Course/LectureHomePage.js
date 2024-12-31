@@ -253,15 +253,27 @@ export default function LectureHomePage({ lecture_number, lectureData, lectureEx
 
                             <ul className="space-y-4 pl-4">
                                 
-                                <li className="text-[15px] list-disc">
+                                {lectureExerciseData.map((item) => (
+                                    <li className="text-[15px] list-disc" key={item.id}>
+                                         <a
+                                            // href="/playground?lesson_quid=6c6d35ab-b8a1-4b9f-89be-2d85cd7a05fa"  // --> then, fetch/create question in backend --> pushURLState to created question
+                                            href={`/playground?lesson_quid=${item.id}`}
+                                            className='font-normal text-blue-600 dark:text-blue-500 hover:underline'
+                                        >
+                                            {item.name}
+                                        </a>
+                                    </li>
+                                ))}
+
+                                {/* <li className="text-[15px] list-disc">
                                     <a
                                         // href="/playground?lesson_quid=6c6d35ab-b8a1-4b9f-89be-2d85cd7a05fa"  // --> then, fetch/create question in backend --> pushURLState to created question
                                         href={`/playground?lesson_quid=${lectureExerciseData.id}`}
                                         className='font-normal text-blue-600 dark:text-blue-500 hover:underline'
-                                    >
-                                        {lectureExerciseData.name}
+                                    >                                        
+                                        {lectureExerciseData}
                                     </a>
-                                </li>
+                                </li> */}
 
                             </ul>
 

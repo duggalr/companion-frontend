@@ -112,19 +112,27 @@ export default function HeroPrimary() {
                     <SparklesText text="Learn Programming With Your Personal AI Tutor" data-aos="fade-up" className="mt-0 tracking-wide"/>
 
                     <p className="text-[19px] text-muted-foreground pt-4 tracking-wide" data-aos="fade-up">
-                        Our first free programming course that will be offered here with the AI Tutor, will be the popular <StandardLink uri="https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/" text="MIT 6.100L Introduction to Python" new_tab={true}/>.
+                        Take MIT's 6.100L Introduction to Python course on our platform, guided by an AI tutor offering you with real-time help and feedback.
                     </p>
 
-                    <p
+                    <p className="text-[19px] text-muted-foreground pt-4 tracking-wide" data-aos="fade-up">
+                        You can also get help from the tutor for your own programming challenges using our integrated Online IDE and Python REPL environment.
+                    </p>
+
+                    {/* <p className="text-[19px] text-muted-foreground pt-4 tracking-wide" data-aos="fade-up">
+                        Our first free programming course that will be offered here with the AI Tutor, will be the popular <StandardLink uri="https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/" text="MIT 6.100L Introduction to Python" new_tab={true}/>.
+                    </p> */}
+
+                    {/* <p
                         onClick={handleLearnMoreClick}
                         ref={aboutRef}
                         className="inline-block text-[12.5px] text-blue-400 dark:text-blue-400 pt-2 tracking-wide hover:cursor-pointer hover:underline"
                         data-aos="fade-up"
                     >
                         Learn More
-                    </p>
+                    </p> */}
 
-                    <div className="flex justify-center mt-8 mb-1" data-aos="fade-up">
+                    {/* <div className="flex justify-center mt-8 mb-1" data-aos="fade-up">
                         {currentLandingSaved ? (
                             <div className="bg-green-600 dark:bg-green-700 text-gray-100 px-4 py-1.5 rounded-md shadow-lg transition-opacity duration-300 text-[15.5px] z-50">
                                 🎉 Email saved successfully. You will be notified when the course is complete very soon. Thank you! 🎉
@@ -151,15 +159,13 @@ export default function HeroPrimary() {
                                 </form>
                             </div>
                         )}
-                    </div>
+                    </div> */}
 
-                    <span className="text-[13px] text-gray-400" data-aos="fade-up">
-                        {/* TODO:  */}
-
+                    {/* <span className="text-[13px] text-gray-400" data-aos="fade-up">
                         {emailSubmissionCount !== null ? (
                             `${emailSubmissionCount} people have signed up already!`
                         ): null}
-                    </span>
+                    </span> */}
 
                     <div className="pt-2 text-gray-800 dark:text-gray-400 text-center" data-aos="fade-down">
                         <hr className="my-4 w-1/2 mx-auto border-gray-300 dark:border-gray-700" />
