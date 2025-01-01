@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-// import Link from 'next/link';
+import Link from 'next/link';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faClock, faLaptopCode, faSchool, faBook } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faClock, faLaptopCode, faSchool, faBook, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { fetchDashboardData } from "@/lib/backend_api/fetchDashboardData";
 import { fetchDashboardCourseHomeData } from "@/lib/backend_api/fetchDashboardCourseHomeData";
 import { getFromLocalStorage } from "@/lib/utils/localStorageUtils";
@@ -123,6 +123,13 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
     //     }
     // ]
 
+    const [activeTab, setActiveTab] = useState("course");
+    console.log('activeTab', activeTab)
+
+    const _handleActiveTabClick = async (val) => {
+        setActiveTab(val);
+    };
+
     return (
 
         // bg-gray-900 text-white
@@ -131,71 +138,159 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
             <div className="w-full max-w-4xl">
 
                 {/* Tab List */}
-                <div className="flex border-b border-gray-700 pb-2">
+                {/* <div className="flex border-b border-gray-700 pb-2"> */}
+                <div className="border-b border-gray-500">
 
-                    <span className="text-[16px] pr-2 cursor-pointer">
-                        <FontAwesomeIcon icon={faBook} className="pr-1"/> MIT 6.100L Course
-                    </span>
+                    <ul className="flex flex-wrap -mb-px">
 
-                    {userAuthenticated ? (
-                        <span className="px-6 text-[16px]">
-                            <FontAwesomeIcon icon={faLaptopCode} className="pr-1"/>
-                            Your Code Files
-                        </span>
-                    ): (
-                        <span className="px-6 text-[16px] text-gray-400 cursor-not-allowed opacity-50">
-                            <FontAwesomeIcon icon={faLaptopCode} className="pr-1"/>
-                            Your Code Files
-                        </span>
-                    )}
+                        <li className="me-2">
+                            <span
+                            // className="inline-block p-4 pb-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 active"
+                            className={`inline-block p-4 pb-2 border-b-2 rounded-t-lg hover:text-blue-600 hover:border-blue-500 dark:hover:text-blue-500 cursor-pointer ${(activeTab === 'course') ? 'border-blue-500 border-bold active font-semibold' : 'border-transparent'}`}
+                            onClick={() => _handleActiveTabClick("course")}
+                            ><FontAwesomeIcon icon={faBook} className="pr-1"/> MIT 6.100L Course</span>
+                        </li>
+
+                        <li className="me-2">
+                            <span
+                            // className="inline-block p-4 pb-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 active"
+                            className={`inline-block p-4 pb-2 border-b-2 rounded-t-lg hover:text-blue-600 hover:border-blue-500 dark:hover:text-blue-500 cursor-pointer ${(activeTab === 'code_files') ? 'border-blue-500 border-bold active font-semibold' : 'border-transparent'}`}
+                            onClick={() => _handleActiveTabClick("code_files")}
+                            ><FontAwesomeIcon icon={faLaptopCode} className="pr-1"/>Your Playground Code Files</span>
+                        </li>
+
+                    </ul>
 
                 </div>
 
-                <div className="pt-2">
-                    <span className="text-gray-500 text-[12.5px]">
-                        You can also view the course on <a 
-                            href="https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/"
-                            className='text-blue-600 dark:text-blue-500 hover:underline cursor-pointer'
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            MIT OCW
-                        </a>.
-                    </span>
-                </div>
+                {activeTab === 'course' ? (
+                    <div className="pt-2">
+                        <span className="text-gray-500 text-[12.5px]">
+                            You can also view the course on <a 
+                                href="https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/"
+                                className='text-blue-600 dark:text-blue-500 hover:underline cursor-pointer'
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                MIT OCW
+                            </a>.
+                        </span>
+                    </div>
+                ) : (
 
+                    <div className="pt-2">
+                        <span className="text-gray-500 text-[12.5px]">
+                            Work on a <a 
+                                href="/playground"
+                                className='text-blue-600 dark:text-blue-500 hover:underline cursor-pointer'
+                            >new question</a>.
+                        </span>
+                    </div>
+
+                )}
+                
                 <div className="mt-5">
 
-                    {/* Timeline */}
-                    <ol className="relative border-s border-gray-200 dark:border-gray-700">                  
-                        {courseLectureList.map((item) => (
-                            <li
-                                className="mb-8 ms-4"
-                                key={item.id}
-                            >
-                                {(item.lecture_passed === true) ? (
-                                    <div className="absolute w-3 h-3 bg-green-500 rounded-full mt-1.5 -start-1.5 border border-green dark:border-gray-900 dark:bg-gray-700"></div>
-                                ): (
-                                    <div className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                                )}
-                                
-                                <a 
-                                    href={`/course/introduction-to-programming/${item.number}`} 
-                                    className="cursor-pointer"
+                    {activeTab === 'course' ? (
+
+                        <ol className="relative border-s border-gray-200 dark:border-gray-700">
+                            {courseLectureList.map((item) => (
+                                <li
+                                    className="mb-8 ms-4"
+                                    key={item.id}
                                 >
-                                    <h3 
-                                        // className="inline text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-500"
-                                        className="inline text-lg font-semibold text-blue-600 hover:text-blue-400"
+                                    {(item.lecture_passed === true) ? (
+                                        <div className="absolute w-3 h-3 bg-green-500 rounded-full mt-1.5 -start-1.5 border border-green dark:border-gray-900 dark:bg-gray-700"></div>
+                                    ): (
+                                        <div className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                                    )}
+                                    
+                                    <a 
+                                        href={`/course/introduction-to-programming/${item.number}`} 
+                                        className="cursor-pointer"
                                     >
-                                        {item.name}
-                                    </h3>
-                                </a>
-                                <p className="mb-4 pt-1 text-[15px] font-normal text-gray-500 dark:text-gray-400">
-                                    {item.description}
-                                </p>
-                            </li>
-                        ))}
-                    </ol>
+                                        <h3 
+                                            // className="inline text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-500"
+                                            className="inline text-lg font-semibold text-blue-600 hover:text-blue-400"
+                                        >
+                                            {item.name}
+                                        </h3>
+                                    </a>
+                                    <p className="mb-4 pt-1 text-[15px] font-normal text-gray-500 dark:text-gray-400">
+                                        {item.description}
+                                    </p>
+                                </li>
+                            ))}
+                        </ol>
+
+                    ): (
+
+                        <>
+
+                            {(dashboardDataList.length > 0) ? (
+
+                                <ul className="divide-y mt-0">
+
+                                    {dashboardDataList.map((dashboard_item, index) => (
+                                        // <li key={dashboard_item.id} className="pb-0">
+                                        <li key={dashboard_item.id} className={`${(index !== 0 ? "pb-4" : "pb-3")}`}>
+                                            <div className="flex items-center space-x-4 rtl:space-x-reverse">
+                                                {/* <div className="flex-1 min-w-0 pt-0"> */}
+                                                <div className={`flex-1 min-w-0 ${(index !== 0 ? "pt-3" : "pt-0")}`}>
+                                                    <Link href={`/playground?qid=${dashboard_item.id}`}>
+                                                        {editingIndex === index ? (
+                                                            <input
+                                                                type="text"
+                                                                value={fileNames[index] || ""}
+                                                                onChange={(e) => handleInputChange(e, index)}
+                                                                onBlur={() => handleInputBlur(index)}
+                                                                className="bg-transparent border-b-2 border-gray-400 outline-none w-full text-[17.5px] font-medium text-gray-900 truncate dark:text-white"
+                                                                autoFocus
+                                                            />
+                                                        ) : (
+                                                            <p
+                                                                // className="tracking-wide text-[17.5px] font-medium text-gray-900 truncate dark:text-white cursor-pointer hover:text-blue-400 dark:hover:text-blue-400 inline-block"
+                                                                className="cursor-pointer hover:text-blue-400 text-blue-600 font-medium truncate dark:text-blue-500 dark:hover:text-blue-400"
+                                                            >
+                                                                {fileNames[index] || dashboard_item.name}
+                                                            </p>
+                                                        )}
+                                                    </Link>
+                                                    <div className="flex items-center space-x-2 pt-0">
+                                                        <FontAwesomeIcon icon={faInfoCircle} className="text-[15px] text-gray-400 pt-1" />
+                                                        <p className="tracking-wide text-[12.5px] mt-1 text-gray-500 truncate dark:text-gray-400">
+                                                            Language: Python
+                                                        </p>
+                                                        <p className="tracking-wide text-[12.5px] mt-1 text-gray-500 truncate dark:text-gray-400">|</p>
+                                                        <p className="tracking-wide text-[12.5px] mt-1 text-gray-500 truncate dark:text-gray-400">
+                                                            Number of Chat Messages: {dashboard_item.number_of_chat_messages}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex flex-col items-start text-[13px] text-gray-900 dark:text-gray-400">
+                                                    <div className="inline-flex items-center pt-0">
+                                                        <FontAwesomeIcon icon={faClock} className="text-[12px] text-gray-400 pr-2" />
+                                                        {/* Last Updated: {dashboard_item.updated_date} */}
+                                                        Last Updated: {new Date(dashboard_item.updated_date).toLocaleDateString()}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    ))}
+
+                                </ul>
+
+                            ) : (
+
+                                <h1>
+                                    No Code Files Saved...
+                                </h1>
+
+                            )}
+
+                        </>
+
+                    )}
 
                 </div>
 
@@ -288,7 +383,6 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
         //        )}
 
         //    </div>
-
 
     );
 

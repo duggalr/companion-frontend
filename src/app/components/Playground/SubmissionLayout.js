@@ -126,6 +126,7 @@ const SubmissionLayout = () => {
 
                 <p className="pt-4 leading-7 text-[14px] text-gray-600 dark:text-gray-300">
                     Submissions with dynamically generated tests are coming soon to the playground...
+                    This feature is currently only available for the Introduction to Python course we offer!
                 </p>
 
             </div>

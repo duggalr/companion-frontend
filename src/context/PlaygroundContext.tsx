@@ -7,9 +7,9 @@ import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomI
 import { fetchQuestionData } from '@/lib/backend_api/fetchQuestionData';
 import { fetchLessonQuestionData } from '@/lib/backend_api/fetchLessonQuestionData';
 // import handleRandomQuestionSet from "@/lib/utils/handleRandomQuestionSet";
-// import { updatePlaygroundState } from "@/lib/utils/dispatchUtils";
 // import handleRandomQuestionFetchAndSet from "@/lib/utils/handleRandomQuestionSet";
 import handleRandomQuestionFetchAndSet from "@/lib/utils/handleRandomQuestionFetchAndSet";
+import { updatePlaygroundState } from "@/lib/utils/dispatchUtils";
 
 
 interface PlaygroundContextType {
@@ -131,19 +131,20 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
             question_object_id,
             userAccessToken
         );
+        
+        console.log('question_data_response-->', question_data_response);
  
         if (question_data_response['success'] === true){
             const qdata = question_data_response['data'];
 
-            dispatch({
-                type: "SET_QUESTION_INPUT_OUTPUT",
-
+            const new_state_dict = {
                 // question info
                 question_id: qdata['question_object_id'],
                 name: qdata['name'],
                 question: qdata['text'],
                 input_output_list: qdata['example_io_list'],
                 code: qdata['current_code'],
+                console_output: state.console_output,
                 lecture_question: false,
                 test_case_list: [],
 
@@ -152,13 +153,16 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
                 program_output_result: [],
                 ai_tutor_feedback: null,
                 user_code_submission_history_objects: []
+            };
 
-            });
+            updatePlaygroundState(
+                dispatch, new_state_dict, isAuthenticated
+            );
 
         } else {
-
-            // // TODO: return 404?
-            // router.push("/404");
+            
+            // 404
+            window.location.href = '/404';
 
         }
 

@@ -9,7 +9,6 @@ export default async function handleRandomQuestionFetchAndSet(anon_user_id, user
         anon_user_id,
         user_access_token
     );
-    console.log('current-pg-state-new:', current_playground_state);
 
     if (random_question_dict_response['success'] === true){
 
@@ -31,6 +30,11 @@ export default async function handleRandomQuestionFetchAndSet(anon_user_id, user
             ai_tutor_feedback: null,
             user_code_submission_history_objects: []
         };
+
+        // Remove the `qid` parameter from the URL
+        const url = new URL(window.location.href);
+        url.searchParams.delete('qid');
+        window.history.replaceState({}, document.title, url.toString());
 
         updatePlaygroundState(
             dispatch, new_state_dict, is_authenticated

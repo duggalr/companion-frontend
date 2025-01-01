@@ -55,7 +55,7 @@ export default async function handleAPIFetch(endpoint_url, method, access_token,
             }
 
         }
-        
+
         if (!apiResponse.ok) {
             return {
                 'success': false,
