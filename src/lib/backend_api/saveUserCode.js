@@ -6,8 +6,6 @@ export async function saveUserCode(accessToken, payload) {
 
     const endPointUrl = API_BACKEND_URL + '/save_user_code';
 
-    console.log('SAVE USER CODE PAYLOAD:', payload);
-
     const apiResponse = await handleAPIFetch(
         endPointUrl,
         "POST",

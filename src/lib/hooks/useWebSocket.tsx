@@ -94,33 +94,47 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 userAccessToken,
                 qdict
             );
-    
             const new_question_object_id = save_user_response['data']['question_id'];
-    
-            dispatch({
-                type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: new_question_object_id,
-                name: state.name,
-                question: state.question,
-                input_output_list: state.input_output_list,
-                code: state.code,
-                lecture_question: state.lecture_question
-            });
-    
-            if (!isAuthenticated){
+        
+            dispatch({type: 'UPDATE_QUESTION_ID', question_id: new_question_object_id});
 
-                const pg_question_dict = {
+            if (!isAuthenticated) {
+
+                // Update state dict in localStorage
+                const new_state_dict = {
+                    ...state,
                     question_id: new_question_object_id,
-                    name: state.name,
-                    question: state.question,
-                    input_output_list: state.input_output_list,
-                    code: state.code
-                }
-                saveToLocalStorage('playground_question_dict', JSON.stringify(pg_question_dict));
-    
+                };
+                saveToLocalStorage('playground_question_dict', JSON.stringify(new_state_dict));
+
             }
-    
+
             return new_question_object_id;
+
+            // dispatch({
+            //     type: "SET_QUESTION_INPUT_OUTPUT",
+            //     question_id: new_question_object_id,
+            //     name: state.name,
+            //     question: state.question,
+            //     input_output_list: state.input_output_list,
+            //     code: state.code,
+            //     lecture_question: state.lecture_question
+            // });
+    
+            // if (!isAuthenticated){
+
+            //     const pg_question_dict = {
+            //         question_id: new_question_object_id,
+            //         name: state.name,
+            //         question: state.question,
+            //         input_output_list: state.input_output_list,
+            //         code: state.code
+            //     }
+            //     saveToLocalStorage('playground_question_dict', JSON.stringify(pg_question_dict));
+    
+            // }
+    
+            // return new_question_object_id;
 
         } else {
 
@@ -306,9 +320,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     useEffect(() => {
 
-        // TODO:
-        //    test below and finalize; go from there
-
         if (isAuthenticated){
             // TODO:
                 // fetch messages for the question (qid)
@@ -321,12 +332,12 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 console.log('lesson question id:', lesson_question_object_id);
                 _handleAuthenticatedChatMessageInitialization(
                     lesson_question_object_id
-                )
+                );
 
             } else if (question_object_id){
                 _handleAuthenticatedChatMessageInitialization(
                     question_object_id
-                )
+                );
             } else {
                 setMessages([{
                     text: `Welcome! 😄 I'm Companion, your personal programming tutor.

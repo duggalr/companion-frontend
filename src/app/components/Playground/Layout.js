@@ -1,3 +1,4 @@
+import React from 'react';
 import { ResizableBox } from "react-resizable";
 import NewCodeEditor from '@/app/components/Playground/NewCodeEditor';
 import RightTablayout from '@/app/components/Playground/RightTablayout';

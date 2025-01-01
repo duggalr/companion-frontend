@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,8 +10,8 @@ import useUserContext from "@/lib/hooks/useUserContext";
 import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/localStorageUtils";
 import { updateUserQuestion } from '@/lib/backend_api/updateUserQuestion';
 import addQIDParam from '@/lib/utils/addQidParam';
-import { _handleUserSaveCode } from "@/lib/utils/handleSaveUserCode";
 import { handleSolutionSubmit } from "@/lib/backend_api/handleSolutionSubmit";
+import { handleSaveUserCode } from "@/lib/utils/handleSaveUserCode";
 
 
 const ProblemLayout = ({ setActiveTab }) => {
@@ -31,7 +31,6 @@ const ProblemLayout = ({ setActiveTab }) => {
     const [currentProblemIOList, setCurrentProblemIOList] = useState([]);
 
     useEffect(() => {
-
         setQuestionName(currentProblemState.name);
         setQuestionText(currentProblemState.question);
         setCurrentProblemIOList(currentProblemState.input_output_list);
@@ -54,105 +53,202 @@ const ProblemLayout = ({ setActiveTab }) => {
 
         setEditing(false);
         setInputOutputLoading(true);
+        
         let current_question_id = currentProblemState.question_id;
         let current_q_name = questionName;
         let current_q_text = questionText;
-
-        if (isAuthenticated) {
-
-            let response_data = await updateUserQuestion(
-                userAccessToken,
-                null,
-                current_question_id,
-                current_q_name,
-                current_q_text
-            );
-
-            if (response_data['success'] === true){
-                let response_json_data = response_data['data'];
-                let example_io_list = JSON.parse(response_json_data['example_io_list']);
     
-                setCurrentProblemIOList(example_io_list);
-                setInputOutputLoading(false);
+        let current_anon_user_id = getFromLocalStorage("user_id");
+        let update_user_question_response = await updateUserQuestion(
+            userAccessToken,
+            current_anon_user_id,
+            current_question_id,
+            current_q_name,
+            current_q_text
+        );
+        console.log('update_user_question_response:', update_user_question_response);
 
-                dispatch({
-                    type: "SET_QUESTION_INPUT_OUTPUT",
-                    
-                    question_id: response_json_data['unique_question_id'],
-                    name: response_json_data['question_name'],
-                    question: response_json_data['question_text'],
-                    input_output_list: example_io_list,
-                    code: currentProblemState.code,
-                    console_output: null,
-                    lecture_question: false,
-                    test_case_list: [],
+        if (update_user_question_response['success'] === true){
+
+            let response_json_data = update_user_question_response['data'];
+            let example_io_list = JSON.parse(response_json_data['example_io_list']);
             
-                    // submission feedback
-                    all_test_cases_passed: null,
-                    program_output_result: [],
-                    ai_tutor_feedback: null,
-                    user_code_submission_history_objects: []
+            setCurrentProblemIOList(example_io_list);
+            setInputOutputLoading(false);
 
-                });
-                
+            dispatch({
+                type: "SET_PLAYGROUND_STATE",
+
+                question_id: response_json_data['unique_question_id'],
+                name: response_json_data['question_name'],
+                question: response_json_data['question_text'],
+                input_output_list: example_io_list,
+                code: currentProblemState.code,
+                console_output: state.console_output,
+
+                lecture_question: false,
+                test_case_list: [],
+                all_test_cases_passed: null,
+                program_output_result: [],
+                ai_tutor_feedback: null,
+
+                user_code_submission_history_objects: []
+            });
+
+            if (isAuthenticated){
+
                 addQIDParam(response_json_data['unique_question_id']);
 
             }
+            else {
 
-        } else { 
-    
-            let current_anon_user_id = getFromLocalStorage("user_id");
-
-            // TODO:
-            let response_data = await updateUserQuestion(
-                null,
-                current_anon_user_id,
-                current_question_id,
-                current_q_name,
-                current_q_text
-            );
-
-            // let response_data = await generateQuestionTestCases(current_q_name, current_q_text);
-            // // console.log('response_data:', response_data);
-
-            if (response_data['success'] === true){
-                let response_json_data = response_data['data'];
-                let example_io_list = JSON.parse(response_json_data['example_io_list']);
-    
-                setCurrentProblemIOList(example_io_list);
-                setInputOutputLoading(false);
-    
-                let tmp_d = {
+                const tmp_dict = {
                     question_id: response_json_data['unique_question_id'],
                     name: response_json_data['question_name'],
                     question: response_json_data['question_text'],
                     input_output_list: example_io_list,
                     code: currentProblemState.code,
-                };
-                saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
+                    console_output: state.console_output,
 
-                dispatch({
-                    type: "SET_QUESTION_INPUT_OUTPUT",
-
-                    question_id: response_json_data['unique_question_id'],
-                    name: response_json_data['question_name'],
-                    question: response_json_data['question_text'],
-                    input_output_list: example_io_list,
-                    code: currentProblemState.code,
-                    console_output: null,
                     lecture_question: false,
                     test_case_list: [],
-            
-                    // submission feedback
                     all_test_cases_passed: null,
                     program_output_result: [],
                     ai_tutor_feedback: null,
-                    user_code_submission_history_objects: [],
-                });
 
-            }
+                    user_code_submission_history_objects: []
+                };
+                saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_dict));
 
+            };
+            
+            // let tmp_d = {
+            //     question_id: response_json_data['unique_question_id'],
+            //     name: response_json_data['question_name'],
+            //     question: response_json_data['question_text'],
+            //     input_output_list: example_io_list,
+            //     code: currentProblemState.code,
+            // };
+            // saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
+
+            // dispatch({
+            //     type: "SET_QUESTION_INPUT_OUTPUT",
+
+            //     question_id: response_json_data['unique_question_id'],
+            //     name: response_json_data['question_name'],
+            //     question: response_json_data['question_text'],
+            //     input_output_list: example_io_list,
+            //     code: currentProblemState.code,
+            //     console_output: null,
+            //     lecture_question: false,
+            //     test_case_list: [],
+        
+            //     // submission feedback
+            //     all_test_cases_passed: null,
+            //     program_output_result: [],
+            //     ai_tutor_feedback: null,
+            //     user_code_submission_history_objects: [],
+            // });
+
+        } else {
+            console.log('Failed to update question...')
         }
+
+        // if (isAuthenticated) {
+
+        //     let response_data = await updateUserQuestion(
+        //         userAccessToken,
+        //         null,
+        //         current_question_id,
+        //         current_q_name,
+        //         current_q_text
+        //     );
+
+        //     if (response_data['success'] === true){
+        //         let response_json_data = response_data['data'];
+        //         let example_io_list = JSON.parse(response_json_data['example_io_list']);
+    
+        //         setCurrentProblemIOList(example_io_list);
+        //         setInputOutputLoading(false);
+
+        //         dispatch({
+        //             type: "SET_QUESTION_INPUT_OUTPUT",
+                    
+        //             question_id: response_json_data['unique_question_id'],
+        //             name: response_json_data['question_name'],
+        //             question: response_json_data['question_text'],
+        //             input_output_list: example_io_list,
+        //             code: currentProblemState.code,
+        //             console_output: null,
+        //             lecture_question: false,
+        //             test_case_list: [],
+            
+        //             // submission feedback
+        //             all_test_cases_passed: null,
+        //             program_output_result: [],
+        //             ai_tutor_feedback: null,
+        //             user_code_submission_history_objects: []
+
+        //         });
+
+        //         addQIDParam(response_json_data['unique_question_id']);
+
+        //     }
+
+        // } else {
+    
+        //     let current_anon_user_id = getFromLocalStorage("user_id");
+
+        //     // TODO:
+        //     let response_data = await updateUserQuestion(
+        //         null,
+        //         current_anon_user_id,
+        //         current_question_id,
+        //         current_q_name,
+        //         current_q_text
+        //     );
+
+        //     // let response_data = await generateQuestionTestCases(current_q_name, current_q_text);
+        //     // // console.log('response_data:', response_data);
+
+        //     if (response_data['success'] === true){
+        //         let response_json_data = response_data['data'];
+        //         let example_io_list = JSON.parse(response_json_data['example_io_list']);
+    
+        //         setCurrentProblemIOList(example_io_list);
+        //         setInputOutputLoading(false);
+    
+        //         let tmp_d = {
+        //             question_id: response_json_data['unique_question_id'],
+        //             name: response_json_data['question_name'],
+        //             question: response_json_data['question_text'],
+        //             input_output_list: example_io_list,
+        //             code: currentProblemState.code,
+        //         };
+        //         saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
+
+        //         dispatch({
+        //             type: "SET_QUESTION_INPUT_OUTPUT",
+
+        //             question_id: response_json_data['unique_question_id'],
+        //             name: response_json_data['question_name'],
+        //             question: response_json_data['question_text'],
+        //             input_output_list: example_io_list,
+        //             code: currentProblemState.code,
+        //             console_output: null,
+        //             lecture_question: false,
+        //             test_case_list: [],
+            
+        //             // submission feedback
+        //             all_test_cases_passed: null,
+        //             program_output_result: [],
+        //             ai_tutor_feedback: null,
+        //             user_code_submission_history_objects: [],
+        //         });
+
+        //     }
+
+        // }
 
     }
 
@@ -213,55 +309,8 @@ const ProblemLayout = ({ setActiveTab }) => {
         }
     };
 
-    const handleSaveCodeInternal = async (payload) => {
-
-        let user_save_code_response_dict = await _handleUserSaveCode(
-            userAccessToken,
-            payload
-        );
-
-        if (isAuthenticated){
-
-            dispatch({
-                type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: user_save_code_response_dict['question_id'],
-                name: state.name,
-                question: state.question,
-                input_output_list: state.input_output_list,
-                code: state.code,
-                lecture_question: state.lecture_question
-            });
-            
-            if (state.lecture_question != true){
-                addQIDParam(user_save_code_response_dict['question_id']);
-            }
-
-        } else {
-
-            let tmp_d = {
-                question_id: user_save_code_response_dict['question_id'],
-                name: state.name,
-                question: state.question,
-                input_output_list: state.input_output_list,
-                code: state.code
-            };
-
-            dispatch({
-                type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: user_save_code_response_dict['question_id'],
-                name: state.name,
-                question: state.question,
-                input_output_list: state.input_output_list,
-                code: state.code
-            });
-            saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
-
-        }
-        
-    }
-
     // Run Code
-    const handleRun = () => {
+    const handleRun = async () => {
 
         dispatch({
             type: "UPDATE_CONSOLE_OUTPUT",
@@ -282,49 +331,24 @@ const ProblemLayout = ({ setActiveTab }) => {
             'question_name': state.name,
             'question_text': state.question,
             'example_input_output_list': state.input_output_list,
-            'lecture_question': state.lecture_question
-        }
+            'lecture_question': state.lecture_question,
+            'code': current_user_code,
+            'user_id': null
+        };
 
-        dispatch({
-            type: "UPDATE_CODE_STATE",
-            code: current_user_code,
-        });
+        const saveCodeResponse = await handleSaveUserCode(
+            payload,
+            dispatch, 
+            isAuthenticated,
+            userAccessToken,
+            currentProblemState
+        );
 
-        // anon case - code saving
-        if (isAuthenticated){
-
-            payload['user_id'] = null;
-            payload['code'] = current_user_code;
-
-            console.log('payload-NEW:', payload);
-
-            handleSaveCodeInternal(
-                payload
-            )
-
-        } else {
-
-            // _saveUserCodeInBackend(current_user_code);
-
-            let anon_user_id = getFromLocalStorage("user_id");
-            // let payload = {
-            //     'user_id': anon_user_id,
-            //     'question_id': state.question_id,
-            //     'code': current_user_code
-            // }
-
-            payload['user_id'] = anon_user_id;
-            payload['code'] = current_user_code;
-            // saveUserCode(null, payload);
-
-            handleSaveCodeInternal(
-                payload
-            );
-
+        if ('error' in saveCodeResponse){
+            console.log('Could not save user code...');
         }
       
     };
-
 
     const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 
@@ -379,7 +403,6 @@ const ProblemLayout = ({ setActiveTab }) => {
 
     }
 
-
     return (
 
         <MathJaxContext>
@@ -390,18 +413,96 @@ const ProblemLayout = ({ setActiveTab }) => {
 
                     <div className="mt-1 flex justify-between items-center  border-b-[1px] border-gray-300  w-full">
 
+                        {state.lecture_question && (
+
+                            isAuthenticated ? (
+                                <div className="mt-0">
+                                    <span className="text-[11.5px] text-gray-600 dark:text-gray-500">
+                                        Shortcut: (Ctrl / Cmd) + S to save code
+                                    </span>
+                                </div>
+                            ) : (
+                                
+                                <div className="mt-0">
+                                    <span className="text-[11.5px] text-gray-600 dark:text-gray-500">
+                                    Make a {" "}
+                                        <a
+                                            className='text-blue-600 dark:text-blue-500 hover:underline cursor-pointer'
+                                            href="/api/auth/login"
+                                        >
+                                            free account
+                                        </a> to submit and work on the lecture exercises!
+                                    </span>
+                                </div>
+                               
+                            )
+                        )}
+
                         {/* Save Code Text */}
-                        <div className="mt-0">
+                        {/* <div className="mt-0">
                             <span className="text-[11.5px] text-gray-600 dark:text-gray-500">
                                 Shortcut: (Ctrl / Cmd) + S to save code
                             </span>
-                        </div>
+                        </div> */}
+
 
                         {/* Button Div */}
                         <div className="space-x-2 text-right pb-2">
                             
-                            {/* Run Code Button */}
                             {(isAuthenticated === true) ? (
+                                
+                                <button
+                                    onClick={handleRun}
+                                    disabled={isRunLoading}
+                                    className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all 
+                                        ${isRunLoading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+                                    >
+                                    {isRunLoading ? (
+                                        <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faPlay} className="text-white pr-2" />
+                                    )}
+                                    {isRunLoading ? "Running..." : "Run Code"}
+                                </button>
+
+                            ): (isAuthenticated === false && currentProblemState.lecture_question === false) ? (
+
+                                <button
+                                    onClick={handleRun}
+                                    disabled={isRunLoading}
+                                    className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all 
+                                        ${isRunLoading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+                                    >
+                                    {isRunLoading ? (
+                                        <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faPlay} className="text-white pr-2" />
+                                    )}
+                                    {isRunLoading ? "Running..." : "Run Code"}
+                                </button>
+
+                            ) : (isAuthenticated === false && currentProblemState.lecture_question === true) ? (
+
+                                <button
+                                    onClick={handleRun}
+                                    disabled={true}
+                                    className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all bg-gray-400 cursor-not-allowed`}
+                                    >
+                                    {isRunLoading ? (
+                                        <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faPlay} className="text-white pr-2" />
+                                    )}
+                                    {isRunLoading ? "Running..." : "Run Code"}
+                                </button>
+
+                            ): (null)
+                            
+                            }
+
+
+                            {/* Run Code Button */}
+                            {/* {(isAuthenticated === true) ? (
 
                                 <button
                                     onClick={handleRun}
@@ -433,7 +534,7 @@ const ProblemLayout = ({ setActiveTab }) => {
                                 </button>
                             
                                 )
-                            }
+                            } */}
                         
                             {state.lecture_question ? (
 
@@ -494,22 +595,24 @@ const ProblemLayout = ({ setActiveTab }) => {
                             />
 
                         ):(
-                            
+
                             <>
                                 <h1 className="font-semibold text-[17px] mr-2">
                                     Question: {questionName}
                                 </h1>
 
-                                <div className="flex space-x-4 mr-4">
-                                    <span 
-                                        className="text-[12px] text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-400 dark:hover:text-blue-400"
-                                        onClick={(e) => _handleEditQuestion(e)}
-                                    >
-                                        <FontAwesomeIcon icon={faPencil} className="pr-1"/> 
-                                        edit question
-                                    </span>
+                                {(state['lecture_question'] !== true) && (
+                                    <div className="flex space-x-4 mr-4">
+                                        <span 
+                                            className="text-[12px] text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-400 dark:hover:text-blue-400"
+                                            onClick={(e) => _handleEditQuestion(e)}
+                                        >
+                                            <FontAwesomeIcon icon={faPencil} className="pr-1"/> 
+                                            edit question
+                                        </span>
 
-                                </div>
+                                    </div>
+                                )}
                             
                             </>
 

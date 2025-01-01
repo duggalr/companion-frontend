@@ -1,7 +1,7 @@
 export interface QuestionInputOutputPair{
     input: string;
     output: string;
-}
+};
 
 type TestCase = { [key: string]: any };
 
@@ -19,15 +19,14 @@ export interface PlaygroundState {
     program_output_result: [];
     ai_tutor_feedback: string | null;
     user_code_submission_history_objects: []
-}
+};
 
 export type PlaygroundAction =
     | { type: "SET_QUESTION"; payload: string }
     // | { type: "SET_OTHER_DATA"; payload: Record<string, any> };
 
-
 export interface SubmissionState {
     result: boolean | null;
     ai_tutor_feedback: string | null;
     output_list: any;
-}
+};

@@ -41,7 +41,6 @@ export default function HeroPrimaryNew() {
     useEffect(() => {
 
         let current_theme = getFromLocalStorage('theme');
-        console.log('current-theme:', current_theme);
         setCurrentTheme(current_theme);
 
     }, []);
@@ -107,14 +106,22 @@ export default function HeroPrimaryNew() {
                     >
                         Learn More
                     </p>
-                    
+
                     <div className="mt-2" data-aos="fade-down">
 
-                        <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-xl text-[15.5px] px-5 py-3 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        <button
+                            type="button"
+                            className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-xl text-[15.5px] px-5 py-3 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" 
+                            onClick={_handleCourseBtnClick}
+                        >
                         Try MIT 6.100L - Introduction To Python
                         </button>
 
-                        <button type="button" class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-xl text-[15.5px] px-5 py-3 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">
+                        <button
+                            type="button"
+                            className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-xl text-[15.5px] px-5 py-3 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+                            onClick={_handlePGBtnClick}
+                        >
                         Try the Tutor in our Playground REPL
                         </button>
 
@@ -192,7 +199,7 @@ export default function HeroPrimaryNew() {
 
                     {/* What We Currently Offer Section */}
                     <h1
-                        class="mb-10 text-3xl font-bold leading-none tracking-normal text-gray-900 dark:text-white"
+                        className="mb-10 text-3xl font-bold leading-none tracking-normal text-gray-900 dark:text-white"
                         data-aos="fade-up"
                     >Currently we offer:</h1>
 
@@ -218,15 +225,15 @@ export default function HeroPrimaryNew() {
 
                             {/* <button
                                 type="button"
-                                class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-6"
+                                className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-6"
                             > */}
-                            <button type="button" class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">
+                            <button type="button" className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">
                                 Watch a Demo (TODO:)
                             </button>
                             
                             <button
                                 type="button"
-                                class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-6"
+                                className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-6"
                                 onClick={_handleCourseBtnClick}
                             >
                             {/* <button type="button" class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"> */}
@@ -252,12 +259,12 @@ export default function HeroPrimaryNew() {
                             {/* <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Watch a Demo</button> */}
 
                             <button type="button"
-                            class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+                            className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
                             >Watch a Demo (TODO:)</button>
 
                             <button
                                 type="button"
-                                class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-6"
+                                className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-6"
                                 onClick={_handlePGBtnClick}
                             >Go to Playground</button>
 
@@ -289,20 +296,30 @@ export default function HeroPrimaryNew() {
                 <div className="mt-12 w-3/4" data-aos="fade-up">
                     <ul className="space-y-4">
                         <li className="flex justify-between items-center border-b pb-4 text-[17px]">
-                            <StandardLink 
+                            {/* <StandardLink 
                                 uri="https://medium.com/@drahul2820/companion-update-upcoming-mit-course-release-47bd9714b0a4"
                                 text="📰 Companion: Update and Upcoming MIT Course Release"
                                 new_tab={true}
-                            />
+                            /> */}
+                            <a 
+                                className="text-blue-400 dark:text-blue-400 hover:underline mx-1 text-[16.5px]"
+                                href="https://medium.com/@drahul2820/companion-update-upcoming-mit-course-release-47bd9714b0a4"
+                                target="_blank" rel="noopener noreferrer"
+                            >📰 Companion: Update and Upcoming MIT Course Release</a>
                             <span className="text-gray-500 text-sm">Dec 16, 2024</span>
                         </li>
 
-                        <li className="flex justify-between items-center border-b pb-2 pt-2 text-[17px]">
-                            <StandardLink 
+                        <li className="flex justify-between items-center border-b pb-2 pt-2 text-[16.5px] tracking-wide">
+                            {/* <StandardLink 
                                 uri="https://medium.com/@drahul2820/introducing-companion-an-online-repl-with-an-ai-tutor-85c564fae398"
                                 text="📰 Companion: Initial MVP Launch"
                                 new_tab={true}
-                            />
+                            /> */}
+                            <a 
+                                className="text-blue-400 dark:text-blue-400 hover:underline mx-1 text-[16px] tracking-wide"
+                                href="https://medium.com/@drahul2820/introducing-companion-an-online-repl-with-an-ai-tutor-85c564fae398"
+                                target="_blank" rel="noopener noreferrer"
+                            >📰 Companion: Initial MVP Launch</a>
                             <span className="text-gray-500 text-sm">Oct 21, 2024</span>
                         </li>
                     </ul>

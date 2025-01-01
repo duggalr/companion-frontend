@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX, faCheck, faSpinner } from "@fortawesome/free-solid-svg-icons";
@@ -7,7 +7,7 @@ import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
 import { handleSolutionSubmit } from "@/lib/backend_api/handleSolutionSubmit";
 
 
-const SubmissionLayout = ({}) => {
+const SubmissionLayout = () => {
 
     const { isAuthenticated, userAccessToken } = useUserContext();
     const [currentTestCase, setCurrentTestCase] = useState(0);
@@ -232,7 +232,7 @@ const SubmissionLayout = ({}) => {
                 All Test Cases Passed. <FontAwesomeIcon icon={faCheck} className="pr-1 text-green-600 text-[15px] ml-1"/> 
             </p> */}
 
-            <div className="bg-gray-800 p-5 pb-10 rounded-lg shadow mb-6 mt-4">
+            <div className="bg-gray-700 p-5 pb-10 rounded-lg shadow mb-6 mt-4">
 
                 <div className="flex justify-between items-center mb-4">
 
@@ -268,7 +268,7 @@ const SubmissionLayout = ({}) => {
 
                     <div>
                         <h3 className="font-semibold text-sm text-gray-300 mb-1">Input</h3>
-                        <pre className="bg-gray-700 text-sm p-3 rounded-lg text-gray-200">
+                        <pre className="bg-gray-600 text-sm p-3 rounded-lg text-gray-200">
                         {testCaseList[currentTestCase].input}
                         {/* TODO: add input */}
                         </pre>
@@ -278,7 +278,7 @@ const SubmissionLayout = ({}) => {
                         <h3 className="font-semibold text-sm text-gray-300 mb-1">
                         Expected Output
                         </h3>
-                        <pre className="bg-gray-700 text-sm p-3 rounded-lg text-gray-200">
+                        <pre className="bg-gray-600 text-sm p-3 rounded-lg text-gray-200">
                         {testCaseList[currentTestCase].output}
                         </pre>
                     </div>
@@ -287,7 +287,7 @@ const SubmissionLayout = ({}) => {
                         <h3 className="font-semibold text-sm text-gray-300 mb-1">
                         Your Program Output
                         </h3>
-                        <pre className="bg-gray-700 text-sm p-3 rounded-lg text-gray-200">
+                        <pre className="bg-gray-600 text-sm p-3 rounded-lg text-gray-200">
 
                             {/* {currentProblemState.program_output_result.length > 0 ?? (
                                 currentProblemState.program_output_result[currentTestCase]
@@ -311,20 +311,20 @@ const SubmissionLayout = ({}) => {
             </h2>
 
             {/* Submission History Table */}
-            <div class="relative overflow-x-auto">
-                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <div className="relative overflow-x-auto">
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             {/* <th scope="col" class="px-6 py-3">
                                 #
                             </th> */}
-                            <th scope="col" class="px-2 py-3">
+                            <th scope="col" className="px-2 py-3">
                                 Date
                             </th>
-                            <th scope="col" class="px-2 py-3">
+                            <th scope="col" className="px-2 py-3">
                                 Passed
                             </th>
-                            <th scope="col" class="px-2 py-3">
+                            <th scope="col" className="px-2 py-3">
                                 Code
                             </th>
                         </tr>

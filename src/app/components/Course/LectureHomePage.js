@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faVideo, faNoteSticky } from "@fortawesome/free-solid-svg-icons";
@@ -73,7 +73,7 @@ export default function LectureHomePage({ lecture_number, lectureData, lectureEx
         // <div className="flex flex-col max-5xl">
         //     <div className="min-w-4xl max-w-4xl relative">
 
-        <div className="min-h-screen flex justify-center pt-4">
+        <div className="min-h-screen flex justify-center pt-4 bg-[#f4f5f6] dark:bg-gray-900">
 
             {/* <div className="absolute left-0 pl-[265px]">
                 <a
@@ -99,19 +99,19 @@ export default function LectureHomePage({ lecture_number, lectureData, lectureEx
             </div> */}
 
 
-            {lecture_number == 1 && (
-                <div className="absolute left-0 pl-[265px]">
-                    <a
-                        className="cursor-pointer font-normal text-blue-600 dark:text-blue-400 hover:underline text-[14px]"
-                        href='/dashboard'
-                    >
-                        Home
-                    </a>
-                </div>
-            )}
+            {/* {lecture_number == 1 && ( */}
+            <div className="absolute left-0 pl-[265px]">
+                <a
+                    className="cursor-pointer font-normal text-blue-600 dark:text-blue-400 hover:underline text-[14px]"
+                    href='/dashboard'
+                >
+                    Home
+                </a>
+            </div>
+            {/* )} */}
 
             {lecture_number > MIN_LECTURE_NUMBER && (
-                <div className="absolute left-0 pl-[265px]">
+                <div className="absolute right-20 pr-[265px]">
                     <a
                         // onClick={(e) => {
                         //     e.preventDefault();

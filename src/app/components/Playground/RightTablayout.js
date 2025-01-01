@@ -1,26 +1,27 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBook, faComments, faShuffle, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { saveToLocalStorage, getFromLocalStorage, removeFromLocalStorage } from  '@/lib/utils/localStorageUtils';
-import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomInitialPlaygroundQuestion';
+// import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomInitialPlaygroundQuestion';
 import useUserContext from "@/lib/hooks/useUserContext";
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
-import handleRandomQuestionSet from "@/lib/utils/handleRandomQuestionSet";
+import handleRandomQuestionFetchAndSet from "@/lib/utils/handleRandomQuestionFetchAndSet";
 import ProblemLayout from "@/app/components/Playground/ProblemLayout";
 import SubmissionLayout from "@/app/components/Playground/SubmissionLayout";
 import NewChatInterface from '@/app/components/Playground/NewChatInterface';
-// import addQIDParam from '@/lib/utils/addQidParam';
 
 
-const RightTabLayout = ({ }) => {
+const RightTabLayout = () => {
 
     const [activeTab, setActiveTab] = useState("problem");
 
     const {isAuthenticated, userAccessToken} = useUserContext();
+    const { state, dispatch } = usePlaygroundContext();
 
     const _handleNewBlankQuestion = async () => {
         
-        let tmp_d = {
+        let new_blank_question_data = {
+            // question data
             question_id: null,
             name: "Enter Question Name...",
             question: "Enter your question text here (by pressing 'edit question')...",
@@ -28,90 +29,303 @@ const RightTabLayout = ({ }) => {
             code: `def main():
     raise notImplementedError
 `,
+            console_output: state.console_output,
+            lecture_question: false,
+            test_case_list: [],
+
+            // submission feedback
+            all_test_cases_passed: null,
+            program_output_result: [],
+            ai_tutor_feedback: null,
+            user_code_submission_history_objects: []
         };
 
+        dispatch({
+            type: "SET_PLAYGROUND_STATE",
+            
+            // question data
+            question_id: null,
+            name: "Enter Question Name...",
+            question: "Enter your question text here (by pressing 'edit question')...",
+            input_output_list: [],
+            code: `def main():
+    raise notImplementedError
+`,
+            console_output: state.console_output,
+            lecture_question: false,
+            test_case_list: [],
+
+            // submission feedback
+            all_test_cases_passed: null,
+            program_output_result: [],
+            ai_tutor_feedback: null,
+            user_code_submission_history_objects: []
+        });
+
+        window.history.pushState({}, '', `/playground?new=true`);
+        
         if (isAuthenticated){
-
-            // TODO:
-            window.history.pushState({}, '', `/playground?new=true`);
-            dispatch({
-                type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: null,
-                name: tmp_d['name'],
-                question: tmp_d['question'],
-                input_output_list: tmp_d['input_output_list'],
-                code: tmp_d['code'],
-            });
-            window.location.reload();
-
+            // window.location.reload();
         }
         else {
-
-            window.history.pushState({}, '', `/playground?new=true`);
+            // delete old playground question data
             removeFromLocalStorage('playground_question_dict');
-
-            saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
-            dispatch({
-                type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: null,
-                name: tmp_d['name'],
-                question: tmp_d['question'],
-                input_output_list: tmp_d['input_output_list'],
-                code: tmp_d['code'],
-            });
-
+            
             // delete messages in local storage
-            removeFromLocalStorage('user_chat_messages');
-            window.location.reload();
+            removeFromLocalStorage('user_chat_messages'); 
 
+            // save new dict in local-storage
+            saveToLocalStorage('playground_question_dict', JSON.stringify(new_blank_question_data));
+
+            // window.location.reload();
         }
+
+        // dispatch({
+        //     type: "SET_QUESTION_INPUT_OUTPUT",
+        //     question_id: null,
+        //     name: tmp_d['name'],
+        //     question: tmp_d['question'],
+        //     input_output_list: tmp_d['input_output_list'],
+        //     code: tmp_d['code'],
+        // });
+
+        // if (isAuthenticated){
+
+        //     // TODO:
+        //     window.history.pushState({}, '', `/playground?new=true`);
+        //     dispatch({
+        //         type: "SET_QUESTION_INPUT_OUTPUT",
+        //         question_id: null,
+        //         name: tmp_d['name'],
+        //         question: tmp_d['question'],
+        //         input_output_list: tmp_d['input_output_list'],
+        //         code: tmp_d['code'],
+        //     });
+        //     window.location.reload();
+
+        // }
+        // else {
+
+        //     window.history.pushState({}, '', `/playground?new=true`);
+        //     removeFromLocalStorage('playground_question_dict');
+
+        //     saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
+        //     dispatch({
+        //         type: "SET_QUESTION_INPUT_OUTPUT",
+        //         question_id: null,
+        //         name: tmp_d['name'],
+        //         question: tmp_d['question'],
+        //         input_output_list: tmp_d['input_output_list'],
+        //         code: tmp_d['code'],
+        //     });
+
+        //     // delete messages in local storage
+        //     removeFromLocalStorage('user_chat_messages');
+        //     window.location.reload();
+
+        // }
 
     };
 
-    const { dispatch } = usePlaygroundContext();
-
     const _handleShuffleQuestion = async () => {
+        
+        const current_user_id = await getFromLocalStorage('user_id');        
 
-        if (isAuthenticated) {
+        let random_question_set_response = await handleRandomQuestionFetchAndSet(
+            current_user_id,
+            userAccessToken,
+            dispatch,
+            isAuthenticated,
+            state
+        );
+
+        if ('error' in random_question_set_response){
+            console.log('Error fetching random question...');
+        };
+
+        // anon_user_id, user_access_token, dispatch, is_authenticated, current_playground_state
+
+        // const random_question_dict_response = await getRandomInitialPlaygroundQuestion(
+        //     current_user_id,
+        //     userAccessToken
+        // );
+
+        // // if (random_question_dict_response['success'] === true){
+        
+        // //     const random_question_data = random_question_dict_response['data'];
+
+        // //     const new_state_dict = {
+        // //         // question info
+        // //         question_id: null,
+        // //         name: random_question_data['name'],
+        // //         question: random_question_data['text'],
+        // //         input_output_list: random_question_data['example_io_list'],
+        // //         code: random_question_data['starter_code'],
+        // //         console_output: playgroundState.console_output,
+        // //         lecture_question: false,
+        // //         test_case_list: [],
+
+        // //         // submission feedback
+        // //         all_test_cases_passed: null,
+        // //         program_output_result: [],
+        // //         ai_tutor_feedback: null,
+        // //         user_code_submission_history_objects: []
+        // //     };
+
+        // //     updatePlaygroundState(
+        // //         dispatch, new_state_dict, isAuthenticated
+        // //     );
+
+        // //     // // Dispatch
+        // //     // dispatch({
+        // //     //     type: "SET_PLAYGROUND_STATE",
+
+        // //     //     // question info
+        // //     //     question_id: null,
+        // //     //     name: random_question_data['name'],
+        // //     //     question: random_question_data['text'],
+        // //     //     input_output_list: random_question_data['example_io_list'],
+        // //     //     code: random_question_data['starter_code'],
+        // //     //     console_output: state.console_output,
+        // //     //     lecture_question: false,
+        // //     //     test_case_list: [],
+
+        // //     //     // submission feedback
+        // //     //     all_test_cases_passed: null,
+        // //     //     program_output_result: [],
+        // //     //     ai_tutor_feedback: null,
+        // //     //     user_code_submission_history_objects: []
+        // //     // });
+
+        // //     // if (!isAuthenticated) {
+        // //     //     // Save in Local Storage
+        // //     //     saveToLocalStorage("playground_question_dict", JSON.stringify(new_state_dict));
+        // //     // };
+
+        // // }
+        // // else {
+
+        // //     console.log('Error fetching random question...')
+
+        // // }
+
+
+        // const random_question_dict_response = await getRandomInitialPlaygroundQuestion(
+        //     null, userAccessToken
+        // );
+
+        // TODO: delete
+        // console.log('rnd_question_dict:', rnd_question_dict);
+
+        // if (random_question_dict_response['success'] === true){
+
+        //     const new_state_dict = {
+        //         // question info
+        //         question_id: null,
+        //         name: random_question_data['name'],
+        //         question: random_question_data['text'],
+        //         input_output_list: random_question_data['example_io_list'],
+        //         code: random_question_data['starter_code'],
+        //         console_output: state.console_output,
+        //         lecture_question: false,
+        //         test_case_list: [],
+
+        //         // submission feedback
+        //         all_test_cases_passed: null,
+        //         program_output_result: [],
+        //         ai_tutor_feedback: null,
+        //         user_code_submission_history_objects: []
+        //     };
+
+        //     // Dispatch
+        //     dispatch({
+        //         type: "SET_PLAYGROUND_STATE",
+
+        //         // question info
+        //         question_id: null,
+        //         name: random_question_data['name'],
+        //         question: random_question_data['text'],
+        //         input_output_list: random_question_data['example_io_list'],
+        //         code: random_question_data['starter_code'],
+        //         console_output: state.console_output,
+        //         lecture_question: false,
+        //         test_case_list: [],
+
+        //         // submission feedback
+        //         all_test_cases_passed: null,
+        //         program_output_result: [],
+        //         ai_tutor_feedback: null,
+        //         user_code_submission_history_objects: []
+        //     });
+
+        // }
+        // else {
+        //     console.log('Error fetching random question...');
+        // }
+
+        // TODO: delete
+
+        // if (isAuthenticated) {
             
-            let rnd_question_dict = await getRandomInitialPlaygroundQuestion(
-                null, userAccessToken
-            );
+        //     let rnd_question_dict = await getRandomInitialPlaygroundQuestion(
+        //         null, userAccessToken
+        //     );
 
-            if (rnd_question_dict['success'] === true){
+        //     // TODO: abstract this and go from there (get as much, if not all of this complete tonight)
 
-                const rnd_q_data = rnd_question_dict['data'];
+        //     if (rnd_question_dict['success'] === true){
 
-                dispatch({
-                    type: "SET_QUESTION_INPUT_OUTPUT",
-                    question_id: null,
-                    name: rnd_q_data['name'],
-                    question: rnd_q_data['text'],
-                    input_output_list: rnd_q_data['example_io_list'],
-                    code: rnd_q_data['starter_code'],
-                });
+        //         const random_question_data = rnd_question_dict['data'];
 
-            }
+        //         dispatch({
+        //             type: "SET_PLAYGROUND_STATE",
 
-        } else {
+        //              // question info
+        //             question_id: null,
+        //             name: random_question_data['name'],
+        //             question: random_question_data['text'],
+        //             input_output_list: random_question_data['example_io_list'],
+        //             code: random_question_data['starter_code'],
+        //             console_output: playgroundState.console_output,
+        //             lecture_question: false,
+        //             test_case_list: [],
 
-            let current_user_id = getFromLocalStorage('user_id');
-            let rnd_question_set_response = await handleRandomQuestionSet(current_user_id);
+        //             // submission feedback
+        //             all_test_cases_passed: null,
+        //             program_output_result: [],
+        //             ai_tutor_feedback: null,
+        //             user_code_submission_history_objects: []
 
-            dispatch({
-                type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: null,
-                name: rnd_question_set_response['name'],
-                question: rnd_question_set_response['question'],
-                input_output_list: rnd_question_set_response['input_output_list'],
-                code: rnd_question_set_response['code'],
-            });
+        //         });
 
-            
+        //         // dispatch({
+        //         //     type: "SET_QUESTION_INPUT_OUTPUT",
+        //         //     question_id: null,
+        //         //     name: rnd_q_data['name'],
+        //         //     question: rnd_q_data['text'],
+        //         //     input_output_list: rnd_q_data['example_io_list'],
+        //         //     code: rnd_q_data['starter_code'],
+        //         // });
 
-        }
+        //     }
 
-    }
+        // } else {
+
+        //     let current_user_id = getFromLocalStorage('user_id');
+        //     let rnd_question_set_response = await handleRandomQuestionSet(current_user_id);
+
+        //     dispatch({
+        //         type: "SET_QUESTION_INPUT_OUTPUT",
+        //         question_id: null,
+        //         name: rnd_question_set_response['name'],
+        //         question: rnd_question_set_response['question'],
+        //         input_output_list: rnd_question_set_response['input_output_list'],
+        //         code: rnd_question_set_response['code'],
+        //     });
+
+        // }
+
+    };
 
     return (
       

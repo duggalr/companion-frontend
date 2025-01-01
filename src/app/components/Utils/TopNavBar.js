@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ThemeToggle from './ThemeToggle';
 import { Pacifico } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -59,7 +59,7 @@ export default function TopNavBar ({ }) {
                 {showLoginSpan === 2 ? (
 
                     <div className="text-right pt-0 mt-0 font-normal">
-                        <span className="text-[11.5px] pt-0 mt-0 text-gray-500 dark:text-gray-500">
+                        {/* <span className="text-[11.5px] pt-0 mt-0 text-gray-500 dark:text-gray-500">
                             Make a {" "}
                             <a
                                 className='text-blue-600 dark:text-blue-500 hover:underline cursor-pointer'
@@ -68,7 +68,7 @@ export default function TopNavBar ({ }) {
                                 free account
                             </a> to work on the lecture exercises!
                         </span>
-                        <span className='pl-2'>|</span>
+                        <span className='pl-2'>|</span> */}
                     </div>
 
                 ) : showLoginSpan === 1 ? (

@@ -2,12 +2,14 @@ import React, { createContext, useReducer, ReactNode, useEffect } from "react";
 import useUserContext from "@/lib/hooks/useUserContext";
 import { PlaygroundState } from "./types";
 import { playgroundReducer, PlaygroundAction } from "@/reducers/playgroundReducer";
-import { getFromLocalStorage } from "@/lib/utils/localStorageUtils";
+import { getFromLocalStorage, saveToLocalStorage } from "@/lib/utils/localStorageUtils";
 import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomInitialPlaygroundQuestion';
 import { fetchQuestionData } from '@/lib/backend_api/fetchQuestionData';
-import handleRandomQuestionSet from "@/lib/utils/handleRandomQuestionSet";
-// import addQIDParam from '@/lib/utils/addQidParam';
 import { fetchLessonQuestionData } from '@/lib/backend_api/fetchLessonQuestionData';
+// import handleRandomQuestionSet from "@/lib/utils/handleRandomQuestionSet";
+// import { updatePlaygroundState } from "@/lib/utils/dispatchUtils";
+// import handleRandomQuestionFetchAndSet from "@/lib/utils/handleRandomQuestionSet";
+import handleRandomQuestionFetchAndSet from "@/lib/utils/handleRandomQuestionFetchAndSet";
 
 
 interface PlaygroundContextType {
@@ -42,71 +44,83 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
     const _setRandomQuestion = async () => {
         
-        if (isAuthenticated){
+        const current_user_id = await getFromLocalStorage('user_id');
+        let random_question_set_response = await handleRandomQuestionFetchAndSet(
+            current_user_id,
+            userAccessToken,
+            dispatch,
+            isAuthenticated,
+            state
+        );
 
-            const rnd_question_dict_response = await getRandomInitialPlaygroundQuestion(
-                null,
-                userAccessToken
-            )
-            if (rnd_question_dict_response['success'] === true){
+        if ('error' in random_question_set_response){
+            console.log('Error fetching random question...');
+        };
+        
 
-                const rnd_q_data = rnd_question_dict_response['data'];
-                
-                // // Update URL Param
-                // addQIDParam(rnd_q_data['question_id']);
+        // const random_question_dict_response = await getRandomInitialPlaygroundQuestion(
+        //     current_user_id,
+        //     userAccessToken
+        // );
 
-                dispatch({
-                    type: "SET_QUESTION_INPUT_OUTPUT",
-                    
-                    // question info
-                    question_id: null,
-                    name: rnd_q_data['name'],
-                    question: rnd_q_data['text'],
-                    input_output_list: rnd_q_data['example_io_list'],
-                    code: rnd_q_data['starter_code'],
-                    lecture_question: false,
-                    test_case_list: [],
+        // if (random_question_dict_response['success'] === true){
 
-                    // submission feedback
-                    all_test_cases_passed: null,
-                    program_output_result: [],
-                    ai_tutor_feedback: null,
-                    user_code_submission_history_objects: []
+        //     const random_question_data = random_question_dict_response['data'];
 
-                });
-            }
+        //     const new_state_dict = {
+        //         // question info
+        //         question_id: null,
+        //         name: random_question_data['name'],
+        //         question: random_question_data['text'],
+        //         input_output_list: random_question_data['example_io_list'],
+        //         code: random_question_data['starter_code'],
+        //         console_output: state.console_output,
+        //         lecture_question: false,
+        //         test_case_list: [],
 
-        } 
-        else {
+        //         // submission feedback
+        //         all_test_cases_passed: null,
+        //         program_output_result: [],
+        //         ai_tutor_feedback: null,
+        //         user_code_submission_history_objects: []
+        //     };
 
-            const current_user_id = await getFromLocalStorage('user_id');
+        //     updatePlaygroundState(
+        //         dispatch, new_state_dict, isAuthenticated
+        //     );
 
-            const rnd_question_set_response = await handleRandomQuestionSet(current_user_id);
+        //     // // Dispatch
+        //     // dispatch({
+        //     //     type: "SET_PLAYGROUND_STATE",
 
-            if (rnd_question_set_response){
+        //     //     // question info
+        //     //     question_id: null,
+        //     //     name: random_question_data['name'],
+        //     //     question: random_question_data['text'],
+        //     //     input_output_list: random_question_data['example_io_list'],
+        //     //     code: random_question_data['starter_code'],
+        //     //     console_output: state.console_output,
+        //     //     lecture_question: false,
+        //     //     test_case_list: [],
 
-                dispatch({
-                    type: "SET_QUESTION_INPUT_OUTPUT",
-                    
-                    // question info 
-                    question_id: null,
-                    name: rnd_question_set_response['name'],
-                    question: rnd_question_set_response['question'],
-                    input_output_list: rnd_question_set_response['input_output_list'],
-                    code: rnd_question_set_response['code'],
-                    lecture_question: false,
-                    test_case_list: [],
+        //     //     // submission feedback
+        //     //     all_test_cases_passed: null,
+        //     //     program_output_result: [],
+        //     //     ai_tutor_feedback: null,
+        //     //     user_code_submission_history_objects: []
+        //     // });
 
-                    // submission feedback
-                    all_test_cases_passed: null,
-                    program_output_result: [],
-                    ai_tutor_feedback: null,
-                    user_code_submission_history_objects: []
-                });
+        //     // if (!isAuthenticated) {
+        //     //     // Save in Local Storage
+        //     //     saveToLocalStorage("playground_question_dict", JSON.stringify(new_state_dict));
+        //     // };
 
-            }
+        // }
+        // else {
 
-        }
+        //     console.log('Error fetching random question...')
+
+        // }
 
     }
 
@@ -164,57 +178,85 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
         if (question_data_response['success'] === true){
             let qdata = question_data_response['data'];
-
-            if (isAuthenticated === true){
+            console.log('q-data:', qdata);
             
-                let qid = qdata['question_object_id'];
-
-                // console.log('user_question_lecture_object:', qid);
-
-                console.log("TESTING PG Q-OUTPUT:", qdata);
-
-                dispatch({
-                    type: "SET_QUESTION_INPUT_OUTPUT",
-                    question_id: qid,
-                    name: qdata['name'],
-                    question: qdata['exercise'],
-                    input_output_list: qdata['input_output_list'],
-                    code: qdata['user_code'],
-                    
-                    lecture_question: true,
-                    test_case_list: qdata['test_case_list'],
-                    all_test_cases_passed: null,
-                    program_output_result: [],
-                    ai_tutor_feedback: null,
-
-                    user_code_submission_history_objects: qdata['user_code_submission_history_objects']
-                });
-
+            let qid;
+            if (isAuthenticated === true){
+                qid = qdata['question_object_id'];
             } else {
-
-                dispatch({
-                    type: "SET_QUESTION_INPUT_OUTPUT",
-                    question_id: "",
-                    name: qdata['name'],
-                    question: qdata['exercise'],
-                    input_output_list: qdata['input_output_list'],
-                    code: qdata['user_code'],
-                    
-                    lecture_question: true,
-                    test_case_list: qdata['test_case_list'],
-                    all_test_cases_passed: null,
-                    program_output_result: [],
-                    ai_tutor_feedback: null,
-
-                    user_code_submission_history_objects: qdata['user_code_submission_history_objects']
-                });
-
+                qid = "";
             }
+
+            dispatch({
+                type: "SET_PLAYGROUND_STATE",
+
+                question_id: qid,
+                name: qdata['name'],
+                question: qdata['exercise'],
+                input_output_list: qdata['input_output_list'],
+                code: qdata['user_code'],
+
+                console_output: state.console_output,
+
+                lecture_question: true,
+                test_case_list: qdata['test_case_list'],
+                all_test_cases_passed: null,
+                program_output_result: [],
+                ai_tutor_feedback: null,
+
+                user_code_submission_history_objects: qdata['user_code_submission_history_objects']
+            });
+
+
+            // if (isAuthenticated === true){
+
+            //     let qid = qdata['question_object_id'];
+
+            //     // console.log('user_question_lecture_object:', qid);
+
+            //     console.log("TESTING PG Q-OUTPUT:", qdata);
+
+            //     dispatch({
+            //         type: "SET_QUESTION_INPUT_OUTPUT",
+            //         question_id: qid,
+            //         name: qdata['name'],
+            //         question: qdata['exercise'],
+            //         input_output_list: qdata['input_output_list'],
+            //         code: qdata['user_code'],
+
+            //         lecture_question: true,
+            //         test_case_list: qdata['test_case_list'],
+            //         all_test_cases_passed: null,
+            //         program_output_result: [],
+            //         ai_tutor_feedback: null,
+
+            //         user_code_submission_history_objects: qdata['user_code_submission_history_objects']
+            //     });
+
+            // } else {
+
+            //     dispatch({
+            //         type: "SET_QUESTION_INPUT_OUTPUT",
+            //         question_id: "",
+            //         name: qdata['name'],
+            //         question: qdata['exercise'],
+            //         input_output_list: qdata['input_output_list'],
+            //         code: qdata['user_code'],
+                    
+            //         lecture_question: true,
+            //         test_case_list: qdata['test_case_list'],
+            //         all_test_cases_passed: null,
+            //         program_output_result: [],
+            //         ai_tutor_feedback: null,
+
+            //         user_code_submission_history_objects: qdata['user_code_submission_history_objects']
+            //     });
+
+            // }
 
         }
 
     }
-
 
     // Load data from localStorage on initial load
     useEffect(() => {
@@ -245,7 +287,7 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
                     if (new_question_value === 'true'){
 
                         dispatch({
-                            type: "SET_QUESTION_INPUT_OUTPUT",
+                            type: "SET_PLAYGROUND_STATE",
 
                             // question info
                             question_id: null,
@@ -253,6 +295,7 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
                             question: "Enter your question text here (by pressing 'edit question')...",
                             input_output_list: [],
                             code: `def main():\n    raise notImplementedError`,
+                            console_output: state.console_output,
                             lecture_question: false,
                             test_case_list: [],
 
@@ -271,59 +314,71 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
                 }
 
-            } else {
+            }
+            else {
 
                 const current_pg_qdict = getFromLocalStorage('playground_question_dict');
 
                 if (current_pg_qdict){
                     const current_pg_qdict_json = JSON.parse(current_pg_qdict);
+
                     dispatch({
-                        type: "SET_QUESTION_INPUT_OUTPUT",
-                        
+                        type: "SET_PLAYGROUND_STATE",
+
                         // question info
                         question_id: current_pg_qdict_json['question_id'],
                         name: current_pg_qdict_json['name'],
                         question: current_pg_qdict_json['question'],
                         input_output_list: current_pg_qdict_json['input_output_list'],
                         code: current_pg_qdict_json['code'],
+                        console_output: state.console_output,
                         lecture_question: false,
                         test_case_list: [],
+
                         // submission feedback
                         all_test_cases_passed: null,
                         program_output_result: [],
                         ai_tutor_feedback: null,
                         user_code_submission_history_objects: []
                     });
+
                 }
                 
                 else {
         
-                    const url_search_params = new URLSearchParams(window.location.search);
-                    const new_question_value = url_search_params.get('new');
-                    if (new_question_value === 'true'){
+                    _setRandomQuestion();
+
+                    // const url_search_params = new URLSearchParams(window.location.search);
+                    // const new_question_value = url_search_params.get('new');
+
+                    // if (new_question_value === 'true'){
                         
-                        const current_pg_qdict_json = JSON.parse(current_pg_qdict);
-                        dispatch({
-                            type: "SET_QUESTION_INPUT_OUTPUT",
+                    //     const current_pg_qdict_json = JSON.parse(current_pg_qdict);
+                    //     dispatch({
+                    //         type: "SET_PLAYGROUND_STATE",
                             
-                            // question info
-                            question_id: current_pg_qdict_json['question_id'],
-                            name: current_pg_qdict_json['name'],
-                            question: current_pg_qdict_json['question'],
-                            input_output_list: current_pg_qdict_json['input_output_list'],
-                            code: current_pg_qdict_json['code'],
-                            lecture_question: false,
-                            test_case_list: [],
-                            // submission feedback
-                            all_test_cases_passed: null,
-                            program_output_result: [],
-                            ai_tutor_feedback: null,
-                            user_code_submission_history_objects: []
-                        });
+                    //         // question info
+                    //         question_id: current_pg_qdict_json['question_id'],
+                    //         name: current_pg_qdict_json['name'],
+                    //         question: current_pg_qdict_json['question'],
+                    //         input_output_list: current_pg_qdict_json['input_output_list'],
+                    //         code: current_pg_qdict_json['code'],
+                    //         console_output: state.console_output,
+                    //         lecture_question: false,
+                    //         test_case_list: [],
+
+                    //         // submission feedback
+                    //         all_test_cases_passed: null,
+                    //         program_output_result: [],
+                    //         ai_tutor_feedback: null,
+                    //         user_code_submission_history_objects: []
+                    //     });
         
-                    } else {
-                        _setRandomQuestion();
-                    }
+                    // } else {
+
+                    //     _setRandomQuestion();
+
+                    // }
 
                 }
 
@@ -333,121 +388,10 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
     }, [isAuthenticated, userAccessToken]);
 
+
     return (
         <PlaygroundContext.Provider value={{ state, dispatch }}>
             {children}
         </PlaygroundContext.Provider>
     );
 };
-
-
-
-
-// if (isAuthenticated) {
-            
-//     // // Steps --> check if qid in URL; if so, fetch that question + user-access-token; else, show random question in authenticated way
-
-
-//             console.log('lesson question id:', lesson_question_object_id);
-
-//         } else if (question_object_id) {
-
-//             // fetch_question_data
-//             _setExistingQuestionData(question_object_id);
-
-//         } else {
-            
-//             const url_search_params = new URLSearchParams(window.location.search);
-//             const new_question_value = url_search_params.get('new');
-//             if (new_question_value === 'true'){
-
-//                 dispatch({
-//                     type: "SET_QUESTION_INPUT_OUTPUT",
-
-//                     // question info
-//                     question_id: null,
-//                     name: "Enter Question Name...",
-//                     question: "Enter your question text here (by pressing 'edit question')...",
-//                     input_output_list: [],
-//                     code: `def main():
-// raise notImplementedError
-// `,
-//                     lecture_question: false,
-//                     test_case_list: [],
-
-//                     // submission feedback
-//                     all_test_cases_passed: null,
-//                     program_output_result: [],
-//                     ai_tutor_feedback: null,
-//                     user_code_submission_history_objects: []
-//                 });
-
-//             } else {
-
-//                 _setRandomQuestion();
-
-//             }
-
-//         }
-
-//     }
-
-//     else {
-
-        // const current_pg_qdict = getFromLocalStorage('playground_question_dict');
-        // if (current_pg_qdict){
-        //     const current_pg_qdict_json = JSON.parse(current_pg_qdict);
-        //     dispatch({
-        //         type: "SET_QUESTION_INPUT_OUTPUT",
-                
-        //         // question info
-        //         question_id: current_pg_qdict_json['question_id'],
-        //         name: current_pg_qdict_json['name'],
-        //         question: current_pg_qdict_json['question'],
-        //         input_output_list: current_pg_qdict_json['input_output_list'],
-        //         code: current_pg_qdict_json['code'],
-        //         lecture_question: false,
-        //         test_case_list: [],
-        //         // submission feedback
-        //         all_test_cases_passed: null,
-        //         program_output_result: [],
-        //         ai_tutor_feedback: null,
-        //         user_code_submission_history_objects: []
-        //     });
-        // }
-        // else {
-
-        //     const url_search_params = new URLSearchParams(window.location.search);
-        //     const new_question_value = url_search_params.get('new');
-        //     if (new_question_value === 'true'){
-                
-        //         const current_pg_qdict_json = JSON.parse(current_pg_qdict);
-        //         dispatch({
-        //             type: "SET_QUESTION_INPUT_OUTPUT",
-                    
-        //             // question info
-        //             question_id: current_pg_qdict_json['question_id'],
-        //             name: current_pg_qdict_json['name'],
-        //             question: current_pg_qdict_json['question'],
-        //             input_output_list: current_pg_qdict_json['input_output_list'],
-        //             code: current_pg_qdict_json['code'],
-        //             lecture_question: false,
-        //             test_case_list: [],
-        //             // submission feedback
-        //             all_test_cases_passed: null,
-        //             program_output_result: [],
-        //             ai_tutor_feedback: null,
-        //             user_code_submission_history_objects: []
-        //         });
-
-        //     } else {
-
-        //         _setRandomQuestion();
-
-        //     }
-
-//         }
-
-//     }
-
-// }

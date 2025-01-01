@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import Link from 'next/link';
+import React, { useEffect, useState } from "react";
+// import Link from 'next/link';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faClock, faLaptopCode, faSchool, faBook } from "@fortawesome/free-solid-svg-icons";
 import { fetchDashboardData } from "@/lib/backend_api/fetchDashboardData";
@@ -126,7 +126,7 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
     return (
 
         // bg-gray-900 text-white
-        <div className="min-h-screen flex justify-center pt-12">
+        <div className="min-h-screen flex justify-center pt-8 bg-[#f4f5f6] dark:bg-gray-900">
 
             <div className="w-full max-w-4xl">
 
@@ -151,7 +151,20 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
 
                 </div>
 
-                <div className="mt-8">
+                <div className="pt-2">
+                    <span className="text-gray-500 text-[12.5px]">
+                        You can also view the course on <a 
+                            href="https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/"
+                            className='text-blue-600 dark:text-blue-500 hover:underline cursor-pointer'
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            MIT OCW
+                        </a>.
+                    </span>
+                </div>
+
+                <div className="mt-5">
 
                     {/* Timeline */}
                     <ol className="relative border-s border-gray-200 dark:border-gray-700">                  
@@ -163,7 +176,7 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                                 {(item.lecture_passed === true) ? (
                                     <div className="absolute w-3 h-3 bg-green-500 rounded-full mt-1.5 -start-1.5 border border-green dark:border-gray-900 dark:bg-gray-700"></div>
                                 ): (
-                                    <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                                    <div className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
                                 )}
                                 
                                 <a 
@@ -171,7 +184,8 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                                     className="cursor-pointer"
                                 >
                                     <h3 
-                                        className="inline text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-500"
+                                        // className="inline text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-500"
+                                        className="inline text-lg font-semibold text-blue-600 hover:text-blue-400"
                                     >
                                         {item.name}
                                     </h3>
