@@ -20,12 +20,15 @@ export default function TopNavBar ({ }) {
 
     const [ showLoginSpan, setShowLoginSpan ] = useState(null);
 
+    const [ courseProgress, setCourseProgress ] = useState({});
+
     const _handleLectureProgressFetch = async () => {
         
         // TODO: fetch number of completed and not completed --> show progress in navbar
 
         let fetchProgressResponse = await fetchCourseProgress();
         console.log('fetchProgressResponse:', fetchProgressResponse);
+        setCourseProgress(fetchProgressResponse);
 
     }
 
@@ -107,10 +110,32 @@ export default function TopNavBar ({ }) {
 
                 )}
 
-                    
+                {isAuthenticated ? (
+                    <div className="flex items-center space-x-4">
+                        
+                        <div className="relative w-8 h-8">
+                            <div
+                            className="absolute inset-0 rounded-full border-2 border-gray-200"
+                            style={{
+                                background: `conic-gradient(#4ade80 ${courseProgress.percent_complete}%, transparent ${courseProgress.percent_complete}%)`,
+                            }}
+                            ></div>
+                            <div className="absolute inset-[2px] flex items-center justify-center rounded-full bg-transparent">
+                                <span className="text-xs font-semibold text-black pl-1">
+                                    {courseProgress.percent_complete}%
+                                </span>
+                            </div>
+                        </div>
 
-                {/* )} */}
-                {/* TODO: fetch lecture complete */}
+                        <div className="text-[13.5px] font-normal text-gray-600">
+                            <p>Lectures Remaining: {courseProgress.remaining} / {courseProgress.total}</p>
+                        </div>
+                        <span className="text-gray-500">|</span>
+                    </div>
+                ) : (
+                    <span></span>
+                )}
+                
 
                 {/* Dashboard */}
                 {isAuthenticated ? (
