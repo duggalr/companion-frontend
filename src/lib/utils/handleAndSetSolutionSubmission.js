@@ -40,8 +40,6 @@ export default async function handleAndSetSolutionSubmission(lecture_qid, code, 
 
         return {'success': true};
 
-        setIsSubmitLoading(false);
-
     } else {
 
         return {

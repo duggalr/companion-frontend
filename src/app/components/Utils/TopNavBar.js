@@ -4,7 +4,9 @@ import ThemeToggle from './ThemeToggle';
 import { Pacifico } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquareCaretRight, faCode, faBook, faHome, faArrowRightFromBracket, faUserPlus } from "@fortawesome/free-solid-svg-icons";
-import useUserContext from '../../../lib/hooks/useUserContext';
+// import useUserContext from '../../../lib/hooks/useUserContext';
+import useUserContext from '@/lib/hooks/useUserContext';
+import { fetchCourseProgress } from '@/lib/backend_api/fetchCourseProgress';
 
 
 const pacifico_font = Pacifico({
@@ -17,7 +19,16 @@ export default function TopNavBar ({ }) {
     const {isAuthenticated} = useUserContext();
 
     const [ showLoginSpan, setShowLoginSpan ] = useState(null);
-    
+
+    const _handleLectureProgressFetch = async () => {
+        
+        // TODO: fetch number of completed and not completed --> show progress in navbar
+
+        let fetchProgressResponse = await fetchCourseProgress();
+        console.log('fetchProgressResponse:', fetchProgressResponse);
+
+    }
+
     useEffect(() => {
 
         // TODO:
@@ -33,7 +44,11 @@ export default function TopNavBar ({ }) {
                 setShowLoginSpan(1);
             }
 
-        };
+        } else {
+
+            _handleLectureProgressFetch();
+
+        }
 
     }, [isAuthenticated]);
 
@@ -95,6 +110,7 @@ export default function TopNavBar ({ }) {
                     
 
                 {/* )} */}
+                {/* TODO: fetch lecture complete */}
 
                 {/* Dashboard */}
                 {isAuthenticated ? (

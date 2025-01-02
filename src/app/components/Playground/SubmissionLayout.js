@@ -328,7 +328,6 @@ const SubmissionLayout = () => {
                                     key={index}
                                     className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                                 >
-                                    {/* <td className="p-3">{new Date(submission.lc_submission_history_object_created).toLocaleDateString()}</td> */}
                                     <td className="p-3">{format(new Date(submission.lc_submission_history_object_created), "PPpp")}</td>
                                     
                                     <td
