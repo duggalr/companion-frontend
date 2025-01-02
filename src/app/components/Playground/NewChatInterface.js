@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
@@ -6,7 +6,7 @@ import useUserContext from "@/lib/hooks/useUserContext";
 import { useWebSocket } from "@/lib/hooks/useWebSocket";
 
 
-const NewChatInterface = ({ }) => {
+const NewChatInterface = () => {
 
     const FASTAPI_WEBSOCKET_URL = process.env.NEXT_PUBLIC_CHAT_WEBSOCKET_URL;
 

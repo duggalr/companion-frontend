@@ -232,10 +232,8 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                                 <ul className="divide-y mt-0">
 
                                     {dashboardDataList.map((dashboard_item, index) => (
-                                        // <li key={dashboard_item.id} className="pb-0">
                                         <li key={dashboard_item.id} className={`${(index !== 0 ? "pb-4" : "pb-3")}`}>
                                             <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                                                {/* <div className="flex-1 min-w-0 pt-0"> */}
                                                 <div className={`flex-1 min-w-0 ${(index !== 0 ? "pt-3" : "pt-0")}`}>
                                                     <Link href={`/playground?qid=${dashboard_item.id}`}>
                                                         {editingIndex === index ? (

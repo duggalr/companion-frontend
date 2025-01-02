@@ -10,6 +10,7 @@ export type PlaygroundAction =
     | {type: "UPDATE_TEST_CASE_LIST"; test_case_list: TestCase | TestCase[] | []}
     | {type: "UPDATE_SUBMISSION_RESULTS"; all_test_cases_passed: boolean, program_output_result: [], ai_tutor_feedback: string, user_code_submission_history_objects: []}
     | {type: "UPDATE_QUESTION_ID"; question_id: string}
+    | {type: "UPDATE_NEXT_LECTURE_NUMBER_AND_QUESTION"; next_lecture_number: number | null, next_question_object_id: string | null}
 
 // Reducer logic
 export const playgroundReducer = (state: PlaygroundState, action: PlaygroundAction): PlaygroundState => {
@@ -30,7 +31,10 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
                 program_output_result: action.program_output_result,
                 ai_tutor_feedback: action.ai_tutor_feedback,
 
-                user_code_submission_history_objects: action.user_code_submission_history_objects
+                user_code_submission_history_objects: action.user_code_submission_history_objects,
+
+                next_lecture_number: state.next_lecture_number,
+                next_question_object_id: state.next_question_object_id
             }
         }
 
@@ -73,6 +77,16 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
             return {
                 ...state,
                 question_id: action.question_id
+            }
+        }
+
+        case "UPDATE_NEXT_LECTURE_NUMBER_AND_QUESTION": {
+            return {
+                ...state,
+                // lecture_number: action.lecture_number,
+                // next_question_object_id: action.next_question_object_id
+                next_lecture_number: action.next_lecture_number,
+                next_question_object_id: action.next_question_object_id
             }
         }
 

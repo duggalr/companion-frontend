@@ -4,20 +4,8 @@ import { usePlaygroundContext } from "./usePlaygroundContext";
 import { getFromLocalStorage, saveToLocalStorage } from "../utils/localStorageUtils";
 import { fetchChatMessages } from "@/lib/backend_api/fetchChatMessages";
 import { saveUserQuestion } from "@/lib/backend_api/saveUserQuestion";
-// import { saveUserCode } from "../backend_api/saveUserCode";
-// // import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/localStorageUtils";
-// import { getFromLocalStorage, saveToLocalStorage } from "../utils/localStorageUtils";
-// import { saveUserRunCode } from "../api/saveUserRunCode";
-
 
 interface MessagePayload {
-    // parent_playground_object_id: string,
-    // text: string,
-    // user_code: string,
-    // all_user_messages_str: string,
-    // sender: string,
-    // type: string,
-
     parent_question_object_id: string,
     current_problem_name: string,
     current_problem_question: string,

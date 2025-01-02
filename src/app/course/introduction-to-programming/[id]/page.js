@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TopNavBar from '@/app/components/Utils/TopNavBar';
 import LectureHomePage from '@/app/components/Course/LectureHomePage';
 import useUserContext from "@/lib/hooks/useUserContext";

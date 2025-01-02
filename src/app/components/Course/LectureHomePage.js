@@ -8,7 +8,7 @@ import HeroVideoDialog from "@/components/ui/hero-video-dialog";
 export default function LectureHomePage({ lecture_number, lectureData, lectureExerciseData }) {
 
     const MIN_LECTURE_NUMBER = 1;
-    const MAX_LECTURE_NUMBER = 6;
+    const MAX_LECTURE_NUMBER = 20;
 
     const router = useRouter();
     const [activeTab, setActiveTab] = useState('lecture_video');

@@ -36,7 +36,10 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
         all_test_cases_passed: null,
         program_output_result: [],
         ai_tutor_feedback: null,
-        user_code_submission_history_objects: []
+        user_code_submission_history_objects: [],
+
+        next_lecture_number: null,
+        next_question_object_id: null
     };
 
     const [state, dispatch] = useReducer(playgroundReducer, initialState);
@@ -56,71 +59,6 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
         if ('error' in random_question_set_response){
             console.log('Error fetching random question...');
         };
-        
-
-        // const random_question_dict_response = await getRandomInitialPlaygroundQuestion(
-        //     current_user_id,
-        //     userAccessToken
-        // );
-
-        // if (random_question_dict_response['success'] === true){
-
-        //     const random_question_data = random_question_dict_response['data'];
-
-        //     const new_state_dict = {
-        //         // question info
-        //         question_id: null,
-        //         name: random_question_data['name'],
-        //         question: random_question_data['text'],
-        //         input_output_list: random_question_data['example_io_list'],
-        //         code: random_question_data['starter_code'],
-        //         console_output: state.console_output,
-        //         lecture_question: false,
-        //         test_case_list: [],
-
-        //         // submission feedback
-        //         all_test_cases_passed: null,
-        //         program_output_result: [],
-        //         ai_tutor_feedback: null,
-        //         user_code_submission_history_objects: []
-        //     };
-
-        //     updatePlaygroundState(
-        //         dispatch, new_state_dict, isAuthenticated
-        //     );
-
-        //     // // Dispatch
-        //     // dispatch({
-        //     //     type: "SET_PLAYGROUND_STATE",
-
-        //     //     // question info
-        //     //     question_id: null,
-        //     //     name: random_question_data['name'],
-        //     //     question: random_question_data['text'],
-        //     //     input_output_list: random_question_data['example_io_list'],
-        //     //     code: random_question_data['starter_code'],
-        //     //     console_output: state.console_output,
-        //     //     lecture_question: false,
-        //     //     test_case_list: [],
-
-        //     //     // submission feedback
-        //     //     all_test_cases_passed: null,
-        //     //     program_output_result: [],
-        //     //     ai_tutor_feedback: null,
-        //     //     user_code_submission_history_objects: []
-        //     // });
-
-        //     // if (!isAuthenticated) {
-        //     //     // Save in Local Storage
-        //     //     saveToLocalStorage("playground_question_dict", JSON.stringify(new_state_dict));
-        //     // };
-
-        // }
-        // else {
-
-        //     console.log('Error fetching random question...')
-
-        // }
 
     }
 
@@ -177,13 +115,10 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
         );
         console.log('lesson-question-data:', question_data_response);
 
-        // window.history.pushState({}, '', `/playground?qid=${current_qid}`);
-        // initial_lesson_qid
-
         if (question_data_response['success'] === true){
             let qdata = question_data_response['data'];
             console.log('q-data:', qdata);
-            
+
             let qid;
             if (isAuthenticated === true){
                 qid = qdata['question_object_id'];
@@ -211,52 +146,11 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
                 user_code_submission_history_objects: qdata['user_code_submission_history_objects']
             });
 
-
-            // if (isAuthenticated === true){
-
-            //     let qid = qdata['question_object_id'];
-
-            //     // console.log('user_question_lecture_object:', qid);
-
-            //     console.log("TESTING PG Q-OUTPUT:", qdata);
-
-            //     dispatch({
-            //         type: "SET_QUESTION_INPUT_OUTPUT",
-            //         question_id: qid,
-            //         name: qdata['name'],
-            //         question: qdata['exercise'],
-            //         input_output_list: qdata['input_output_list'],
-            //         code: qdata['user_code'],
-
-            //         lecture_question: true,
-            //         test_case_list: qdata['test_case_list'],
-            //         all_test_cases_passed: null,
-            //         program_output_result: [],
-            //         ai_tutor_feedback: null,
-
-            //         user_code_submission_history_objects: qdata['user_code_submission_history_objects']
-            //     });
-
-            // } else {
-
-            //     dispatch({
-            //         type: "SET_QUESTION_INPUT_OUTPUT",
-            //         question_id: "",
-            //         name: qdata['name'],
-            //         question: qdata['exercise'],
-            //         input_output_list: qdata['input_output_list'],
-            //         code: qdata['user_code'],
-                    
-            //         lecture_question: true,
-            //         test_case_list: qdata['test_case_list'],
-            //         all_test_cases_passed: null,
-            //         program_output_result: [],
-            //         ai_tutor_feedback: null,
-
-            //         user_code_submission_history_objects: qdata['user_code_submission_history_objects']
-            //     });
-
-            // }
+            dispatch({
+                type: "UPDATE_NEXT_LECTURE_NUMBER_AND_QUESTION",
+                next_lecture_number: qdata['next_lecture_number'],
+                next_question_object_id: qdata['next_question_object_id']
+            });
 
         }
 
@@ -352,38 +246,6 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
         
                     _setRandomQuestion();
 
-                    // const url_search_params = new URLSearchParams(window.location.search);
-                    // const new_question_value = url_search_params.get('new');
-
-                    // if (new_question_value === 'true'){
-                        
-                    //     const current_pg_qdict_json = JSON.parse(current_pg_qdict);
-                    //     dispatch({
-                    //         type: "SET_PLAYGROUND_STATE",
-                            
-                    //         // question info
-                    //         question_id: current_pg_qdict_json['question_id'],
-                    //         name: current_pg_qdict_json['name'],
-                    //         question: current_pg_qdict_json['question'],
-                    //         input_output_list: current_pg_qdict_json['input_output_list'],
-                    //         code: current_pg_qdict_json['code'],
-                    //         console_output: state.console_output,
-                    //         lecture_question: false,
-                    //         test_case_list: [],
-
-                    //         // submission feedback
-                    //         all_test_cases_passed: null,
-                    //         program_output_result: [],
-                    //         ai_tutor_feedback: null,
-                    //         user_code_submission_history_objects: []
-                    //     });
-        
-                    // } else {
-
-                    //     _setRandomQuestion();
-
-                    // }
-
                 }
 
             }
@@ -398,4 +260,5 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
             {children}
         </PlaygroundContext.Provider>
     );
+
 };

@@ -3,15 +3,15 @@ import React, { useEffect, useState } from "react";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencil, faPlay, faSpinner, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
 import useUserContext from "@/lib/hooks/useUserContext";
 import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/localStorageUtils";
 import { updateUserQuestion } from '@/lib/backend_api/updateUserQuestion';
 import addQIDParam from '@/lib/utils/addQidParam';
-import { handleSolutionSubmit } from "@/lib/backend_api/handleSolutionSubmit";
 import { handleSaveUserCode } from "@/lib/utils/handleSaveUserCode";
+import handleAndSetSolutionSubmission from "@/lib/utils/handleAndSetSolutionSubmission";
 
 
 const ProblemLayout = ({ setActiveTab }) => {
@@ -121,134 +121,10 @@ const ProblemLayout = ({ setActiveTab }) => {
                 saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_dict));
 
             };
-            
-            // let tmp_d = {
-            //     question_id: response_json_data['unique_question_id'],
-            //     name: response_json_data['question_name'],
-            //     question: response_json_data['question_text'],
-            //     input_output_list: example_io_list,
-            //     code: currentProblemState.code,
-            // };
-            // saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
-
-            // dispatch({
-            //     type: "SET_QUESTION_INPUT_OUTPUT",
-
-            //     question_id: response_json_data['unique_question_id'],
-            //     name: response_json_data['question_name'],
-            //     question: response_json_data['question_text'],
-            //     input_output_list: example_io_list,
-            //     code: currentProblemState.code,
-            //     console_output: null,
-            //     lecture_question: false,
-            //     test_case_list: [],
-        
-            //     // submission feedback
-            //     all_test_cases_passed: null,
-            //     program_output_result: [],
-            //     ai_tutor_feedback: null,
-            //     user_code_submission_history_objects: [],
-            // });
 
         } else {
             console.log('Failed to update question...')
         }
-
-        // if (isAuthenticated) {
-
-        //     let response_data = await updateUserQuestion(
-        //         userAccessToken,
-        //         null,
-        //         current_question_id,
-        //         current_q_name,
-        //         current_q_text
-        //     );
-
-        //     if (response_data['success'] === true){
-        //         let response_json_data = response_data['data'];
-        //         let example_io_list = JSON.parse(response_json_data['example_io_list']);
-    
-        //         setCurrentProblemIOList(example_io_list);
-        //         setInputOutputLoading(false);
-
-        //         dispatch({
-        //             type: "SET_QUESTION_INPUT_OUTPUT",
-                    
-        //             question_id: response_json_data['unique_question_id'],
-        //             name: response_json_data['question_name'],
-        //             question: response_json_data['question_text'],
-        //             input_output_list: example_io_list,
-        //             code: currentProblemState.code,
-        //             console_output: null,
-        //             lecture_question: false,
-        //             test_case_list: [],
-            
-        //             // submission feedback
-        //             all_test_cases_passed: null,
-        //             program_output_result: [],
-        //             ai_tutor_feedback: null,
-        //             user_code_submission_history_objects: []
-
-        //         });
-
-        //         addQIDParam(response_json_data['unique_question_id']);
-
-        //     }
-
-        // } else {
-    
-        //     let current_anon_user_id = getFromLocalStorage("user_id");
-
-        //     // TODO:
-        //     let response_data = await updateUserQuestion(
-        //         null,
-        //         current_anon_user_id,
-        //         current_question_id,
-        //         current_q_name,
-        //         current_q_text
-        //     );
-
-        //     // let response_data = await generateQuestionTestCases(current_q_name, current_q_text);
-        //     // // console.log('response_data:', response_data);
-
-        //     if (response_data['success'] === true){
-        //         let response_json_data = response_data['data'];
-        //         let example_io_list = JSON.parse(response_json_data['example_io_list']);
-    
-        //         setCurrentProblemIOList(example_io_list);
-        //         setInputOutputLoading(false);
-    
-        //         let tmp_d = {
-        //             question_id: response_json_data['unique_question_id'],
-        //             name: response_json_data['question_name'],
-        //             question: response_json_data['question_text'],
-        //             input_output_list: example_io_list,
-        //             code: currentProblemState.code,
-        //         };
-        //         saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
-
-        //         dispatch({
-        //             type: "SET_QUESTION_INPUT_OUTPUT",
-
-        //             question_id: response_json_data['unique_question_id'],
-        //             name: response_json_data['question_name'],
-        //             question: response_json_data['question_text'],
-        //             input_output_list: example_io_list,
-        //             code: currentProblemState.code,
-        //             console_output: null,
-        //             lecture_question: false,
-        //             test_case_list: [],
-            
-        //             // submission feedback
-        //             all_test_cases_passed: null,
-        //             program_output_result: [],
-        //             ai_tutor_feedback: null,
-        //             user_code_submission_history_objects: [],
-        //         });
-
-        //     }
-
-        // }
 
     }
 
@@ -357,49 +233,21 @@ const ProblemLayout = ({ setActiveTab }) => {
         setIsSubmitLoading(true);
         let lecture_qid = currentProblemState.question_id;
         let code = currentProblemState.code;
-        console.log("HANDLE SUBMIT BUTTON CLICK:", lecture_qid, code);
 
-        let solutionSubmitRes = await handleSolutionSubmit(
-            userAccessToken,
+        const solutionSubmitResponse = await handleAndSetSolutionSubmission(
             lecture_qid,
-            code
+            code,
+            userAccessToken,
+            state,
+            dispatch
         );
-        console.log('solutionSubmitRes:', solutionSubmitRes);
 
-        if (solutionSubmitRes['success'] === true){
+        if (solutionSubmitResponse['success'] != true){
+            console.log('Error submitting solution:', solutionSubmitResponse);
+        };
 
-            let output_solution_data = solutionSubmitRes['data'];
-            let all_test_cases_passed = output_solution_data['all_tests_passed'];
-            let program_result_list = output_solution_data['result_list'];
-            let ai_feedback_response = output_solution_data['ai_response'];
-
-
-            // let user_code_submission_history_objects = output_solution_data['']
-            let old_user_code_submission_list = currentProblemState.user_code_submission_history_objects;
-            old_user_code_submission_list.push({
-                'lc_submission_history_object_id': output_solution_data['lc_submission_history_object_id'],
-                'lc_submission_history_object_created': output_solution_data['lc_submission_history_object_created'],
-                'lc_submission_history_object_boolean_result': output_solution_data['lc_submission_history_object_boolean_result'],
-                'lc_submission_history_code': output_solution_data['lc_submission_history_code'],
-            });
-
-            console.log('old_user_code_submission_list-NEW:', old_user_code_submission_list);
-
-            
-            dispatch({
-                type: "UPDATE_SUBMISSION_RESULTS",
-
-                all_test_cases_passed: all_test_cases_passed,
-                program_output_result: program_result_list,
-                ai_tutor_feedback: ai_feedback_response,
-                user_code_submission_history_objects: old_user_code_submission_list
-            });
-
-            setIsSubmitLoading(false);
-            console.log('setActiveTab', setActiveTab);
-            setActiveTab("submission");
-
-        }
+        setIsSubmitLoading(false);
+        setActiveTab("submission");
 
     }
 
@@ -418,7 +266,7 @@ const ProblemLayout = ({ setActiveTab }) => {
                             isAuthenticated ? (
                                 <div className="mt-0">
                                     <span className="text-[11.5px] text-gray-600 dark:text-gray-500">
-                                        Shortcut: (Ctrl / Cmd) + S to save code
+                                        (Ctrl / Cmd) + S to save code | Submissions will take about 10-15 seconds.
                                     </span>
                                 </div>
                             ) : (
@@ -551,7 +399,6 @@ const ProblemLayout = ({ setActiveTab }) => {
                                             </>
                                         ) : (
                                             <>
-                                                <FontAwesomeIcon className="text-white pr-2" />
                                                 Submit Solution
                                             </>
                                         )}
