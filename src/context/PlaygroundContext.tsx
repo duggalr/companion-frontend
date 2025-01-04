@@ -175,7 +175,8 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
         if (ps_data_response['success'] === true){
 
             let current_problem_set_data = ps_data_response['current_question_state'];
-            
+            console.log('current_problem_set_test_case_list:', current_problem_set_data['test_case_list']);
+
             // TODO: finalize here
 
             dispatch({

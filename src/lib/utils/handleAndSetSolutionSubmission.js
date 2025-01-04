@@ -29,6 +29,8 @@ export default async function handleAndSetSolutionSubmission(lecture_qid, code, 
 
         console.log('old_user_code_submission_list-NEW:', old_user_code_submission_list);
 
+        console.log('PROGRAM RESULT LIST:', program_result_list);
+
         dispatch({
             type: "UPDATE_SUBMISSION_RESULTS",
 

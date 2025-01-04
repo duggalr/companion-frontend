@@ -523,7 +523,7 @@ const ProblemLayout = ({ setActiveTab }) => {
 
                     </div>
                     
-                    <div className="flex items-center justify-between pb-2 mt-4">
+                    <div className="flex items-center pb-2 mt-4">
                         
                         {editing ? (
 
@@ -545,7 +545,7 @@ const ProblemLayout = ({ setActiveTab }) => {
                                         Question: {questionName}
                                     </h1>
 
-                                    {(state.problem_set_current_part > 0) && <span
+                                    {/* {(state.problem_set_current_part > 0) && <span
                                         className="text-[13px] text-gray-700 hover:text-blue-400 cursor-pointer"
                                         onClick={_handleProblemSetLastPartClick}
                                     >
@@ -557,8 +557,29 @@ const ProblemLayout = ({ setActiveTab }) => {
                                         onClick={_handleProblemSetNextPartClick}
                                     >
                                         Next Part <FontAwesomeIcon icon={faArrowRight} className="pl-1"/>
-                                    </span>}
-                                    
+                                    </span>} */}
+
+                                    {/* Last / Next Part */}
+                                    <div className="ml-4">
+                                        {(state.problem_set_current_part > 0) && (
+                                            <span
+                                                className="text-[12px] text-blue-500 hover:text-blue-400 cursor-pointer"
+                                                onClick={_handleProblemSetLastPartClick}
+                                            >
+                                                <FontAwesomeIcon icon={faArrowLeft} className="pr-1" /> Last Part
+                                            </span>
+                                        )}
+
+                                        <span className="px-4"></span>
+                                        {state.problem_set_next_part && (
+                                            <span
+                                                className="text-[12px] text-blue-500 hover:text-blue-400 cursor-pointer"
+                                                onClick={_handleProblemSetNextPartClick}
+                                            >
+                                                Next Part <FontAwesomeIcon icon={faArrowRight} className="pl-1"/>
+                                            </span>
+                                        )}
+                                    </div>
 
                                     {(state['lecture_question'] !== true) && (
                                         <div className="flex space-x-4 mr-4">

@@ -17,8 +17,9 @@ const SubmissionLayout = () => {
     let currentProblemState = playgroundContext.state;
     let playgroundDispatch = playgroundContext.dispatch;
     const testCaseList = currentProblemState['test_case_list'];
-    console.log('currentProblemState-NEW:', currentProblemState);
-    console.log('tmp-new-two:', currentProblemState.ai_tutor_feedback);
+    console.log('test-case-list:', testCaseList);
+    // console.log('currentProblemState-NEW:', currentProblemState);
+    // console.log('tmp-new-two:', currentProblemState.ai_tutor_feedback);
 
     const handlePrevious = () => {
         if (currentTestCase > 0) {
@@ -56,6 +57,8 @@ const SubmissionLayout = () => {
         }
 
     }
+
+    // TODO: fix test case rendering and go from there
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     // const [selectedViewCode, setSelectedViewCode] = useState(null);
@@ -256,7 +259,7 @@ const SubmissionLayout = () => {
 
                     <div>
                         <h3 className="font-semibold text-sm text-gray-300 mb-1">Input</h3>
-                        <pre className="bg-gray-600 text-sm p-3 rounded-lg text-gray-200">
+                        <pre className="bg-gray-600 text-sm p-3 rounded-lg text-gray-200 text-wrap">
                         {testCaseList[currentTestCase].input}
                         {/* TODO: add input */}
                         </pre>
