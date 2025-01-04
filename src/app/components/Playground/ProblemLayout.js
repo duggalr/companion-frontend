@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencil, faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faPlay, faSpinner, faArrowRight, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
 import useUserContext from "@/lib/hooks/useUserContext";
@@ -29,6 +29,7 @@ const ProblemLayout = ({ setActiveTab }) => {
     
     const [inputOutputLoading, setInputOutputLoading] = useState(false);
     const [currentProblemIOList, setCurrentProblemIOList] = useState([]);
+    console.log('currentProblemIOList-NEW:', currentProblemIOList);
 
     useEffect(() => {
         setQuestionName(currentProblemState.name);
@@ -251,6 +252,101 @@ const ProblemLayout = ({ setActiveTab }) => {
 
     }
 
+
+    const _handleProblemSetNextPartClick = async () => {
+
+        const next_ps_part = state.problem_set_next_part;
+        console.log('next_ps_part', next_ps_part);
+
+        const problem_set_question_list = state.problem_set_question_list;
+        console.log('ps-question-list:', problem_set_question_list);
+        
+        const next_problem_set_data = problem_set_question_list[next_ps_part];
+        console.log('next_problem_set_data:', next_problem_set_data);
+
+        // const current_pg_code = currentProblemState.code;
+        // const current_question_code = next_problem_set_data['code'];
+
+        // let new_pg_code = current_pg_code.trim() + '\n\n' + current_question_code + '\n\n';
+
+        // TODO: refactor and consolidate this function and the set problem set to single place
+        const current_pg_code = currentProblemState.code;
+
+        // Update View
+        dispatch({
+            type: "SET_PROBLEM_SET_PLAYGROUND_STATE",
+
+            question_id: next_problem_set_data['question_id'],
+            name: next_problem_set_data['name'],
+            question: next_problem_set_data['question'],
+            input_output_list: next_problem_set_data['input_output_list'],
+            code: current_pg_code,
+
+            lecture_question: next_problem_set_data['lecture_question'],
+            test_case_list: next_problem_set_data['test_case_list'],
+            
+            // submission history
+            all_test_cases_passed: null,
+            program_output_result: [],
+            ai_tutor_feedback: null,
+            user_code_submission_history_objects: [],
+
+            next_lecture_number: next_problem_set_data['next_lecture_number'],
+            next_question_object_id: next_problem_set_data['next_question_object_id'],
+
+            problem_set_object_id: state.problem_set_object_id,
+            problem_set_question: true,
+            problem_set_current_part: next_problem_set_data['problem_set_current_part'],
+            problem_set_next_part: next_problem_set_data['problem_set_next_part'],
+            problem_set_question_list: problem_set_question_list
+        });
+        
+    };
+
+    // TODO: finalize problem set
+
+    const _handleProblemSetLastPartClick = async () => {
+        // TODO: in this case, only update the question and related, not the code
+
+        const problem_set_question_list = state.problem_set_question_list;
+        console.log('ps-question-list:', problem_set_question_list);
+        
+        const last_ps_part = state.problem_set_current_part - 1;
+        const last_problem_set_data = problem_set_question_list[last_ps_part];
+        console.log('last_problem_set_data:', last_problem_set_data);
+
+        const current_pg_code = currentProblemState.code;
+
+        // Update View
+        dispatch({
+            type: "SET_PROBLEM_SET_PLAYGROUND_STATE",
+
+            question_id: last_problem_set_data['question_id'],
+            name: last_problem_set_data['name'],
+            question: last_problem_set_data['question'],
+            input_output_list: last_problem_set_data['input_output_list'],
+            code: current_pg_code,
+
+            lecture_question: last_problem_set_data['lecture_question'],
+            test_case_list: last_problem_set_data['test_case_list'],
+            
+            // submission history
+            all_test_cases_passed: null,
+            program_output_result: [],
+            ai_tutor_feedback: null,
+            user_code_submission_history_objects: [],
+
+            next_lecture_number: last_problem_set_data['next_lecture_number'],
+            next_question_object_id: last_problem_set_data['next_question_object_id'],
+
+            problem_set_question: true,
+            problem_set_current_part: last_problem_set_data['problem_set_current_part'],
+            problem_set_next_part: last_problem_set_data['problem_set_next_part'],
+            problem_set_question_list: problem_set_question_list
+        });
+    }
+
+
     return (
 
         <MathJaxContext>
@@ -442,26 +538,67 @@ const ProblemLayout = ({ setActiveTab }) => {
                             />
 
                         ):(
+                            (state.problem_set_question === true) ? (
 
-                            <>
-                                <h1 className="font-semibold text-[17px] mr-2">
-                                    Question: {questionName}
-                                </h1>
+                                <>
+                                    <h1 className="font-semibold text-[17px] mr-2">
+                                        Question: {questionName}
+                                    </h1>
 
-                                {(state['lecture_question'] !== true) && (
-                                    <div className="flex space-x-4 mr-4">
-                                        <span 
-                                            className="text-[12px] text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-400 dark:hover:text-blue-400"
-                                            onClick={(e) => _handleEditQuestion(e)}
-                                        >
-                                            <FontAwesomeIcon icon={faPencil} className="pr-1"/> 
-                                            edit question
-                                        </span>
+                                    {(state.problem_set_current_part > 0) && <span
+                                        className="text-[13px] text-gray-700 hover:text-blue-400 cursor-pointer"
+                                        onClick={_handleProblemSetLastPartClick}
+                                    >
+                                        <FontAwesomeIcon icon={faArrowLeft} className="pl-1"/> Last Part
+                                    </span>}
 
-                                    </div>
-                                )}
+                                    {state.problem_set_next_part && <span
+                                        className="text-[13px] text-gray-700 hover:text-blue-400 cursor-pointer pr-4"
+                                        onClick={_handleProblemSetNextPartClick}
+                                    >
+                                        Next Part <FontAwesomeIcon icon={faArrowRight} className="pl-1"/>
+                                    </span>}
+                                    
+
+                                    {(state['lecture_question'] !== true) && (
+                                        <div className="flex space-x-4 mr-4">
+                                            <span 
+                                                className="text-[12px] text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-400 dark:hover:text-blue-400"
+                                                onClick={(e) => _handleEditQuestion(e)}
+                                            >
+                                                <FontAwesomeIcon icon={faPencil} className="pr-1"/> 
+                                                edit question
+                                            </span>
+
+                                        </div>
+                                    )}
+                                
+                                </>
+
+                            ) : (
+
+                                <>
+                                    <h1 className="font-semibold text-[17px] mr-2">
+                                        Question: {questionName}
+                                    </h1>
+
+                                    {(state['lecture_question'] !== true) && (
+                                        <div className="flex space-x-4 mr-4">
+                                            <span 
+                                                className="text-[12px] text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-400 dark:hover:text-blue-400"
+                                                onClick={(e) => _handleEditQuestion(e)}
+                                            >
+                                                <FontAwesomeIcon icon={faPencil} className="pr-1"/> 
+                                                edit question
+                                            </span>
+
+                                        </div>
+                                    )}
+                                
+                                </>
+
+                            )
                             
-                            </>
 
                         )}
                       

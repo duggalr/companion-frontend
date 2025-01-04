@@ -22,6 +22,13 @@ export interface PlaygroundState {
 
     next_lecture_number: number | null;
     next_question_object_id: string | null;
+
+    // TODO: Problem Set Related
+    problem_set_object_id: string | null,
+    problem_set_question: boolean | null;
+    problem_set_current_part: number | null;
+    problem_set_next_part: number | null;
+    problem_set_question_list: { [key: string]: any } | null;
 };
 
 export type PlaygroundAction =
@@ -33,5 +40,3 @@ export interface SubmissionState {
     ai_tutor_feedback: string | null;
     output_list: any;
 };
-
-// TODO: start here with implementing Pset-1

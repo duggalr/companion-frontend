@@ -6,6 +6,7 @@ import { getFromLocalStorage, saveToLocalStorage } from "@/lib/utils/localStorag
 import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomInitialPlaygroundQuestion';
 import { fetchQuestionData } from '@/lib/backend_api/fetchQuestionData';
 import { fetchLessonQuestionData } from '@/lib/backend_api/fetchLessonQuestionData';
+import { fetchProblemSetData } from '@/lib/backend_api/fetchProblemSetData';
 // import handleRandomQuestionSet from "@/lib/utils/handleRandomQuestionSet";
 // import handleRandomQuestionFetchAndSet from "@/lib/utils/handleRandomQuestionSet";
 import handleRandomQuestionFetchAndSet from "@/lib/utils/handleRandomQuestionFetchAndSet";
@@ -39,7 +40,14 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
         user_code_submission_history_objects: [],
 
         next_lecture_number: null,
-        next_question_object_id: null
+        next_question_object_id: null,
+
+        // problem set
+        problem_set_object_id: null,
+        problem_set_question: null,
+        problem_set_current_part: null,
+        problem_set_next_part: null,
+        problem_set_question_list: {}
     };
 
     const [state, dispatch] = useReducer(playgroundReducer, initialState);
@@ -106,7 +114,6 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
     }
 
-    // TODO:
     const _setLessonQuestionData = async (lesson_qid: string) => {
 
         let question_data_response = await fetchLessonQuestionData(
@@ -156,20 +163,76 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
     }
 
+    const _setProblemSetQuestionData = async (problem_set_object_id: string) => {
+
+        // TODO: 
+        let ps_data_response = await fetchProblemSetData(
+            problem_set_object_id,
+            userAccessToken
+        );
+
+        console.log('ps-data:', ps_data_response);
+        if (ps_data_response['success'] === true){
+
+            let current_problem_set_data = ps_data_response['current_question_state'];
+            
+            // TODO: finalize here
+
+            dispatch({
+                type: "SET_PROBLEM_SET_PLAYGROUND_STATE",
+
+                question_id: current_problem_set_data['question_id'],
+                name: current_problem_set_data['name'],
+                question: current_problem_set_data['question'],
+                input_output_list: current_problem_set_data['input_output_list'],
+                code: current_problem_set_data['code'],
+                
+                lecture_question: current_problem_set_data['lecture_question'],
+                test_case_list: current_problem_set_data['test_case_list'],
+                
+                // submission history
+                all_test_cases_passed: null,
+                program_output_result: [],
+                ai_tutor_feedback: null,
+                user_code_submission_history_objects: [],
+
+                next_lecture_number: current_problem_set_data['next_lecture_number'],
+                next_question_object_id: current_problem_set_data['next_question_object_id'],
+            
+                problem_set_object_id: problem_set_object_id,
+                problem_set_question: true,
+                problem_set_current_part: current_problem_set_data['problem_set_current_part'],
+                problem_set_next_part: current_problem_set_data['problem_set_next_part'],
+                problem_set_question_list: ps_data_response['data']
+            });
+
+        }
+
+    }
+
     // Load data from localStorage on initial load
     useEffect(() => {
 
         // let pg_obj_id = searchParams['pid'];
         const url_search_params = new URLSearchParams(window.location.search);
+    
+        const problem_set_object_id = url_search_params.get('psid');
         const lesson_question_object_id = url_search_params.get('lesson_quid');
         const question_object_id = url_search_params.get('qid');
-    
-        if (lesson_question_object_id){
+
+        if (problem_set_object_id){
+
+            _setProblemSetQuestionData(
+                problem_set_object_id
+            );
+
+        } else if (lesson_question_object_id){
 
             // TODO: fetch_lesson_question_data
             _setLessonQuestionData(lesson_question_object_id);
 
-        } else {
+        }
+        else {
 
             if (isAuthenticated) {
                 

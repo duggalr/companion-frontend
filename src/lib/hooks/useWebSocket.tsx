@@ -161,6 +161,11 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
         if (isAuthenticated) {
 
+            // TODO:
+                // will only occur in authenticated case
+                // set problem set == true and pass the problem set object id 
+                // save from there and adjust fetch accordingly
+
             const user_current_code = state.code;
             const messageForBackend = {
                 parent_question_object_id: qid,
@@ -172,11 +177,13 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 lecture_question: state.lecture_question,
                 sender: 'user',
                 type: 'user_message',
+
+                problem_set_question: true,
+                problem_set_object_id: state.problem_set_object_id
             };
 
             setMessages((messages) => [...messages, messageForBackend]);
             _sendMessage(messageForBackend);
-
         }
         else {
 
@@ -249,13 +256,14 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     }, [url]);
 
 
-    const _handleAuthenticatedChatMessageInitialization = async (question_object_id: string) => {
+    const _handleAuthenticatedChatMessageInitialization = async (question_object_id: string, problem_set_question: boolean) => {
 
         if (userAccessToken){
             const user_chat_msg_list = await fetchChatMessages(
                 userAccessToken,
                 question_object_id,
-                state.lecture_question
+                state.lecture_question,
+                problem_set_question
             );
 
             console.log('user_chat_msg_list:', user_chat_msg_list);
@@ -312,19 +320,33 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             // TODO:
                 // fetch messages for the question (qid)
             const url_search_params = new URLSearchParams(window.location.search);
+
+            const problem_set_object_id = url_search_params.get('psid');
             const lesson_question_object_id = url_search_params.get('lesson_quid');
             const question_object_id = url_search_params.get('qid');
 
-            if (lesson_question_object_id){
+            if (problem_set_object_id){
+
+                // TODO:
+                console.log('problem question id:', problem_set_object_id);
+                console.log('PROBLEM SET STATE - WEBSOCKET:', state);
+                _handleAuthenticatedChatMessageInitialization(
+                    problem_set_object_id,
+                    true
+                );
+
+            } else if (lesson_question_object_id){
 
                 console.log('lesson question id:', lesson_question_object_id);
                 _handleAuthenticatedChatMessageInitialization(
-                    lesson_question_object_id
+                    lesson_question_object_id,
+                    false
                 );
 
             } else if (question_object_id){
                 _handleAuthenticatedChatMessageInitialization(
-                    question_object_id
+                    question_object_id,
+                    false
                 );
             } else {
                 setMessages([{

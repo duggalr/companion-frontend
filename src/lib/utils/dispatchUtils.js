@@ -8,10 +8,17 @@ export const updateQuestionID = (dispatch, response_data, isAuthenticated, state
     });
 
     if (isAuthenticated) {
+
+        // TODO: 
         // Add Question ID to the URL if not already there
-        if (state.lecture_question !== true) {
-            addQIDParam(response_data['question_id']);
+        if (state.problem_set_question !== true && state.lecture_question !== true){
+            addQIDParam(response_data['question_id']);   
         }
+
+        // if (state.lecture_question !== true) {
+        //     addQIDParam(response_data['question_id']);
+        // }
+
     } else {
         // Update state dict in localStorage
         const new_state_dict = {

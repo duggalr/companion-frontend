@@ -147,7 +147,77 @@ const RightTabLayout = () => {
                         </li>
                     </ul>
                     
+
+                    {/* TODO: */}
+                    {/* Defining Problem Layout and Data based on question type */}
                     {
+                        state.problem_set_question === true ? (
+
+                            <div className="flex space-x-5 mt-1">
+                                <a
+                                    className="text-[11px] text-gray-600 dark:text-gray-500 cursor-pointer hover:text-gray-900 dark:hover:text-gray-300 pr-4"
+                                    href={`/course/introduction-to-programming/${state.next_lecture_number}`}
+                                >
+                                    <FontAwesomeIcon icon={faBook} className="pr-1"/>
+                                    Lecture Notes
+                                </a>
+
+                                {state.next_question_object_id && (
+                                    <a
+                                        className="text-[11px] text-gray-600 dark:text-gray-500 cursor-pointer hover:text-gray-900 dark:hover:text-gray-300 pl-0 pr-8"
+                                        href={`/playground?lesson_quid=${state.next_question_object_id}`}
+                                    >
+                                        Next Question
+                                        <FontAwesomeIcon icon={faArrowRight} className="pl-2"/>
+                                    </a>
+                                )}
+                            </div>
+
+                        ) : state.lecture_question === true ? (
+
+                            <div className="flex space-x-5 mt-1">
+                                <a
+                                    className="text-[11px] text-gray-600 dark:text-gray-500 cursor-pointer hover:text-gray-900 dark:hover:text-gray-300 pr-4"
+                                    href={`/course/introduction-to-programming/${state.next_lecture_number}`}
+                                >
+                                    <FontAwesomeIcon icon={faBook} className="pr-1"/>
+                                    Lecture Notes
+                                </a>
+
+                                {state.next_question_object_id && (
+                                    <a
+                                        className="text-[11px] text-gray-600 dark:text-gray-500 cursor-pointer hover:text-gray-900 dark:hover:text-gray-300 pl-0 pr-8"
+                                        href={`/playground?lesson_quid=${state.next_question_object_id}`}
+                                    >
+                                        Next Question
+                                        <FontAwesomeIcon icon={faArrowRight} className="pl-2"/>
+                                    </a>
+                                )}
+                            </div>
+
+                        ) : (
+
+                            <div className="flex space-x-5 mt-1">
+                                <span
+                                    className="text-[11px] text-gray-600 dark:text-gray-500 cursor-pointer hover:text-gray-900 dark:hover:text-gray-300"
+                                    onClick={_handleNewBlankQuestion}
+                                >
+                                    <FontAwesomeIcon icon={faPlus} className="pr-1"/>
+                                    New Blank Question
+                                </span>
+                                <span 
+                                    className="text-[11px] text-gray-600 dark:text-gray-500 cursor-pointer hover:text-gray-900 dark:hover:text-gray-300 pr-4"
+                                    onClick={_handleShuffleQuestion}
+                                >
+                                    <FontAwesomeIcon icon={faShuffle} className="pr-1"/>
+                                    Random Question
+                                </span>
+                            </div>
+
+                        )
+                    }
+
+                    {/* {
                         (state.lecture_question === true) ? (
 
                             <div className="flex space-x-5 mt-1">
@@ -191,7 +261,7 @@ const RightTabLayout = () => {
                             </div>
 
                         )
-                    }
+                    } */}
                     
                 </div>
             </div>

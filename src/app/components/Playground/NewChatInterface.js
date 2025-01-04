@@ -39,7 +39,6 @@ const NewChatInterface = () => {
     const [currentUserInputMessage, setCurrentUserInputMessage] = useState("");
     const [sendBtnEnabled, setSendBtnEnabled] = useState(false);
 
-
     const handleMessageSend = () => {
         // handleSendUserChatMessage();
         let current_user_msg = currentUserInputMessageRef.current;
@@ -126,7 +125,7 @@ const NewChatInterface = () => {
 
                 {/* Input area - textarea */}
                 <div className="flex items-center border-t border-gray-300 dark:border-gray-600 pt-2 mt-2">
-
+                    
                     <textarea
                         ref={inputValueRef}
                         value={currentUserInputMessage}
@@ -136,7 +135,7 @@ const NewChatInterface = () => {
                         placeholder="type a message..."
                         rows={1}
                         style={{ minHeight: '50px', maxHeight: '120px' }}
-                        disabled={isLoading}
+                        disabled={isLoading || !isAuthenticated}
                     />
 
                     <button

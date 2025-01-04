@@ -11,6 +11,7 @@ export type PlaygroundAction =
     | {type: "UPDATE_SUBMISSION_RESULTS"; all_test_cases_passed: boolean, program_output_result: [], ai_tutor_feedback: string, user_code_submission_history_objects: []}
     | {type: "UPDATE_QUESTION_ID"; question_id: string}
     | {type: "UPDATE_NEXT_LECTURE_NUMBER_AND_QUESTION"; next_lecture_number: number | null, next_question_object_id: string | null}
+    | {type: "SET_PROBLEM_SET_PLAYGROUND_STATE"; question_id: string | null, name: string, question: string, input_output_list: QuestionInputOutputPair[], code: string, lecture_question: boolean | null, test_case_list: TestCase | TestCase[] | [], all_test_cases_passed: boolean | null, program_output_result: [], ai_tutor_feedback: null, user_code_submission_history_objects: [], next_lecture_number: number | null, next_question_object_id: string | null, problem_set_object_id: string | null, problem_set_question: boolean | null, problem_set_current_part: number | null, problem_set_next_part: number | null, problem_set_question_list: { [key: string]: any } | null}
 
 // Reducer logic
 export const playgroundReducer = (state: PlaygroundState, action: PlaygroundAction): PlaygroundState => {
@@ -34,7 +35,12 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
                 user_code_submission_history_objects: action.user_code_submission_history_objects,
 
                 next_lecture_number: state.next_lecture_number,
-                next_question_object_id: state.next_question_object_id
+                next_question_object_id: state.next_question_object_id,
+
+                problem_set_question: state.problem_set_question,
+                problem_set_current_part: state.problem_set_current_part,
+                problem_set_next_part: state.problem_set_next_part,
+                problem_set_question_list: state.problem_set_question_list
             }
         }
 
@@ -88,6 +94,38 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
                 next_lecture_number: action.next_lecture_number,
                 next_question_object_id: action.next_question_object_id
             }
+        }
+
+        case "SET_PROBLEM_SET_PLAYGROUND_STATE": {
+            return {
+
+                question_id: action.question_id,
+                name: action.name,
+                question: action.question,
+                input_output_list: action.input_output_list,
+                code: action.code,
+                console_output: state.console_output,
+
+                lecture_question: action.lecture_question,
+
+                test_case_list: action.test_case_list,
+                all_test_cases_passed: action.all_test_cases_passed,
+                program_output_result: action.program_output_result,
+                ai_tutor_feedback: action.ai_tutor_feedback,
+
+                user_code_submission_history_objects: action.user_code_submission_history_objects,
+
+                next_lecture_number: action.next_lecture_number,
+                next_question_object_id: action.next_question_object_id,
+
+                problem_set_object_id: action.problem_set_object_id,
+                problem_set_question: action.problem_set_question,
+                problem_set_current_part: action.problem_set_current_part,
+                problem_set_next_part: action.problem_set_next_part,
+                problem_set_question_list: action.problem_set_question_list
+
+            }
+
         }
 
     }
