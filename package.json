@@ -24,6 +24,7 @@
     "date-fns": "^4.1.0",
     "framer-motion": "^11.15.0",
     "lucide-react": "^0.453.0",
+    "marked": "^15.0.5",
     "mathjax-full": "^3.2.2",
     "motion": "^11.15.0",
     "next": "14.2.15",

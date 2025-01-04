@@ -370,7 +370,7 @@ const SubmissionLayout = () => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="3" className="text-center p-3">
+                                <td colSpan="3" className="p-3">
                                     No submissions have been made.
                                 </td>
                             </tr>

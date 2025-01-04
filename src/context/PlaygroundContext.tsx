@@ -175,7 +175,9 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
         if (ps_data_response['success'] === true){
 
             let current_problem_set_data = ps_data_response['current_question_state'];
+
             console.log('current_problem_set_test_case_list:', current_problem_set_data['test_case_list']);
+            console.log('current-input-output-list:', current_problem_set_data['input_output_list']);
 
             // TODO: finalize here
 
@@ -186,6 +188,7 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
                 name: current_problem_set_data['name'],
                 question: current_problem_set_data['question'],
                 input_output_list: current_problem_set_data['input_output_list'],
+
                 code: current_problem_set_data['code'],
                 
                 lecture_question: current_problem_set_data['lecture_question'],
@@ -195,7 +198,7 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
                 all_test_cases_passed: null,
                 program_output_result: [],
                 ai_tutor_feedback: null,
-                user_code_submission_history_objects: [],
+                user_code_submission_history_objects: current_problem_set_data['user_code_submission_history_objects'],
 
                 next_lecture_number: current_problem_set_data['next_lecture_number'],
                 next_question_object_id: current_problem_set_data['next_question_object_id'],

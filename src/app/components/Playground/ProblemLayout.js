@@ -13,6 +13,8 @@ import addQIDParam from '@/lib/utils/addQidParam';
 import { handleSaveUserCode } from "@/lib/utils/handleSaveUserCode";
 import handleAndSetSolutionSubmission from "@/lib/utils/handleAndSetSolutionSubmission";
 
+import { marked } from 'marked';
+
 
 const ProblemLayout = ({ setActiveTab }) => {
 
@@ -33,7 +35,8 @@ const ProblemLayout = ({ setActiveTab }) => {
 
     useEffect(() => {
         setQuestionName(currentProblemState.name);
-        setQuestionText(currentProblemState.question);
+        const marked_question = marked(currentProblemState.question);
+        setQuestionText(marked_question);
         setCurrentProblemIOList(currentProblemState.input_output_list);
     }, [currentProblemState])
 
@@ -289,7 +292,7 @@ const ProblemLayout = ({ setActiveTab }) => {
             all_test_cases_passed: null,
             program_output_result: [],
             ai_tutor_feedback: null,
-            user_code_submission_history_objects: [],
+            user_code_submission_history_objects: next_problem_set_data['user_code_submission_history_objects'],
 
             next_lecture_number: next_problem_set_data['next_lecture_number'],
             next_question_object_id: next_problem_set_data['next_question_object_id'],
@@ -329,12 +332,12 @@ const ProblemLayout = ({ setActiveTab }) => {
 
             lecture_question: last_problem_set_data['lecture_question'],
             test_case_list: last_problem_set_data['test_case_list'],
-            
+
             // submission history
             all_test_cases_passed: null,
             program_output_result: [],
             ai_tutor_feedback: null,
-            user_code_submission_history_objects: [],
+            user_code_submission_history_objects: last_problem_set_data['user_code_submission_history_objects'],
 
             next_lecture_number: last_problem_set_data['next_lecture_number'],
             next_question_object_id: last_problem_set_data['next_question_object_id'],
@@ -563,14 +566,14 @@ const ProblemLayout = ({ setActiveTab }) => {
                                     <div className="ml-4">
                                         {(state.problem_set_current_part > 0) && (
                                             <span
-                                                className="text-[12px] text-blue-500 hover:text-blue-400 cursor-pointer"
+                                                className="text-[12px] text-blue-500 hover:text-blue-400 cursor-pointer pr-3"
                                                 onClick={_handleProblemSetLastPartClick}
                                             >
                                                 <FontAwesomeIcon icon={faArrowLeft} className="pr-1" /> Last Part
                                             </span>
                                         )}
 
-                                        <span className="px-4"></span>
+                                        <span className="px-0"></span>
                                         {state.problem_set_next_part && (
                                             <span
                                                 className="text-[12px] text-blue-500 hover:text-blue-400 cursor-pointer"
@@ -659,8 +662,11 @@ const ProblemLayout = ({ setActiveTab }) => {
                         
                     ) : (
                         
-                        <p className="px-1 pt-2 leading-7 text-[14px] text-gray-900 dark:text-gray-300">
-                            {questionText}
+                        <p 
+                            className="px-1 pt-2 leading-7 text-[14px] text-gray-900 dark:text-gray-300"
+                            dangerouslySetInnerHTML={{ __html: questionText }}
+                        >
+                            {/* {questionText} */}
                         </p>
 
                     )}
