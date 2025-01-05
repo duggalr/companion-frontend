@@ -19,72 +19,66 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
     const _handleFetchDashboardData = async () => {
         setDashboardDataLoading(true);
 
-        let dashboard_data = await fetchDashboardData(accessToken);
-        console.log('dashboard_data:', dashboard_data)
-        
-        if (dashboard_data['success'] === true){
+        const current_user_id = await getFromLocalStorage('user_id');
 
+        // TODO:
+        let dashboard_data = await fetchDashboardData(
+            accessToken,
+            current_user_id
+        );
+        console.log('DASHBOARD DATA:', dashboard_data);
+
+        if (dashboard_data['success'] === true){
             // Set Course Lecture data
             setCourseLectureList(dashboard_data.lecture_objects_list);
 
             // Set Dashboard Data
-            setDashboardDataList(dashboard_data.playground_object_list);            
+            setDashboardDataList(dashboard_data.playground_object_list);
 
             // Initialize file names
             setFileNames(dashboard_data.playground_object_list.map(item => item.code_file_name));
-
         }
-
-        // if (dashboard_data?.playground_object_list?.length > 0) {
-        //     // Set Dashboard Data
-        //     setDashboardDataList(dashboard_data.playground_object_list);
-
-        //     // Initialize file names
-        //     setFileNames(dashboard_data.playground_object_list.map(item => item.code_file_name));
-
-        //     // Set Course Lecture data
-        //     setCourseLectureList(dashboard_data.lecture_objects_list);
-
-        // } else {
-        //     console.warn("No dashboard data available or failed to fetch data");
-        // }
-
         setDashboardDataLoading(false);
+
+
+        // // let dashboard_data = await fetchDashboardData(accessToken);
+        // // console.log('dashboard_data:', dashboard_data)
+        
+        // // if (dashboard_data['success'] === true){
+
+        // //     // Set Course Lecture data
+        // //     setCourseLectureList(dashboard_data.lecture_objects_list);
+
+        // //     // Set Dashboard Data
+        // //     setDashboardDataList(dashboard_data.playground_object_list);            
+
+        // //     // Initialize file names
+        // //     setFileNames(dashboard_data.playground_object_list.map(item => item.code_file_name));
+
+        // // }
+
     };
 
 
-    const _handleFetchCourseData = async () => {
+    // const _handleFetchCourseData = async () => {
+    //     setDashboardDataLoading(true);
 
-        setDashboardDataLoading(true);
+    //     // let dashboard_data = await fetchDashboardData(accessToken);
+    //     // console.log('dashboard_data:', dashboard_data)
 
-        // let dashboard_data = await fetchDashboardData(accessToken);
-        // console.log('dashboard_data:', dashboard_data)
+    //     let current_anon_user_id = getFromLocalStorage("user_id");
 
-        let current_anon_user_id = getFromLocalStorage("user_id");
+    //     let course_data_response = await fetchDashboardCourseHomeData(
+    //         current_anon_user_id,
+    //         accessToken
+    //     );
+    //     console.log('course-data:', course_data_response);
 
-        let course_data_response = await fetchDashboardCourseHomeData(
-            current_anon_user_id,
-            accessToken
-        );
-        console.log('course-data:', course_data_response);
-
-        if (course_data_response['success'] === true){
-
-            let data = course_data_response['lecture_objects_list'];
-            setCourseLectureList(data);
-
-        }
-
-    }
-
-    useEffect(() => {
-        if (accessToken && userAuthenticated === true) {
-            _handleFetchDashboardData();
-        } else {
-            // TODO:
-            _handleFetchCourseData();
-        }
-    }, [accessToken, userAuthenticated]);
+    //     if (course_data_response['success'] === true){
+    //         let data = course_data_response['lecture_objects_list'];
+    //         setCourseLectureList(data);
+    //     }
+    // };
 
     // const handleRename = (index) => {
     //     setEditingIndex(index);
@@ -111,7 +105,6 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
         changePGCodeName(accessToken, payload);
     };
 
-
     // // const [activeTab, setActiveTab] = useState("tab1");
 
     // const MIT_COURSE_OUTLINE = [
@@ -124,11 +117,23 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
     // ]
 
     const [activeTab, setActiveTab] = useState("course");
-    console.log('activeTab', activeTab)
 
     const _handleActiveTabClick = async (val) => {
         setActiveTab(val);
     };
+
+    useEffect(() => {
+        // TODO:
+        _handleFetchDashboardData();
+
+        // if (accessToken && userAuthenticated === true) {
+        //     _handleFetchDashboardData();
+        // } else {
+        //     // TODO:
+        //     _handleFetchCourseData();
+        // }
+    }, [accessToken, userAuthenticated]);
+
 
     return (
 
@@ -151,13 +156,26 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                             ><FontAwesomeIcon icon={faBook} className="pr-1"/> MIT 6.100L Course</span>
                         </li>
 
-                        <li className="me-2">
-                            <span
-                            // className="inline-block p-4 pb-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 active"
-                            className={`inline-block p-4 pb-2 border-b-2 rounded-t-lg hover:text-blue-600 hover:border-blue-500 dark:hover:text-blue-500 cursor-pointer ${(activeTab === 'code_files') ? 'border-blue-500 border-bold active font-semibold' : 'border-transparent'}`}
-                            onClick={() => _handleActiveTabClick("code_files")}
-                            ><FontAwesomeIcon icon={faLaptopCode} className="pr-1"/>Your Playground Code Files</span>
-                        </li>
+                        {userAuthenticated ? (
+
+                            <li className="me-2">
+                                <span
+                                // className="inline-block p-4 pb-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 active"
+                                className={`inline-block p-4 pb-2 border-b-2 rounded-t-lg hover:text-blue-600 hover:border-blue-500 dark:hover:text-blue-500 cursor-pointer ${(activeTab === 'code_files') ? 'border-blue-500 border-bold active font-semibold' : 'border-transparent'}`}
+                                onClick={() => _handleActiveTabClick("code_files")}
+                                ><FontAwesomeIcon icon={faLaptopCode} className="pr-1"/>Your Playground Code Files</span>
+                            </li>
+
+                        ) : (
+
+                            <li className="me-2">
+                                <span
+                                className="inline-block p-4 pb-2 border-b-2 border-transparent rounded-t-lg text-gray-400 border-gray-300 cursor-not-allowed"
+                                // className={`inline-block p-4 pb-2 border-b-2 rounded-t-lg hover:text-blue-600 hover:border-blue-500 dark:hover:text-blue-500 cursor-pointer border-transparent}`}
+                                ><FontAwesomeIcon icon={faLaptopCode} className="pr-1"/>Your Playground Code Files</span>
+                            </li>
+
+                        )}
 
                     </ul>
 
@@ -166,7 +184,7 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                 {activeTab === 'course' ? (
                     <div className="pt-2">
                         <span className="text-gray-500 text-[12.5px]">
-                            You can also view the course on <a 
+                            You can also view the course materials on <a 
                                 href="https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/"
                                 className='text-blue-600 dark:text-blue-500 hover:underline cursor-pointer'
                                 target="_blank"
@@ -219,6 +237,85 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                                     <p className="mb-4 pt-1 text-[15px] font-normal text-gray-500 dark:text-gray-400">
                                         {item.description}
                                     </p>
+
+                                    {/* Lecture Exercises */}
+
+                                    <ol className="relative border-s border-gray-200 dark:border-gray-700">
+
+                                        {item.lecture_exercise_list.map((exercise_item) => (
+
+                                            <li
+                                                className="mb-4 ms-4"
+                                                key={exercise_item.id}
+                                            >
+                                                {(exercise_item.complete === true) ? (
+
+                                                    <div className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700">
+                                                        <svg className="w-3.5 h-3.5 me-2 text-green-500 dark:text-green-400 flex-shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+                                                        </svg>
+                                                    </div>
+
+                                                ): (
+                                                    
+                                                    <div className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+
+                                                )}
+                                                
+                                                <a 
+                                                    href={`/playground?lesson_quid=${item.id}`}
+                                                    className="cursor-pointer"
+                                                >
+                                                    <h3
+                                                        className="inline text-base font-normal text-blue-400 hover:text-blue-600"
+                                                    >
+                                                        Lecture Exercise: {item.name}
+                                                    </h3>
+                                                </a>
+
+                                            </li>
+
+                                        ))}
+
+
+                                        {Object.keys(item.problem_set_dict).length > 0 && (
+
+                                            <li
+                                                className="mb-4 ms-4"
+                                                key={item.problem_set_dict.id}
+                                            >
+                                                {(item.problem_set_dict.complete === true) ? (
+
+                                                    <div className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700">
+                                                        <svg className="w-3.5 h-3.5 me-2 text-green-500 dark:text-green-400 flex-shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+                                                        </svg>
+                                                    </div>
+
+                                                ): (
+                                                    
+                                                    <div className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+
+                                                )}
+                                                
+                                                <a 
+                                                    href={`/playground?psid=${item.problem_set_dict.id}`}
+                                                    className="cursor-pointer"
+                                                >
+                                                    <h3
+                                                        className="inline text-base font-normal text-blue-400 hover:text-blue-400"
+                                                    >
+                                                        {item.problem_set_dict.name}
+                                                    </h3>
+                                                </a>
+
+                                            </li>
+
+                                        )}
+                                        
+                                        
+                                    </ol>
+
                                 </li>
                             ))}
                         </ol>
