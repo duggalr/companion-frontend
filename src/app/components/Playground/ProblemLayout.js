@@ -661,9 +661,10 @@ const ProblemLayout = ({ setActiveTab }) => {
                         </div>
                         
                     ) : (
-                        
+
                         <p 
-                            className="px-1 pt-2 leading-7 text-[14px] text-gray-900 dark:text-gray-300"
+                            // className="px-1 pt-2 leading-7 text-[14px] text-gray-900 dark:text-gray-300"
+                            className="px-1 pt-2 leading-7 text-[14px] text-gray-900 dark:text-gray-300 break-words whitespace-normal w-full max-w-[700px] overflow-x-auto"
                             dangerouslySetInnerHTML={{ __html: questionText }}
                         >
                             {/* {questionText} */}
