@@ -238,8 +238,7 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                                         {item.description}
                                     </p>
 
-                                    {/* Lecture Exercises */}
-
+                                    {/* Lecture Exercises and Problem Set */}
                                     <ol className="relative border-s border-gray-200 dark:border-gray-700">
 
                                         {item.lecture_exercise_list.map((exercise_item) => (
@@ -263,11 +262,11 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                                                 )}
                                                 
                                                 <a 
-                                                    href={`/playground?lesson_quid=${item.id}`}
+                                                    href={`/playground?lesson_quid=${exercise_item.id}`}
                                                     className="cursor-pointer"
                                                 >
                                                     <h3
-                                                        className="inline text-base font-normal text-blue-400 hover:text-blue-600"
+                                                        className="inline text-base font-normal text-blue-500 hover:text-blue-600 dark:text-blue-400 hover:dark:text-blue-500"
                                                     >
                                                         Lecture Exercise: {item.name}
                                                     </h3>
@@ -277,7 +276,7 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
 
                                         ))}
 
-
+                                        {/* Problem Set  */}
                                         {Object.keys(item.problem_set_dict).length > 0 && (
 
                                             <li
@@ -298,16 +297,32 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
 
                                                 )}
                                                 
-                                                <a 
-                                                    href={`/playground?psid=${item.problem_set_dict.id}`}
-                                                    className="cursor-pointer"
-                                                >
-                                                    <h3
-                                                        className="inline text-base font-normal text-blue-400 hover:text-blue-400"
+                                                {(item.problem_set_dict.implementation_in_progress === true) ? (
+
+                                                    <a
+                                                        className="cursor-not-allowed"
                                                     >
-                                                        {item.problem_set_dict.name}
-                                                    </h3>
-                                                </a>
+                                                        <h3
+                                                            className={`inline text-base font-normal text-gray-300 disabled}`}
+                                                        >
+                                                            {item.problem_set_dict.name} (being added soon...)
+                                                        </h3>
+                                                    </a>
+
+                                                ) : (
+
+                                                    <a
+                                                        href={`/playground?psid=${item.problem_set_dict.id}`}
+                                                        className="cursor-pointer"
+                                                    >
+                                                        <h3
+                                                            className={`inline text-base font-normal text-blue-500 hover:text-blue-600 dark:text-blue-400 hover:dark:text-blue-500 hover:underline'}`}
+                                                        >
+                                                            {item.problem_set_dict.name}
+                                                        </h3>
+                                                    </a>
+
+                                                )}
 
                                             </li>
 

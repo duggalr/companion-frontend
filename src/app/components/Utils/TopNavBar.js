@@ -60,6 +60,7 @@ export default function TopNavBar ({ }) {
         <ul
             className="flex text-sm font-medium text-center border-b-2 border-gray-300 bg-[#F3F4F6] dark:bg-gray-900 dark:text-gray-300"
         >
+
             <li>
                 <a
                 href={`${process.env.NEXT_PUBLIC_ROOT_URL}`}
@@ -71,7 +72,7 @@ export default function TopNavBar ({ }) {
                 </a>
             </li>
 
-            <div className="ml-auto lg:flex items-center space-x-8 hidden">
+            <div className="ml-auto lg:flex items-center space-x-4 hidden">
 
                 {/* {(!isAuthenticated) && ( */}
                 {showLoginSpan === 2 ? (
@@ -112,7 +113,7 @@ export default function TopNavBar ({ }) {
 
                 {isAuthenticated ? (
                     <div className="flex items-center space-x-4">
-                        
+
                         <div className="relative w-8 h-8">
                             <div
                             className="absolute inset-0 rounded-full border-2 border-gray-200"
@@ -150,14 +151,6 @@ export default function TopNavBar ({ }) {
                     </li>
                 ): (
                     <li>
-                        {/* <a
-                        href="/"
-                        className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-0"
-                        >
-                            <FontAwesomeIcon icon={faHome} className="text-gray-700 pr-2 dark:text-white w-4 h-4" />
-                            Home
-                        </a> */}
-
                         <a
                             href="/dashboard"
                             className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-0"

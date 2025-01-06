@@ -5,7 +5,7 @@ import { faVideo, faNoteSticky } from "@fortawesome/free-solid-svg-icons";
 import HeroVideoDialog from "@/components/ui/hero-video-dialog";
 
 
-export default function LectureHomePage({ lecture_number, lectureData, lectureExerciseData }) {
+export default function LectureHomePage({ lecture_number, lectureData, lectureExerciseData, problemSetData }) {
 
     const MIN_LECTURE_NUMBER = 1;
     const MAX_LECTURE_NUMBER = 20;
@@ -111,7 +111,7 @@ export default function LectureHomePage({ lecture_number, lectureData, lectureEx
             {/* )} */}
 
             {lecture_number > MIN_LECTURE_NUMBER && (
-                <div className="absolute right-20 pr-[265px]">
+                <div className="absolute right-28 pr-[265px]">
                     <a
                         // onClick={(e) => {
                         //     e.preventDefault();
@@ -120,7 +120,7 @@ export default function LectureHomePage({ lecture_number, lectureData, lectureEx
                         className="cursor-pointer font-normal text-blue-600 dark:text-blue-400 hover:underline text-[14px]"
                         href={`/course/introduction-to-programming/${parseInt(lecture_number)-1}`}
                     >
-                        {"<- "}Back
+                        {"<- "}Previous Lecture
                     </a>
                 </div>
             )}
@@ -135,7 +135,7 @@ export default function LectureHomePage({ lecture_number, lectureData, lectureEx
                         className="cursor-pointer font-normal text-blue-600 dark:text-blue-400 hover:underline text-[14px]"
                         href={`/course/introduction-to-programming/${parseInt(lecture_number)+1}`}
                     >
-                        Next{" ->"}
+                        Next Lecture{" ->"}
                     </a>
                 </div>
             )}
@@ -275,6 +275,18 @@ export default function LectureHomePage({ lecture_number, lectureData, lectureEx
                                     </a>
                                 </li> */}
 
+                                {problemSetData && (
+
+                                    <li className="text-[15px] list-disc" key={problemSetData.id}>
+                                        <a
+                                        href={problemSetData.implementation_in_progress ? null : `/playground?psid=${problemSetData.id}`}
+                                        className={`font-normal ${problemSetData.implementation_in_progress ? 'text-gray-300 cursor-not-allowed' : 'text-blue-600 dark:text-blue-500 hover:underline'}`}
+                                        >
+                                        {problemSetData.ps_name}
+                                        </a>
+                                    </li>
+
+                                )}
                             </ul>
 
                         </div>

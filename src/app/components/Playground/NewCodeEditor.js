@@ -102,27 +102,39 @@ const NewCodeEditor = () => {
 
     const _handleSaveUserCodeRequest = async () => {
 
-        let payload = {
-            'question_id': state.question_id,
-            'question_name': state.name,
-            'question_text': state.question,
-            'example_input_output_list': state.input_output_list,
-            'lecture_question': state.lecture_question,
-            'code': codeRef.current,
-            'user_id': null
-        };
+        if (state.lecture_question === true && !isAuthenticated){
+            
+            console.log('Not saving in this case...')
 
-        const saveCodeResponse = await handleSaveUserCode(
-            payload,
-            dispatch, 
-            isAuthenticated,
-            userAccessToken,
-            state
-        );
+        }
+        else {
 
-        if ('error' in saveCodeResponse){
-            console.log('Could not save user code...');
-        };
+            showTemporaryAlert();
+
+            let payload = {
+                'question_id': state.question_id,
+                'question_name': state.name,
+                'question_text': state.question,
+                'example_input_output_list': state.input_output_list,
+                'lecture_question': state.lecture_question,
+                'code': codeRef.current,
+                'user_id': null
+            };
+            console.log('payload-SAVE:', payload);
+    
+            const saveCodeResponse = await handleSaveUserCode(
+                payload,
+                dispatch, 
+                isAuthenticated,
+                userAccessToken,
+                state
+            );
+    
+            if ('error' in saveCodeResponse){
+                console.log('Could not save user code...');
+            };
+
+        }
 
     }
 
@@ -133,12 +145,8 @@ const NewCodeEditor = () => {
             if ((event.metaKey || event.ctrlKey) && event.key === 's') {
                 event.preventDefault();
 
-                // _handleCodeStateChange(codeRef.current);
-                showTemporaryAlert();
-
                 // Save User Code and Update State
                 _handleSaveUserCodeRequest();
-                
             }
         };
 

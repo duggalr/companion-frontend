@@ -82,17 +82,39 @@ const NewChatInterface = () => {
             <div className="flex flex-col h-4/5 dark:bg-gray-900 p-4">
 
                 <div className="flex justify-between items-center">
-                    <span className="text-gray-500 dark:text-gray-400 text-xs pt-1 pl-1 pb-4 tracking-normal">
-                        {/* Get help in guiding your thinking through programming problems, with Companion, an AI Tutor. */}
+                    <span className="text-gray-500 dark:text-gray-400 text-xs pt-1 pl-1 pb-4 tracking-normal leading-5">
                         Get help on your programming problems with Companion, an AI Tutor.
-                        <br/>
+                        {!isAuthenticated && (
+                            <span>
+                                {" "}Make a {" "}
+                                <a
+                                    className='text-blue-600 dark:text-blue-500 hover:underline cursor-pointer'
+                                    href="/api/auth/login"
+                                >
+                                    free account
+                                </a> to work on and save different questions.
+                            </span>
+                        )}
                     </span>
+
                     {(messages.length > 1 && !isAuthenticated) && (
                         <button className="text-blue-500 text-xs" onClick={handleClearMessages}>
                             Clear text
                         </button>
                     )}
                 </div>
+
+                {/* {!isAuthenticated && (
+                    <span className="text-[11.5px] pt-0 mt-0 text-gray-500 dark:text-gray-500">
+                        Make a {" "}
+                        <a
+                            className='text-blue-600 dark:text-blue-500 hover:underline cursor-pointer'
+                            href="/api/auth/login"
+                        >
+                            free account
+                        </a> to work on and save different questions
+                    </span>
+                )} */}
 
                 {/* Messages Area */}
                 <div
