@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import useUserContext from "@/lib/hooks/useUserContext";
+import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
 import { useWebSocket } from "@/lib/hooks/useWebSocket";
 
 
@@ -11,6 +12,7 @@ const NewChatInterface = () => {
     const FASTAPI_WEBSOCKET_URL = process.env.NEXT_PUBLIC_CHAT_WEBSOCKET_URL;
 
     const {isAuthenticated} = useUserContext();
+    const { state, dispatch } = usePlaygroundContext();
 
     const {
         _handleUserMessageSend,
@@ -157,7 +159,8 @@ const NewChatInterface = () => {
                         placeholder="type a message..."
                         rows={1}
                         style={{ minHeight: '50px', maxHeight: '120px' }}
-                        disabled={isLoading || !isAuthenticated}
+                        disabled={isLoading || (!isAuthenticated && (state.lecture_question === true))}
+                        // TODO: fix this to only disabled if not authenticated and is lecture question
                     />
 
                     <button

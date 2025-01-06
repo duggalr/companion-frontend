@@ -27,7 +27,9 @@ const ProblemLayout = ({ setActiveTab }) => {
     const { state, dispatch } = usePlaygroundContext();
     const [editing, setEditing] = useState(false);
     const [questionName, setQuestionName] = useState("");
+
     const [questionText, setQuestionText] = useState("");
+    const [rawQuestionText, setRawQuestionText] = useState("");
     
     const [inputOutputLoading, setInputOutputLoading] = useState(false);
     const [currentProblemIOList, setCurrentProblemIOList] = useState([]);
@@ -37,6 +39,7 @@ const ProblemLayout = ({ setActiveTab }) => {
         setQuestionName(currentProblemState.name);
         const marked_question = marked(currentProblemState.question);
         setQuestionText(marked_question);
+        setRawQuestionText(currentProblemState.question);
         setCurrentProblemIOList(currentProblemState.input_output_list);
     }, [currentProblemState])
 
@@ -46,7 +49,8 @@ const ProblemLayout = ({ setActiveTab }) => {
     }
 
     const _handleQuestionValueChange = (e) => {
-        setQuestionText(e.target.value);
+        // setQuestionText(e.target.value);
+        setRawQuestionText(e.target.value);
     }
 
     const _handleQuestionNameChange = (e) => {
@@ -60,7 +64,8 @@ const ProblemLayout = ({ setActiveTab }) => {
         
         let current_question_id = currentProblemState.question_id;
         let current_q_name = questionName;
-        let current_q_text = questionText;
+        // let current_q_text = questionText;
+        let current_q_text = rawQuestionText;
     
         let current_anon_user_id = getFromLocalStorage("user_id");
         let update_user_question_response = await updateUserQuestion(
@@ -584,7 +589,7 @@ const ProblemLayout = ({ setActiveTab }) => {
                                         )}
                                     </div>
 
-                                    {(state['lecture_question'] !== true) && (
+                                    {/* {(state['lecture_question'] !== true) && (
                                         <div className="flex space-x-4 mr-4">
                                             <span 
                                                 className="text-[12px] text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-400 dark:hover:text-blue-400"
@@ -595,7 +600,7 @@ const ProblemLayout = ({ setActiveTab }) => {
                                             </span>
 
                                         </div>
-                                    )}
+                                    )} */}
                                 
                                 </>
 
@@ -607,7 +612,7 @@ const ProblemLayout = ({ setActiveTab }) => {
                                     </h1>
 
                                     {(state['lecture_question'] !== true) && (
-                                        <div className="flex space-x-4 mr-4">
+                                        <div className="flex space-x-4 mr-4 ml-2">
                                             <span 
                                                 className="text-[12px] text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-400 dark:hover:text-blue-400"
                                                 onClick={(e) => _handleEditQuestion(e)}
@@ -643,7 +648,7 @@ const ProblemLayout = ({ setActiveTab }) => {
 
                             <textarea
                                 // value={currentProblemState.question}
-                                value={questionText}
+                                value={rawQuestionText}
                                 className="mt-3 w-full text-[14px] flex-grow resize-y p-3 bg-gray-50 dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 mr-2"
                                 placeholder="enter your question..."
                                 rows={2}
