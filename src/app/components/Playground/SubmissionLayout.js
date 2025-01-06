@@ -85,7 +85,7 @@ const SubmissionLayout = () => {
 
             }
         }
-        
+
         setSelectedModalDataType(data_type);
         setSelectedModalData(modal_data_string);
         setIsModalOpen(true);
@@ -95,11 +95,6 @@ const SubmissionLayout = () => {
     const closeModal = () => {
         setIsModalOpen(false); // Hide the modal
     };
-
-    useEffect(() => {
-
-    }, []);
-
 
     if (currentProblemState.lecture_question !== true){
         return (
@@ -115,7 +110,23 @@ const SubmissionLayout = () => {
                 </p>
 
             </div>
-        )
+        );
+    }
+
+    if (testCaseList.length === 0){
+        return (
+            <div className="p-2 pl-4 pt-4">
+
+                <h1 className="font-semibold text-[17px] mr-2">
+                    Submissions
+                </h1>
+
+                <p className="pt-4 leading-7 text-[14px] text-gray-600 dark:text-gray-300">
+                    No test cases available for this question...
+                </p>
+
+            </div>
+        );
     }
 
     return (

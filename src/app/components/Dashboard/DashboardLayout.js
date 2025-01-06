@@ -392,7 +392,7 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
 
                             ) : (
 
-                                <h1>
+                                <h1 className="text-gray-700">
                                     No Personal Code Files Saved...
                                 </h1>
 
