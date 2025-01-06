@@ -151,7 +151,8 @@ const RightTabLayout = () => {
                     {/* TODO: */}
                     {/* Defining Problem Layout and Data based on question type */}
                     {
-                        state.problem_set_question === true ? (
+                        // state.problem_set_question === true ? (
+                        (state.lecture_question === true && state.next_question_object_type === "problem_set") ? (
 
                             <div className="flex space-x-5 mt-1">
                                 <a
@@ -165,7 +166,7 @@ const RightTabLayout = () => {
                                 {state.next_question_object_id && (
                                     <a
                                         className="text-[11px] text-gray-600 dark:text-gray-500 cursor-pointer hover:text-gray-900 dark:hover:text-gray-300 pl-0 pr-8"
-                                        href={`/playground?lesson_quid=${state.next_question_object_id}`}
+                                        href={`/playground?psid=${state.next_question_object_id}`}
                                     >
                                         Next Question
                                         <FontAwesomeIcon icon={faArrowRight} className="pl-2"/>

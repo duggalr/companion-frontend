@@ -41,6 +41,7 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
         next_lecture_number: null,
         next_question_object_id: null,
+        next_question_object_type: null,
 
         // problem set
         problem_set_object_id: null,
@@ -156,8 +157,11 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
             dispatch({
                 type: "UPDATE_NEXT_LECTURE_NUMBER_AND_QUESTION",
                 next_lecture_number: qdata['next_lecture_number'],
-                next_question_object_id: qdata['next_question_object_id']
+                next_question_object_id: qdata['next_question_object_id'],
+                next_question_object_type: qdata['next_question_object_type']
             });
+
+            // TODO: update next question state
 
         }
 
@@ -176,8 +180,9 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
             let current_problem_set_data = ps_data_response['current_question_state'];
 
-            console.log('current_problem_set_test_case_list:', current_problem_set_data['test_case_list']);
-            console.log('current-input-output-list:', current_problem_set_data['input_output_list']);
+            console.log('current-problem-set-data:', current_problem_set_data);
+            // console.log('current_problem_set_test_case_list:', current_problem_set_data['test_case_list']);
+            // console.log('current-input-output-list:', current_problem_set_data['input_output_list']);
 
             // TODO: finalize here
 
@@ -202,6 +207,7 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
                 next_lecture_number: current_problem_set_data['next_lecture_number'],
                 next_question_object_id: current_problem_set_data['next_question_object_id'],
+                next_question_object_type: current_problem_set_data['next_question_object_type'],
             
                 problem_set_object_id: problem_set_object_id,
                 problem_set_question: true,

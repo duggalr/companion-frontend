@@ -24,8 +24,6 @@ export default function TopNavBar ({ }) {
 
     const _handleLectureProgressFetch = async () => {
         
-        // TODO: fetch number of completed and not completed --> show progress in navbar
-
         let fetchProgressResponse = await fetchCourseProgress();
         console.log('fetchProgressResponse:', fetchProgressResponse);
         setCourseProgress(fetchProgressResponse);

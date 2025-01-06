@@ -22,6 +22,7 @@ export interface PlaygroundState {
 
     next_lecture_number: number | null;
     next_question_object_id: string | null;
+    next_question_object_type: string | null;
 
     // TODO: Problem Set Related
     problem_set_object_id: string | null,

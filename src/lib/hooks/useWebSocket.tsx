@@ -166,6 +166,8 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 // set problem set == true and pass the problem set object id 
                 // save from there and adjust fetch accordingly
 
+            console.log('STATE WEBSOCKET MESSAGE:', state);
+
             const user_current_code = state.code;
             const messageForBackend = {
                 parent_question_object_id: qid,
@@ -178,7 +180,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 sender: 'user',
                 type: 'user_message',
 
-                problem_set_question: true,
+                problem_set_question: state.problem_set_question,
                 problem_set_object_id: state.problem_set_object_id
             };
 
