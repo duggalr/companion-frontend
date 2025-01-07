@@ -16,6 +16,7 @@ export const getFromLocalStorage = (key) => {
             if (serializedValue === null) return null;
             return JSON.parse(serializedValue);
         } catch (e) {
+            console.error("Error parsing JSON from localStorage:", e);
             return serializedValue;  // Return original value if parsing fails
         }
     } catch (error) {

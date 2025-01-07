@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBook, faComments, faShuffle, faPlus, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faComments, faShuffle, faPlus, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { saveToLocalStorage, getFromLocalStorage, removeFromLocalStorage } from  '@/lib/utils/localStorageUtils';
 import useUserContext from "@/lib/hooks/useUserContext";
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
@@ -151,7 +151,6 @@ const RightTabLayout = () => {
                     {/* TODO: */}
                     {/* Defining Problem Layout and Data based on question type */}
                     {
-                        // state.problem_set_question === true ? (
                         (state.lecture_question === true && state.next_question_object_type === "problem_set") ? (
 
                             <div className="flex space-x-5 mt-1">

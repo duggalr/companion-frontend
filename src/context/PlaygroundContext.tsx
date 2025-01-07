@@ -2,13 +2,10 @@ import React, { createContext, useReducer, ReactNode, useEffect } from "react";
 import useUserContext from "@/lib/hooks/useUserContext";
 import { PlaygroundState } from "./types";
 import { playgroundReducer, PlaygroundAction } from "@/reducers/playgroundReducer";
-import { getFromLocalStorage, saveToLocalStorage } from "@/lib/utils/localStorageUtils";
-import { getRandomInitialPlaygroundQuestion } from '@/lib/backend_api/getRandomInitialPlaygroundQuestion';
+import { getFromLocalStorage } from "@/lib/utils/localStorageUtils";
 import { fetchQuestionData } from '@/lib/backend_api/fetchQuestionData';
 import { fetchLessonQuestionData } from '@/lib/backend_api/fetchLessonQuestionData';
 import { fetchProblemSetData } from '@/lib/backend_api/fetchProblemSetData';
-// import handleRandomQuestionSet from "@/lib/utils/handleRandomQuestionSet";
-// import handleRandomQuestionFetchAndSet from "@/lib/utils/handleRandomQuestionSet";
 import handleRandomQuestionFetchAndSet from "@/lib/utils/handleRandomQuestionFetchAndSet";
 import { updatePlaygroundState } from "@/lib/utils/dispatchUtils";
 
@@ -57,7 +54,7 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
     const _setRandomQuestion = async () => {
         
         const current_user_id = await getFromLocalStorage('user_id');
-        let random_question_set_response = await handleRandomQuestionFetchAndSet(
+        const random_question_set_response = await handleRandomQuestionFetchAndSet(
             current_user_id,
             userAccessToken,
             dispatch,
@@ -117,15 +114,13 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
 
     const _setLessonQuestionData = async (lesson_qid: string) => {
 
-        let question_data_response = await fetchLessonQuestionData(
+        const question_data_response = await fetchLessonQuestionData(
             lesson_qid,
             userAccessToken
         );
-        console.log('lesson-question-data:', question_data_response);
 
         if (question_data_response['success'] === true){
-            let qdata = question_data_response['data'];
-            console.log('q-data:', qdata);
+            const qdata = question_data_response['data'];
 
             let qid;
             if (isAuthenticated === true){
@@ -161,8 +156,6 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
                 next_question_object_type: qdata['next_question_object_type']
             });
 
-            // TODO: update next question state
-
         }
 
     }
@@ -170,7 +163,7 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
     const _setProblemSetQuestionData = async (problem_set_object_id: string) => {
 
         // TODO: 
-        let ps_data_response = await fetchProblemSetData(
+        const ps_data_response = await fetchProblemSetData(
             problem_set_object_id,
             userAccessToken
         );
@@ -178,13 +171,7 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
         console.log('ps-data:', ps_data_response);
         if (ps_data_response['success'] === true){
 
-            let current_problem_set_data = ps_data_response['current_question_state'];
-
-            console.log('current-problem-set-data:', current_problem_set_data);
-            // console.log('current_problem_set_test_case_list:', current_problem_set_data['test_case_list']);
-            // console.log('current-input-output-list:', current_problem_set_data['input_output_list']);
-
-            // TODO: finalize here
+            const current_problem_set_data = ps_data_response['current_question_state'];
 
             dispatch({
                 type: "SET_PROBLEM_SET_PLAYGROUND_STATE",

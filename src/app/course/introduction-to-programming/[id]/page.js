@@ -3,9 +3,7 @@ import React, { useEffect, useState } from 'react';
 import TopNavBar from '@/app/components/Utils/TopNavBar';
 import LectureHomePage from '@/app/components/Course/LectureHomePage';
 import useUserContext from "@/lib/hooks/useUserContext";
-import LoadingScreen from '@/app/components/ui/Loading';
 import { fetchLectureData } from '@/lib/backend_api/fetchLectureData';
-import { isNullOrUndefined } from 'util';
 
 
 export default function LectureHomeLayout ({ params }) {
@@ -32,9 +30,6 @@ export default function LectureHomeLayout ({ params }) {
             let lect_data = lecture_data_res['lecture_data'];
             let lect_exercise_data = lecture_data_res['exercise_data'];
             let problem_set_data = lecture_data_res['problem_set_data'];
-            console.log('lect_data', lect_data);
-            console.log('lect_exercise_data', lect_exercise_data);
-            console.log('problem_set_data', problem_set_data);
 
             setLectureData(lect_data);
             setLectureExerciseData(lect_exercise_data);
@@ -47,14 +42,7 @@ export default function LectureHomeLayout ({ params }) {
 
     // initial-load
     useEffect(() => {
-    
-        // if (userAccessToken) {
-        //     _handleLectureDataFetch();
-        // } else {            
-        // }
-
         _handleLectureDataFetch();
-
     }, [userAccessToken, isAuthenticated]);
 
 
@@ -67,8 +55,6 @@ export default function LectureHomeLayout ({ params }) {
         <main>
             <TopNavBar/>
             <LectureHomePage 
-                // accessToken={userAccessToken}
-                // userAuthenticated={isAuthenticated}
                 lecture_number={lecture_number}
                 lectureData={lectureData}
                 lectureExerciseData={lectureExerciseData}

@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Link from 'next/link';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faClock, faLaptopCode, faSchool, faBook, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faLaptopCode, faBook, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { fetchDashboardData } from "@/lib/backend_api/fetchDashboardData";
-import { fetchDashboardCourseHomeData } from "@/lib/backend_api/fetchDashboardCourseHomeData";
 import { getFromLocalStorage } from "@/lib/utils/localStorageUtils";
 
 
 const DashboardLayout = ({ accessToken, userAuthenticated }) => {
     
-    const [dashboardDataLoading, setDashboardDataLoading] = useState(true);
+    // const [dashboardDataLoading, setDashboardDataLoading] = useState(true);
     const [dashboardDataList, setDashboardDataList] = useState([]);
     const [editingIndex, setEditingIndex] = useState(null);
     const [fileNames, setFileNames] = useState([]);
@@ -19,7 +18,7 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
     const [userLectureProgressDict, setUserLectureProgressDict] = useState({});
 
     const _handleFetchDashboardData = async () => {
-        setDashboardDataLoading(true);
+        // setDashboardDataLoading(true);
 
         const current_user_id = await getFromLocalStorage('user_id');
 
@@ -43,8 +42,7 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
             // Set User Course Progress Dictionary
             setUserLectureProgressDict(dashboard_data.user_lecture_progress_dictionary);
         }
-        setDashboardDataLoading(false);
-
+        // setDashboardDataLoading(false);
 
         // // let dashboard_data = await fetchDashboardData(accessToken);
         // // console.log('dashboard_data:', dashboard_data)
@@ -142,20 +140,17 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
 
     return (
 
-        // bg-gray-900 text-white
         <div className="min-h-screen flex justify-center pt-8 bg-[#f4f5f6] dark:bg-gray-900">
 
             <div className="w-full max-w-5xl">
 
                 {/* Tab List */}
-                {/* <div className="flex border-b border-gray-700 pb-2"> */}
                 <div className="border-b border-gray-500">
 
                     <ul className="flex flex-wrap -mb-px">
 
                         <li className="me-2">
                             <span
-                            // className="inline-block p-4 pb-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 active"
                             className={`inline-block p-4 pb-2 border-b-2 rounded-t-lg hover:text-blue-600 hover:border-blue-500 dark:hover:text-blue-500 cursor-pointer ${(activeTab === 'course') ? 'border-blue-500 border-bold active font-semibold' : 'border-transparent'}`}
                             onClick={() => _handleActiveTabClick("course")}
                             ><FontAwesomeIcon icon={faBook} className="pr-1"/> MIT 6.100L Course</span>
@@ -165,7 +160,6 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
 
                             <li className="me-2">
                                 <span
-                                // className="inline-block p-4 pb-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 active"
                                 className={`inline-block p-4 pb-2 border-b-2 rounded-t-lg hover:text-blue-600 hover:border-blue-500 dark:hover:text-blue-500 cursor-pointer ${(activeTab === 'code_files') ? 'border-blue-500 border-bold active font-semibold' : 'border-transparent'}`}
                                 onClick={() => _handleActiveTabClick("code_files")}
                                 ><FontAwesomeIcon icon={faLaptopCode} className="pr-1"/>Your Playground Code Files</span>
@@ -176,7 +170,6 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                             <li className="me-2">
                                 <span
                                 className="inline-block p-4 pb-2 border-b-2 border-transparent rounded-t-lg text-gray-400 dark:text-gray-500 border-gray-300 cursor-not-allowed"
-                                // className={`inline-block p-4 pb-2 border-b-2 rounded-t-lg hover:text-blue-600 hover:border-blue-500 dark:hover:text-blue-500 cursor-pointer border-transparent}`}
                                 ><FontAwesomeIcon icon={faLaptopCode} className="pr-1"/>Your Playground Code Files</span>
                             </li>
 
@@ -187,21 +180,8 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                                 <strong className="pr-1">Lectures Remaining:</strong>
                                 <span>{userLectureProgressDict.lecture_completed_objects} / {userLectureProgressDict.total_lecture_objects}</span>
                                 <span>
-                                ({userLectureProgressDict.lecture_completion_ratio}%)
+                                    ({userLectureProgressDict.lecture_completion_ratio}%)
                                 </span>
-                                {/* <div className="relative w-8 h-8">
-                                    <div
-                                        className="absolute inset-0 rounded-full border-2 border-gray-200"
-                                        style={{
-                                            background: `conic-gradient(#4ade80 ${userLectureProgressDict.lecture_completion_ratio}%, transparent ${userLectureProgressDict.lecture_completion_ratio}%)`,
-                                        }}
-                                    ></div>
-                                    <div className="absolute inset-[2px] flex items-center justify-center rounded-full bg-transparent">
-                                        <span className="text-xs font-semibold text-black">
-                                            {userLectureProgressDict.lecture_completion_ratio}%
-                                        </span>
-                                    </div>
-                                </div> */}
                             </span>
                         </li>
 
@@ -256,7 +236,6 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                                         className="cursor-pointer"
                                     >
                                         <h3 
-                                            // className="inline text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-500"
                                             className="inline text-lg font-semibold text-blue-600 hover:text-blue-400"
                                         >
                                             {item.name}
@@ -387,7 +366,6 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                                                             />
                                                         ) : (
                                                             <p
-                                                                // className="tracking-wide text-[17.5px] font-medium text-gray-900 truncate dark:text-white cursor-pointer hover:text-blue-400 dark:hover:text-blue-400 inline-block"
                                                                 className="cursor-pointer hover:text-blue-400 text-blue-600 font-medium truncate dark:text-blue-500 dark:hover:text-blue-400"
                                                             >
                                                                 {fileNames[index] || dashboard_item.name}
@@ -408,7 +386,6 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                                                 <div className="flex flex-col items-start text-[13px] text-gray-900 dark:text-gray-400">
                                                     <div className="inline-flex items-center pt-0">
                                                         <FontAwesomeIcon icon={faClock} className="text-[12px] text-gray-400 pr-2" />
-                                                        {/* Last Updated: {dashboard_item.updated_date} */}
                                                         Last Updated: {new Date(dashboard_item.updated_date).toLocaleDateString()}
                                                     </div>
                                                 </div>

@@ -146,12 +146,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             }
         }
 
-        // const new_question_object_id = state.question_id;
-        
-        // TODO: 
-            // handle chat for lecture questions; proceed from there and finalize the basic run/save/chat-functionality for lecture-question 
-            // complete submission functionality <-- critical for today
-
         let qid;
         if (state.lecture_question === true){
             qid = state.question_id;
@@ -160,14 +154,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         }
 
         if (isAuthenticated) {
-
-            // TODO:
-                // will only occur in authenticated case
-                // set problem set == true and pass the problem set object id 
-                // save from there and adjust fetch accordingly
-
-            console.log('STATE WEBSOCKET MESSAGE:', state);
-
             const user_current_code = state.code;
             const messageForBackend = {
                 parent_question_object_id: qid,
@@ -210,12 +196,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         }
 
     }
-
-    // const sendMessage = useCallback((message: string) => {
-    //     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-    //         wsRef.current.send(message);
-    //     }
-    // }, []);
 
     // TODO:
     useEffect(() => {
@@ -272,32 +252,13 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
             if (user_chat_msg_list['data'].length > 0){
 
-                // const messageForBackend = {
-                //     parent_question_object_id: state.question_id,
-                //     current_problem_name: state.name,
-                //     current_problem_question: state.question,
-                //     text: current_user_message,
-                //     user_code: user_current_code,
-                //     all_user_messages_str: all_chat_messages_str,
-                //     sender: 'user',
-                //     type: 'user_message',
-                // };
-
-    //             let tmp_list = [{
-    //                 text: `Welcome! 😄 I'm Companion, your personal programming tutor.
-    
-    // If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
-    //                 sender: "bot",
-    //             }];
-    //             tmp_list.push()
-
-                let initial_message = {
+                const initial_message = {
                     text: `Welcome! 😄 I'm Companion, your personal programming tutor.
     
 If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
                     sender: "bot",
                 }
-                let user_chat_msg_list_data = user_chat_msg_list['data'];
+                const user_chat_msg_list_data = user_chat_msg_list['data'];
                 user_chat_msg_list_data.unshift(initial_message);
                 setMessages(user_chat_msg_list_data);
     
@@ -319,8 +280,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     useEffect(() => {
 
         if (isAuthenticated){
-            // TODO:
-                // fetch messages for the question (qid)
+
             const url_search_params = new URLSearchParams(window.location.search);
 
             const problem_set_object_id = url_search_params.get('psid');
@@ -363,9 +323,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         else {
             
             // // Anon Case
-            
-            // // Fetch or initialize Anon User ID
-            // let current_user_id = getFromLocalStorage('user_id');
 
             // Fetch Messages
             const user_chat_messages = getFromLocalStorage("user_chat_messages");
@@ -395,7 +352,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     // Chat Messages Event Listener for Local Storage
     useEffect(() => {
         if (messages.length > 0) {
-            // localStorage.setItem('user_chat_messages', JSON.stringify(messages));
             saveToLocalStorage('user_chat_messages', JSON.stringify(messages));
         }
     }, [messages]);
@@ -404,7 +360,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     return {
         _handleUserMessageSend,
         _handleResetChatMessages,
-        // sendMessage,
         messages,
         generatedMessage,
         isGeneratingMessage,

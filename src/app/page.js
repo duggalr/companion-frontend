@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import useUserContext from "@/lib/hooks/useUserContext";
 import HeroNavBar from './components/Hero/HeroNavBar';
 // import HeroPrimary from "./components/Hero/HeroPrimary";
-import HeroPrimaryNew from "./components/Hero/HeroPrimaryNew";
+import HeroPrimary from "./components/Hero/HeroPrimary";
 // import { useUser } from "@auth0/nextjs-auth0/client";
 
 
@@ -28,7 +28,7 @@ export default function Home() {
             </div>
 
             <HeroNavBar userAuthenticated={userContext?.isAuthenticated} />
-            <HeroPrimaryNew userAuthenticated={userContext?.isAuthenticated}/>
+            <HeroPrimary userAuthenticated={userContext?.isAuthenticated}/>
         </>
 
     );

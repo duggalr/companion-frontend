@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX, faCheck, faSpinner } from "@fortawesome/free-solid-svg-icons";
@@ -17,9 +17,6 @@ const SubmissionLayout = () => {
     let currentProblemState = playgroundContext.state;
     let playgroundDispatch = playgroundContext.dispatch;
     const testCaseList = currentProblemState['test_case_list'];
-    console.log('test-case-list:', testCaseList);
-    // console.log('currentProblemState-NEW:', currentProblemState);
-    // console.log('tmp-new-two:', currentProblemState.ai_tutor_feedback);
 
     const handlePrevious = () => {
         if (currentTestCase > 0) {
@@ -58,18 +55,13 @@ const SubmissionLayout = () => {
 
     }
 
-    // TODO: fix test case rendering and go from there
-
     const [isModalOpen, setIsModalOpen] = useState(false);
-    // const [selectedViewCode, setSelectedViewCode] = useState(null);
     const [selectedModalDatatype, setSelectedModalDataType] = useState(null);
     const [selectedModalData, setSelectedModalData] = useState(null);
 
-    // TODO: 
     const _handleViewModalDataClick = async (object_id, data_type) => {
 
         let current_sub_hist_objects = currentProblemState.user_code_submission_history_objects;
-        // let current_ai_feedback_string = "";
         let modal_data_string = "";
         for (let i=0; i <= current_sub_hist_objects.length-1; i ++){
             let sub_hist_dict = current_sub_hist_objects[i];
@@ -131,13 +123,9 @@ const SubmissionLayout = () => {
 
     return (
 
-        // <div className="p-4 bg-gray-900 min-h-screen text-white">
         <div className="p-4 min-h-screen mb-8">
             
             <div className="flex justify-between items-center mb-6 border-b-[1px] border-gray-300 pb-2">
-                {/* <h1 className="font-semibold text-xl">
-                    Submissions
-                </h1> */}
                 <h1 className="font-semibold text-[17px] mr-2">
                     Submissions
                     <span className="text-gray-500 text-[11px] pl-2 pt-1 font-normal">
@@ -145,37 +133,7 @@ const SubmissionLayout = () => {
                     </span>
                 </h1>
 
-                {/* TODO: start here by disabling it; proceed from there to finalizing everything in anon and auth */}
-
-                {/* {isAuthenticated ? (
-
-                    <Button
-                        disabled={isSubmitLoading}    
-                        className="w-[130px] py-4 mr-2 mt-1 text-[14px] text-white font-medium rounded-xl transition-all bg-green-400 hover:bg-green-500"
-                        onClick={_handleSubmitButtonClick}
-                    >
-                        {isSubmitLoading ? (
-                            <>
-                                <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
-                                Running...
-                            </>
-                        ) : (
-                            <>
-                                Submit Solution
-                            </>
-                        )}
-                    </Button>
-                    
-                ) : (
-                    <button
-                        className="w-[130px] py-2 mr-2 mt-1 text-[14px] text-white font-medium rounded-xl transition-all bg-gray-400 cursor-not-allowed"
-                        disabled={true}
-                    >
-                        Submit Solution
-                    </button>
-                )} */}
-
-                    {
+                {
                     currentProblemState.lecture_question && currentProblemState.problem_set_question ? (
                         isAuthenticated ? (
                         <Button
@@ -232,7 +190,7 @@ const SubmissionLayout = () => {
                         Submit Solution
                         </button>
                     )
-                    }
+                }
 
             </div>
 
@@ -256,9 +214,6 @@ const SubmissionLayout = () => {
                         <p className="px-0 pt-4 tracking-6 text-[14px] text-gray-500 dark:text-gray-600">
                             Submit your solution to get feedback from the AI Tutor.
                         </p>
-                        // <p className="px-0 pt-4 tracking-6 text-[14px] text-gray-800 dark:text-gray-300 leading-7">
-                        //     Your solution has passed all test cases successfully, which is excellent! This indicates that your implementation of the formula `(a + b) * c` is correct and produces the expected outputs for various inputs, including edge cases. To enhance the clarity of your code, consider adding comments that explain the purpose of each variable and the overall calculation. Although your solution is straightforward, you might also explore using functions to encapsulate this logic, making it reusable and improving the organization of your code. For example, you could define a function like `calculate_total(a, b, c)` that returns the total. Keep up the great work, and continue to look for opportunities to refactor and document your code for better readability!
-                        // </p>
 
                     )}
                     
@@ -284,10 +239,6 @@ const SubmissionLayout = () => {
                     Submit your solution to determine if test cases have passed.
                 </div>
             )}
-
-            {/* <p className="px-0 pt-4 tracking-6 text-[14px] text-gray-800 dark:text-gray-300">
-                All Test Cases Passed. <FontAwesomeIcon icon={faCheck} className="pr-1 text-green-600 text-[15px] ml-1"/> 
-            </p> */}
 
             <div className="bg-gray-700 p-5 pb-10 rounded-lg shadow mb-6 mt-4">
 
@@ -346,16 +297,10 @@ const SubmissionLayout = () => {
                         </h3>
                         <pre className="bg-gray-600 text-sm p-3 rounded-lg text-gray-200">
 
-                            {/* {currentProblemState.program_output_result.length > 0 ?? (
-                                currentProblemState.program_output_result[currentTestCase]
-                            )} */}
-
                             {currentProblemState.program_output_result.length > 0 
-                                ? currentProblemState.program_output_result[currentTestCase].program_output
-                                : ""}
+                            ? currentProblemState.program_output_result[currentTestCase].program_output
+                            : ""}
 
-                        {/* {testCases[currentTestCase].userOutput} */}
-                        {/* TODO: add user output */}
                         </pre>
                     </div>
 
@@ -372,9 +317,6 @@ const SubmissionLayout = () => {
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
-                            {/* <th scope="col" class="px-6 py-3">
-                                #
-                            </th> */}
                             <th scope="col" className="px-2 py-3">
                                 Date
                             </th>
@@ -455,9 +397,6 @@ const SubmissionLayout = () => {
                                 ) : (
                                     "Feedback"
                                 )}</h2>
-                            {/* <p className="text-sm text-gray-600">
-                                {selectedViewCode}
-                            </p> */}
                             <pre className="text-sm text-gray-600 bg-gray-100 p-4 rounded overflow-x-auto h-2/3 text-wrap">
                                 {selectedModalData}
                             </pre>

@@ -6,7 +6,7 @@ export async function fetchDashboardCourseHomeData(user_id: string, accessToken:
 
     const endPointUrl = `${API_BACKEND_URL}/fetch_course_dashboard_home_data`;
 
-    let data = {
+    const data = {
         'user_id': user_id
     };
     

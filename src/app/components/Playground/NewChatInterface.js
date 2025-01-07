@@ -12,12 +12,11 @@ const NewChatInterface = () => {
     const FASTAPI_WEBSOCKET_URL = process.env.NEXT_PUBLIC_CHAT_WEBSOCKET_URL;
 
     const {isAuthenticated} = useUserContext();
-    const { state, dispatch } = usePlaygroundContext();
+    const { state } = usePlaygroundContext();
 
     const {
         _handleUserMessageSend,
         _handleResetChatMessages,
-        // sendMessage,
         messages,
         generatedMessage,
         isGeneratingMessage,
@@ -42,7 +41,6 @@ const NewChatInterface = () => {
     const [sendBtnEnabled, setSendBtnEnabled] = useState(false);
 
     const handleMessageSend = () => {
-        // handleSendUserChatMessage();
         let current_user_msg = currentUserInputMessageRef.current;
         _handleUserMessageSend(current_user_msg);
         setCurrentUserInputMessage("");
@@ -105,18 +103,6 @@ const NewChatInterface = () => {
                         </button>
                     )}
                 </div>
-
-                {/* {!isAuthenticated && (
-                    <span className="text-[11.5px] pt-0 mt-0 text-gray-500 dark:text-gray-500">
-                        Make a {" "}
-                        <a
-                            className='text-blue-600 dark:text-blue-500 hover:underline cursor-pointer'
-                            href="/api/auth/login"
-                        >
-                            free account
-                        </a> to work on and save different questions
-                    </span>
-                )} */}
 
                 {/* Messages Area */}
                 <div

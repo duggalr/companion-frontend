@@ -1,7 +1,7 @@
 import { PlaygroundState, QuestionInputOutputPair } from '@/context/types';
 import { getFromLocalStorage, saveToLocalStorage } from '@/lib/utils/localStorageUtils';
 
-type TestCase = { [key: string]: any };
+type TestCase = { [key: string]: unknown };
 
 export type PlaygroundAction =
     | {type: "SET_PLAYGROUND_STATE"; question_id: string | null, name: string, question: string, input_output_list: QuestionInputOutputPair[], code: string, console_output: string | null, lecture_question: boolean | null, test_case_list: TestCase | TestCase[] | [], all_test_cases_passed: boolean | null, program_output_result: [], ai_tutor_feedback: null, user_code_submission_history_objects: []}
@@ -11,7 +11,7 @@ export type PlaygroundAction =
     | {type: "UPDATE_SUBMISSION_RESULTS"; all_test_cases_passed: boolean, program_output_result: [], ai_tutor_feedback: string, user_code_submission_history_objects: []}
     | {type: "UPDATE_QUESTION_ID"; question_id: string}
     | {type: "UPDATE_NEXT_LECTURE_NUMBER_AND_QUESTION"; next_lecture_number: number | null, next_question_object_id: string | null, next_question_object_type: string | null}
-    | {type: "SET_PROBLEM_SET_PLAYGROUND_STATE"; question_id: string | null, name: string, question: string, input_output_list: QuestionInputOutputPair[], code: string, lecture_question: boolean | null, test_case_list: TestCase | TestCase[] | [], all_test_cases_passed: boolean | null, program_output_result: [], ai_tutor_feedback: null, user_code_submission_history_objects: [], next_lecture_number: number | null, next_question_object_id: string | null, next_question_object_type: string | null, problem_set_object_id: string | null, problem_set_question: boolean | null, problem_set_current_part: number | null, problem_set_next_part: number | null, problem_set_question_list: { [key: string]: any } | null}
+    | {type: "SET_PROBLEM_SET_PLAYGROUND_STATE"; question_id: string | null, name: string, question: string, input_output_list: QuestionInputOutputPair[], code: string, lecture_question: boolean | null, test_case_list: TestCase | TestCase[] | [], all_test_cases_passed: boolean | null, program_output_result: [], ai_tutor_feedback: null, user_code_submission_history_objects: [], next_lecture_number: number | null, next_question_object_id: string | null, next_question_object_type: string | null, problem_set_object_id: string | null, problem_set_question: boolean | null, problem_set_current_part: number | null, problem_set_next_part: number | null, problem_set_question_list: { [key: string]: unknown } | null}
 
 // Reducer logic
 export const playgroundReducer = (state: PlaygroundState, action: PlaygroundAction): PlaygroundState => {
@@ -37,7 +37,8 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
                 next_lecture_number: state.next_lecture_number,
                 next_question_object_id: state.next_question_object_id,
                 next_question_object_type: state.next_question_object_type,
-
+                
+                problem_set_object_id: state.problem_set_object_id,
                 problem_set_question: state.problem_set_question,
                 problem_set_current_part: state.problem_set_current_part,
                 problem_set_next_part: state.problem_set_next_part,
@@ -90,8 +91,6 @@ export const playgroundReducer = (state: PlaygroundState, action: PlaygroundActi
         case "UPDATE_NEXT_LECTURE_NUMBER_AND_QUESTION": {
             return {
                 ...state,
-                // lecture_number: action.lecture_number,
-                // next_question_object_id: action.next_question_object_id
                 next_lecture_number: action.next_lecture_number,
                 next_question_object_id: action.next_question_object_id,
                 next_question_object_type: action.next_question_object_type

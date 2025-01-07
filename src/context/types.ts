@@ -3,7 +3,7 @@ export interface QuestionInputOutputPair{
     output: string;
 };
 
-type TestCase = { [key: string]: any };
+type TestCase = { [key: string]: unknown };
 
 export interface PlaygroundState {
     question_id: string | null;
@@ -29,7 +29,7 @@ export interface PlaygroundState {
     problem_set_question: boolean | null;
     problem_set_current_part: number | null;
     problem_set_next_part: number | null;
-    problem_set_question_list: { [key: string]: any } | null;
+    problem_set_question_list: { [key: string]: unknown } | null;
 };
 
 export type PlaygroundAction =
@@ -39,5 +39,5 @@ export type PlaygroundAction =
 export interface SubmissionState {
     result: boolean | null;
     ai_tutor_feedback: string | null;
-    output_list: any;
+    output_list: unknown;
 };
