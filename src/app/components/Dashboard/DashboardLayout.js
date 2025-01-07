@@ -136,7 +136,7 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                                 rel="noopener noreferrer"
                             >
                                 MIT OCW
-                            </a>.
+                            </a>. (last 6 lectures of the course are not included here)
                         </span>
                     </div>
                 ) : (
