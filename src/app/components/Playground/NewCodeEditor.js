@@ -104,7 +104,7 @@ const NewCodeEditor = () => {
 
         if (state.lecture_question === true && !isAuthenticated){
             
-            console.log('Not saving in this case...')
+            // console.log('Not saving in this case...')
 
         }
         else {
@@ -120,7 +120,6 @@ const NewCodeEditor = () => {
                 'code': codeRef.current,
                 'user_id': null
             };
-            console.log('payload-SAVE:', payload);
     
             const saveCodeResponse = await handleSaveUserCode(
                 payload,

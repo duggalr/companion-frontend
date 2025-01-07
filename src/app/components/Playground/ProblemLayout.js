@@ -33,7 +33,6 @@ const ProblemLayout = ({ setActiveTab }) => {
     
     const [inputOutputLoading, setInputOutputLoading] = useState(false);
     const [currentProblemIOList, setCurrentProblemIOList] = useState([]);
-    console.log('currentProblemIOList-NEW:', currentProblemIOList);
 
     useEffect(() => {
         setQuestionName(currentProblemState.name);
@@ -75,7 +74,6 @@ const ProblemLayout = ({ setActiveTab }) => {
             current_q_name,
             current_q_text
         );
-        console.log('update_user_question_response:', update_user_question_response);
 
         if (update_user_question_response['success'] === true){
 
@@ -162,7 +160,6 @@ const ProblemLayout = ({ setActiveTab }) => {
             const taskResponseURL = FASTAPI_BASE_URL + `/result/${task_id}`;
             const resultResponse = await axios.get(taskResponseURL);
             const { result_output_value } = resultResponse.data;
-            // console.log('Result Output Value:', result_output_value);
             dispatch({
                 type: "UPDATE_CONSOLE_OUTPUT",
                 output: result_output_value
@@ -264,13 +261,10 @@ const ProblemLayout = ({ setActiveTab }) => {
     const _handleProblemSetNextPartClick = async () => {
 
         const next_ps_part = state.problem_set_next_part;
-        console.log('next_ps_part', next_ps_part);
 
         const problem_set_question_list = state.problem_set_question_list;
-        console.log('ps-question-list:', problem_set_question_list);
         
         const next_problem_set_data = problem_set_question_list[next_ps_part];
-        console.log('next_problem_set_data:', next_problem_set_data);
 
         // const current_pg_code = currentProblemState.code;
         // const current_question_code = next_problem_set_data['code'];
@@ -317,12 +311,8 @@ const ProblemLayout = ({ setActiveTab }) => {
         // TODO: in this case, only update the question and related, not the code
 
         const problem_set_question_list = state.problem_set_question_list;
-        console.log('ps-question-list:', problem_set_question_list);
-        
         const last_ps_part = state.problem_set_current_part - 1;
         const last_problem_set_data = problem_set_question_list[last_ps_part];
-        console.log('last_problem_set_data:', last_problem_set_data);
-
         const current_pg_code = currentProblemState.code;
 
         // Update View

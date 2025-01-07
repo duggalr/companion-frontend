@@ -65,7 +65,7 @@ const SubmissionLayout = () => {
         let modal_data_string = "";
         for (let i=0; i <= current_sub_hist_objects.length-1; i ++){
             let sub_hist_dict = current_sub_hist_objects[i];
-            console.log('SUB HISTORY DICTIONARY:', sub_hist_dict)
+
             if (sub_hist_dict['lc_submission_history_object_id'] == object_id){
 
                 if (data_type === 'code'){

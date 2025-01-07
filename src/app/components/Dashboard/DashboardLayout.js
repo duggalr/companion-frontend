@@ -4,11 +4,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock, faLaptopCode, faBook, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { fetchDashboardData } from "@/lib/backend_api/fetchDashboardData";
 import { getFromLocalStorage } from "@/lib/utils/localStorageUtils";
+import { changePGCodeName } from "@/lib/backend_api/changePGCodeName";
 
 
 const DashboardLayout = ({ accessToken, userAuthenticated }) => {
-    
-    // const [dashboardDataLoading, setDashboardDataLoading] = useState(true);
+
     const [dashboardDataList, setDashboardDataList] = useState([]);
     const [editingIndex, setEditingIndex] = useState(null);
     const [fileNames, setFileNames] = useState([]);
@@ -18,16 +18,12 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
     const [userLectureProgressDict, setUserLectureProgressDict] = useState({});
 
     const _handleFetchDashboardData = async () => {
-        // setDashboardDataLoading(true);
-
         const current_user_id = await getFromLocalStorage('user_id');
 
-        // TODO:
         let dashboard_data = await fetchDashboardData(
             accessToken,
             current_user_id
         );
-        console.log('DASHBOARD DATA:', dashboard_data);
 
         if (dashboard_data['success'] === true){
             // Set Course Lecture data
@@ -42,50 +38,8 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
             // Set User Course Progress Dictionary
             setUserLectureProgressDict(dashboard_data.user_lecture_progress_dictionary);
         }
-        // setDashboardDataLoading(false);
-
-        // // let dashboard_data = await fetchDashboardData(accessToken);
-        // // console.log('dashboard_data:', dashboard_data)
-        
-        // // if (dashboard_data['success'] === true){
-
-        // //     // Set Course Lecture data
-        // //     setCourseLectureList(dashboard_data.lecture_objects_list);
-
-        // //     // Set Dashboard Data
-        // //     setDashboardDataList(dashboard_data.playground_object_list);            
-
-        // //     // Initialize file names
-        // //     setFileNames(dashboard_data.playground_object_list.map(item => item.code_file_name));
-
-        // // }
 
     };
-
-
-    // const _handleFetchCourseData = async () => {
-    //     setDashboardDataLoading(true);
-
-    //     // let dashboard_data = await fetchDashboardData(accessToken);
-    //     // console.log('dashboard_data:', dashboard_data)
-
-    //     let current_anon_user_id = getFromLocalStorage("user_id");
-
-    //     let course_data_response = await fetchDashboardCourseHomeData(
-    //         current_anon_user_id,
-    //         accessToken
-    //     );
-    //     console.log('course-data:', course_data_response);
-
-    //     if (course_data_response['success'] === true){
-    //         let data = course_data_response['lecture_objects_list'];
-    //         setCourseLectureList(data);
-    //     }
-    // };
-
-    // const handleRename = (index) => {
-    //     setEditingIndex(index);
-    // };
 
     const handleInputChange = (e, index) => {
         const updatedFileNames = [...fileNames];
@@ -108,17 +62,6 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
         changePGCodeName(accessToken, payload);
     };
 
-    // // const [activeTab, setActiveTab] = useState("tab1");
-
-    // const MIT_COURSE_OUTLINE = [
-    //     {
-    //         id: '1324f143-0086-4811-8093-194115d0697c',
-    //         lecture_number: 1,
-    //         name: 'Lecture 1: Introduction',
-    //         description: 'Introduction to Python: knowledge, machines, objects, types, variables, bindings, IDEs',
-    //     }
-    // ]
-
     const [activeTab, setActiveTab] = useState("course");
 
     const _handleActiveTabClick = async (val) => {
@@ -126,15 +69,9 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
     };
 
     useEffect(() => {
-        // TODO:
+
         _handleFetchDashboardData();
 
-        // if (accessToken && userAuthenticated === true) {
-        //     _handleFetchDashboardData();
-        // } else {
-        //     // TODO:
-        //     _handleFetchCourseData();
-        // }
     }, [accessToken, userAuthenticated]);
 
 

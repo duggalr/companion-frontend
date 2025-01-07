@@ -76,8 +76,6 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
             userAccessToken
         );
         
-        console.log('question_data_response-->', question_data_response);
- 
         if (question_data_response['success'] === true){
             const qdata = question_data_response['data'];
 
@@ -168,7 +166,6 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
             userAccessToken
         );
 
-        console.log('ps-data:', ps_data_response);
         if (ps_data_response['success'] === true){
 
             const current_problem_set_data = ps_data_response['current_question_state'];

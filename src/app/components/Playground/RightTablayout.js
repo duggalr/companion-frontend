@@ -16,7 +16,6 @@ const RightTabLayout = () => {
 
     const {isAuthenticated, userAccessToken} = useUserContext();
     const { state, dispatch } = usePlaygroundContext();
-    console.log('tmp-state:', state);
 
     const _handleNewBlankQuestion = async () => {
         
