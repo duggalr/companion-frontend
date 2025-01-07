@@ -9,7 +9,7 @@ export async function fetchQuestionData(
 
     const endPointUrl = API_BACKEND_URL + '/fetch_question_data';
     const payload = {
-        'question_id': question_object_id
+        'question_id': question_object_id,
     }
 
     const apiResponse = await handleAPIFetch(

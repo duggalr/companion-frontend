@@ -16,6 +16,8 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
 
     const [courseLectureList, setCourseLectureList] = useState([]);
 
+    const [userLectureProgressDict, setUserLectureProgressDict] = useState({});
+
     const _handleFetchDashboardData = async () => {
         setDashboardDataLoading(true);
 
@@ -37,6 +39,9 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
 
             // Initialize file names
             setFileNames(dashboard_data.playground_object_list.map(item => item.code_file_name));
+
+            // Set User Course Progress Dictionary
+            setUserLectureProgressDict(dashboard_data.user_lecture_progress_dictionary);
         }
         setDashboardDataLoading(false);
 
@@ -140,7 +145,7 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
         // bg-gray-900 text-white
         <div className="min-h-screen flex justify-center pt-8 bg-[#f4f5f6] dark:bg-gray-900">
 
-            <div className="w-full max-w-4xl">
+            <div className="w-full max-w-5xl">
 
                 {/* Tab List */}
                 {/* <div className="flex border-b border-gray-700 pb-2"> */}
@@ -176,6 +181,29 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                             </li>
 
                         )}
+
+                        <li className="ml-auto">
+                            <span className="inline-block p-4 pb-2 rounded-t-lg text-gray-700 text-[13.5px] tracking-normal dark:text-gray-300 flex items-center space-x-2">
+                                <strong className="pr-1">Lectures Remaining:</strong>
+                                <span>{userLectureProgressDict.lecture_completed_objects} / {userLectureProgressDict.total_lecture_objects}</span>
+                                <span>
+                                ({userLectureProgressDict.lecture_completion_ratio}%)
+                                </span>
+                                {/* <div className="relative w-8 h-8">
+                                    <div
+                                        className="absolute inset-0 rounded-full border-2 border-gray-200"
+                                        style={{
+                                            background: `conic-gradient(#4ade80 ${userLectureProgressDict.lecture_completion_ratio}%, transparent ${userLectureProgressDict.lecture_completion_ratio}%)`,
+                                        }}
+                                    ></div>
+                                    <div className="absolute inset-[2px] flex items-center justify-center rounded-full bg-transparent">
+                                        <span className="text-xs font-semibold text-black">
+                                            {userLectureProgressDict.lecture_completion_ratio}%
+                                        </span>
+                                    </div>
+                                </div> */}
+                            </span>
+                        </li>
 
                     </ul>
 
@@ -218,7 +246,7 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                                     key={item.id}
                                 >
                                     {(item.lecture_completed === true) ? (
-                                        <div className="absolute w-3 h-3 bg-green-500 rounded-full mt-1.5 -start-1.5 border border-green dark:border-gray-900 dark:bg-gray-700"></div>
+                                        <div className="absolute w-3 h-3 bg-green-500 rounded-full mt-1.5 -start-1.5 border border-green dark:border-gray-900 dark:bg-green-500"></div>
                                     ): (
                                         <div className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
                                     )}
@@ -296,7 +324,7 @@ const DashboardLayout = ({ accessToken, userAuthenticated }) => {
                                                     <div className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
 
                                                 )}
-                                                
+
                                                 {(item.problem_set_dict.implementation_in_progress === true) ? (
 
                                                     <a

@@ -147,7 +147,7 @@ const SubmissionLayout = () => {
 
                 {/* TODO: start here by disabling it; proceed from there to finalizing everything in anon and auth */}
 
-                {isAuthenticated ? (
+                {/* {isAuthenticated ? (
 
                     <Button
                         disabled={isSubmitLoading}    
@@ -173,12 +173,67 @@ const SubmissionLayout = () => {
                     >
                         Submit Solution
                     </button>
-                )}
+                )} */}
 
+                    {
+                    currentProblemState.lecture_question && currentProblemState.problem_set_question ? (
+                        isAuthenticated ? (
+                        <Button
+                            disabled={isSubmitLoading}    
+                            className="w-[130px] py-4 mr-2 mt-1 text-[14px] text-white font-medium rounded-xl transition-all bg-green-400 hover:bg-green-500"
+                            onClick={_handleSubmitButtonClick}
+                        >
+                            {isSubmitLoading ? (
+                            <>
+                                <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                Running...
+                            </>
+                            ) : (
+                            <>Submit Part</>
+                            )}
+                        </Button>
+                        ) : (
+                        <button
+                            className="w-[130px] py-2 mr-2 mt-1 text-[14px] text-white font-medium rounded-xl transition-all bg-gray-400 cursor-not-allowed"
+                            disabled
+                        >
+                            Submit Part
+                        </button>
+                        )
+                    ) : currentProblemState.lecture_question ? (
+                        isAuthenticated ? (
+                        <Button
+                            disabled={isSubmitLoading}    
+                            className="w-[130px] py-4 mr-2 mt-1 text-[14px] text-white font-medium rounded-xl transition-all bg-green-400 hover:bg-green-500"
+                            onClick={_handleSubmitButtonClick}
+                        >
+                            {isSubmitLoading ? (
+                            <>
+                                <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                Running...
+                            </>
+                            ) : (
+                            <>Submit Solution</>
+                            )}
+                        </Button>
+                        ) : (
+                        <button
+                            className="w-[130px] py-2 mr-2 mt-1 text-[14px] text-white font-medium rounded-xl transition-all bg-gray-400 cursor-not-allowed"
+                            disabled
+                        >
+                            Submit Solution
+                        </button>
+                        )
+                    ) : (
+                        <button
+                        className="w-[130px] py-2 mr-2 mt-1 text-[14px] text-white font-medium rounded-xl transition-all bg-gray-400 cursor-not-allowed"
+                        disabled
+                        >
+                        Submit Solution
+                        </button>
+                    )
+                    }
 
-                {/* <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded shadow">
-                    Submit
-                </button> */}
             </div>
 
             <MathJaxContext>

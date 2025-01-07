@@ -14,9 +14,9 @@ const pacifico_font = Pacifico({
     weight: ['400']
 });
 
-export default function TopNavBar ({ }) {
+export default function TopNavBar () {
 
-    const {isAuthenticated} = useUserContext();
+    const {isAuthenticated, userAccessToken} = useUserContext();
 
     const [ showLoginSpan, setShowLoginSpan ] = useState(null);
 
@@ -24,7 +24,9 @@ export default function TopNavBar ({ }) {
 
     const _handleLectureProgressFetch = async () => {
         
-        let fetchProgressResponse = await fetchCourseProgress();
+        let fetchProgressResponse = await fetchCourseProgress(
+            userAccessToken
+        );
         console.log('fetchProgressResponse:', fetchProgressResponse);
         setCourseProgress(fetchProgressResponse);
 
@@ -120,14 +122,14 @@ export default function TopNavBar ({ }) {
                             }}
                             ></div>
                             <div className="absolute inset-[2px] flex items-center justify-center rounded-full bg-transparent">
-                                <span className="text-xs font-semibold text-black pl-1">
+                                <span className="text-xs font-semibold text-black pl-1 dark:text-white">
                                     {courseProgress.percent_complete}%
                                 </span>
                             </div>
                         </div>
 
-                        <div className="text-[13.5px] font-normal text-gray-600">
-                            <p>Lectures Remaining: {courseProgress.remaining} / {courseProgress.total}</p>
+                        <div className="text-[13.5px] font-normal text-gray-600 dark:text-gray-300">
+                            <p>Exercises Remaining: {courseProgress.completed} / {courseProgress.total}</p>
                         </div>
                         <span className="text-gray-500">|</span>
                     </div>

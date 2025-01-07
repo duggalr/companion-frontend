@@ -488,7 +488,9 @@ const ProblemLayout = ({ setActiveTab }) => {
                                 )
                             } */}
                         
-                            {state.lecture_question ? (
+
+                            {/* Submit Solution Button */}
+                            {/* {state.lecture_question ? (
 
                                 isAuthenticated ? (
                                     <Button
@@ -525,7 +527,66 @@ const ProblemLayout = ({ setActiveTab }) => {
                                     Run Test Cases (coming soon...)
                                 </Button>
 
-                            )}
+                            )} */}
+
+                            {
+                                state.lecture_question && state.problem_set_question ? (
+                                    isAuthenticated ? (
+                                    <Button
+                                        disabled={isSubmitLoading}    
+                                        className="w-[130px] py-4 mr-2 mt-1 text-[14px] text-white font-medium rounded-xl transition-all bg-green-400 hover:bg-green-500"
+                                        onClick={_handleSubmitButtonClick}
+                                    >
+                                        {isSubmitLoading ? (
+                                        <>
+                                            <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                            Running...
+                                        </>
+                                        ) : (
+                                        <>Submit Part</>
+                                        )}
+                                    </Button>
+                                    ) : (
+                                    <Button
+                                        className="w-[130px] py-2 text-[14px] text-white font-medium rounded-xl transition-all bg-gray-400 cursor-not-allowed"
+                                        disabled
+                                    >
+                                        Submit Part
+                                    </Button>
+                                    )
+                                ) : state.lecture_question ? (
+                                    isAuthenticated ? (
+                                    <Button
+                                        disabled={isSubmitLoading}    
+                                        className="w-[130px] py-4 mr-2 mt-1 text-[14px] text-white font-medium rounded-xl transition-all bg-green-400 hover:bg-green-500"
+                                        onClick={_handleSubmitButtonClick}
+                                    >
+                                        {isSubmitLoading ? (
+                                        <>
+                                            <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                            Running...
+                                        </>
+                                        ) : (
+                                        <>Submit Solution</>
+                                        )}
+                                    </Button>
+                                    ) : (
+                                    <Button
+                                        className="w-[130px] py-2 text-[14px] text-white font-medium rounded-xl transition-all bg-gray-400 cursor-not-allowed"
+                                        disabled
+                                    >
+                                        Submit Solution
+                                    </Button>
+                                    )
+                                ) : (
+                                    <Button
+                                    disabled={true}
+                                    className="bg-gray-400 text-gray-700 cursor-not-allowed" // Add disabled styles
+                                    >
+                                    Run Test Cases (coming soon...)
+                                    </Button>
+                                )
+                            }
 
                         </div>
 
