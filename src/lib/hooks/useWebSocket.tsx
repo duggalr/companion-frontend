@@ -34,7 +34,7 @@ export const useWebSocket = (url: string) => {
         setMessages([{
             text: `Welcome! 😄 I'm Companion, your personal programming tutor.
 
-If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
+If you are running into a problem such as a bug in your code, need help understanding the question, or want feedback on your code, ask me and I will be more than happy to help.`,
             sender: "bot",
         }]);
     }
@@ -251,7 +251,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 const initial_message = {
                     text: `Welcome! 😄 I'm Companion, your personal programming tutor.
     
-If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
+If you are running into a problem such as a bug in your code, need help understanding the question, or want feedback on your code, ask me and I will be more than happy to help.`,
                     sender: "bot",
                 }
                 const user_chat_msg_list_data = user_chat_msg_list['data'];
@@ -263,7 +263,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 setMessages([{
                     text: `Welcome! 😄 I'm Companion, your personal programming tutor.
     
-If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
+If you are running into a problem such as a bug in your code, need help understanding the question, or want feedback on your code, ask me and I will be more than happy to help.`,
                     sender: "bot",
                 }]);
     
@@ -306,7 +306,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 setMessages([{
                     text: `Welcome! 😄 I'm Companion, your personal programming tutor.
 
-If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
+If you are running into a problem such as a bug in your code, need help understanding the question, or want feedback on your code, ask me and I will be more than happy to help.`,
                     sender: "bot",
                 }]);
             }
@@ -324,7 +324,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 setMessages([{
                     text: `Welcome! 😄 I'm Companion, your personal programming tutor.
 
-If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
+If you are running into a problem such as a bug in your code, need help understanding the question, or want feedback on your code, ask me and I will be more than happy to help.`,
                     sender: "bot",
                 }]);
 
