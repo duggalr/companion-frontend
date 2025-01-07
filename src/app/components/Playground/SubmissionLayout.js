@@ -114,7 +114,7 @@ const SubmissionLayout = () => {
                 </h1>
 
                 <p className="pt-4 leading-7 text-[14px] text-gray-600 dark:text-gray-300">
-                    No test cases available for this question...
+                    No test cases available for this question (yet)...
                 </p>
 
             </div>
