@@ -215,9 +215,9 @@ export default function HeroPrimary() {
                             <br/>with Companion providing real-time guidance and feedback.
                             </p>
 
-                            <button type="button" className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">
+                            {/* <button type="button" className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">
                                 Watch a Demo (TODO:)
-                            </button>
+                            </button> */}
                             
                             <button
                                 type="button"
@@ -243,9 +243,11 @@ export default function HeroPrimary() {
                             Get help, guidance, and feedback from the AI tutor.
                             </p>  
 
-                            <button type="button"
+                            {/* <button type="button"
                             className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
-                            >Watch a Demo (TODO:)</button>
+                            >
+                                Watch a Demo (TODO:)
+                            </button> */}
 
                             <button
                                 type="button"

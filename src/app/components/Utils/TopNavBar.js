@@ -26,7 +26,6 @@ export default function TopNavBar () {
         let fetchProgressResponse = await fetchCourseProgress(
             userAccessToken
         );
-        console.log('fetchProgressResponse:', fetchProgressResponse);
         setCourseProgress(fetchProgressResponse);
 
     }
@@ -38,7 +37,6 @@ export default function TopNavBar () {
 
             const url_search_params = new URLSearchParams(window.location.search);
             const lesson_question_object_id = url_search_params.get('lesson_quid');
-            console.log('lesson-quid:', lesson_question_object_id);
 
             if (lesson_question_object_id){
                 setShowLoginSpan(2);

@@ -11,7 +11,6 @@ export default function LectureHomeLayout ({ params }) {
     const { isAuthenticated, userAccessToken } = useUserContext();
 
     let lecture_number = params.id;
-    console.log('lecture_number:', lecture_number);
 
     const [isLoading, setIsLoading] = useState(true);
     let [lectureData, setLectureData] = useState(null);
@@ -22,7 +21,6 @@ export default function LectureHomeLayout ({ params }) {
     const _handleLectureDataFetch = async () => {
 
         let lecture_data_res = await fetchLectureData(lecture_number);
-        console.log('lecture_data:', lecture_data_res);
 
         // TODO: set and display
         if (lecture_data_res['success'] === true){

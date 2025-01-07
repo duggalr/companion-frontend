@@ -7,7 +7,6 @@ export default async function handleAndSetSolutionSubmission(lecture_qid, code, 
         lecture_qid,
         code
     );
-    console.log('solutionSubmitRes:', solutionSubmitRes);
 
     if (solutionSubmitRes['success'] === true){
 
@@ -26,10 +25,6 @@ export default async function handleAndSetSolutionSubmission(lecture_qid, code, 
 
             'ai_tutor_submission_feedback': ai_feedback_response
         });
-
-        console.log('old_user_code_submission_list-NEW:', old_user_code_submission_list);
-
-        console.log('PROGRAM RESULT LIST:', program_result_list);
 
         dispatch({
             type: "UPDATE_SUBMISSION_RESULTS",

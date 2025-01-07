@@ -41,7 +41,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     const _sendMessage = async (payload: MessagePayload) => {
 
-        console.log('PAYLOAD-WEBSOCKET:', payload);
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
             wsRef.current.send(JSON.stringify(payload));
         }
@@ -138,7 +137,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
         let all_chat_messages_str = "";
         for (let i = 0; i <= messages.length-1; i++) {
-            // console.log('mdict:', messages[i]);
             if (messages[i].sender == 'user'){
                 all_chat_messages_str += "USER: " + messages[i].text + "\n";
             } else {
@@ -248,8 +246,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 problem_set_question
             );
 
-            console.log('user_chat_msg_list:', user_chat_msg_list);
-
             if (user_chat_msg_list['data'].length > 0){
 
                 const initial_message = {
@@ -289,9 +285,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
             if (problem_set_object_id){
 
-                // TODO:
-                console.log('problem question id:', problem_set_object_id);
-                console.log('PROBLEM SET STATE - WEBSOCKET:', state);
                 _handleAuthenticatedChatMessageInitialization(
                     problem_set_object_id,
                     true
@@ -299,7 +292,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
             } else if (lesson_question_object_id){
 
-                console.log('lesson question id:', lesson_question_object_id);
                 _handleAuthenticatedChatMessageInitialization(
                     lesson_question_object_id,
                     false
