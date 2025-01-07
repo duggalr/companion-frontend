@@ -207,11 +207,11 @@ export default function HeroPrimary() {
                         >
                             <h3 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 pt-4">
                             {/* Learn Python with an AI */}
-                            MIT's Introductory to Python Course
+                            MIT&apos;s Introductory to Python Course
                             </h3>
 
                             <p className="text-gray-500 dark:text-gray-400 text-[17px] pt-6">
-                            Take MIT's 6.100L Introduction to Python course on our site,
+                            Take MIT&apos;s 6.100L Introduction to Python course on our site,
                             <br/>with Companion providing real-time guidance and feedback.
                             </p>
 

@@ -6,7 +6,7 @@ export async function handleSolutionSubmit(accessToken: string, lecture_question
 
     const endPointUrl = `${API_BACKEND_URL}/handle_lecture_question_submission`;
 
-    let payload = {
+    const payload = {
         'lecture_question_id': lecture_question_id,
         'code': code
     };

@@ -3,8 +3,7 @@ import React, { useEffect, useState } from 'react';
 import ThemeToggle from './ThemeToggle';
 import { Pacifico } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSquareCaretRight, faCode, faBook, faHome, faArrowRightFromBracket, faUserPlus } from "@fortawesome/free-solid-svg-icons";
-// import useUserContext from '../../../lib/hooks/useUserContext';
+import { faSquareCaretRight, faCode, faArrowRightFromBracket, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import useUserContext from '@/lib/hooks/useUserContext';
 import { fetchCourseProgress } from '@/lib/backend_api/fetchCourseProgress';
 
