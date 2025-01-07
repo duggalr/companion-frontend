@@ -1,7 +1,8 @@
 "use client";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import useUserContext from "@/lib/hooks/useUserContext";
 import HeroNavBar from './components/Hero/HeroNavBar';
+// import HeroPrimary from "./components/Hero/HeroPrimary";
 import HeroPrimary from "./components/Hero/HeroPrimary";
 // import { useUser } from "@auth0/nextjs-auth0/client";
 

@@ -1,21 +1,22 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import useUserContext from "@/lib/hooks/useUserContext";
+import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
 import { useWebSocket } from "@/lib/hooks/useWebSocket";
 
 
-const NewChatInterface = ({ }) => {
+const NewChatInterface = () => {
 
     const FASTAPI_WEBSOCKET_URL = process.env.NEXT_PUBLIC_CHAT_WEBSOCKET_URL;
 
     const {isAuthenticated} = useUserContext();
+    const { state } = usePlaygroundContext();
 
     const {
         _handleUserMessageSend,
         _handleResetChatMessages,
-        // sendMessage,
         messages,
         generatedMessage,
         isGeneratingMessage,
@@ -39,9 +40,7 @@ const NewChatInterface = ({ }) => {
     const [currentUserInputMessage, setCurrentUserInputMessage] = useState("");
     const [sendBtnEnabled, setSendBtnEnabled] = useState(false);
 
-
     const handleMessageSend = () => {
-        // handleSendUserChatMessage();
         let current_user_msg = currentUserInputMessageRef.current;
         _handleUserMessageSend(current_user_msg);
         setCurrentUserInputMessage("");
@@ -83,11 +82,21 @@ const NewChatInterface = ({ }) => {
             <div className="flex flex-col h-4/5 dark:bg-gray-900 p-4">
 
                 <div className="flex justify-between items-center">
-                    <span className="text-gray-500 dark:text-gray-400 text-xs pt-1 pl-1 pb-4 tracking-normal">
-                        {/* Get help in guiding your thinking through programming problems, with Companion, an AI Tutor. */}
+                    <span className="text-gray-500 dark:text-gray-400 text-xs pt-1 pl-1 pb-4 tracking-normal leading-5">
                         Get help on your programming problems with Companion, an AI Tutor.
-                        <br/>
+                        {!isAuthenticated && (
+                            <span>
+                                {" "}Make a {" "}
+                                <a
+                                    className='text-blue-600 dark:text-blue-500 hover:underline cursor-pointer'
+                                    href="/api/auth/login"
+                                >
+                                    free account
+                                </a> to work on and save different questions.
+                            </span>
+                        )}
                     </span>
+
                     {(messages.length > 1 && !isAuthenticated) && (
                         <button className="text-blue-500 text-xs" onClick={handleClearMessages}>
                             Clear text
@@ -126,7 +135,7 @@ const NewChatInterface = ({ }) => {
 
                 {/* Input area - textarea */}
                 <div className="flex items-center border-t border-gray-300 dark:border-gray-600 pt-2 mt-2">
-
+                    
                     <textarea
                         ref={inputValueRef}
                         value={currentUserInputMessage}
@@ -136,7 +145,8 @@ const NewChatInterface = ({ }) => {
                         placeholder="type a message..."
                         rows={1}
                         style={{ minHeight: '50px', maxHeight: '120px' }}
-                        disabled={isLoading}
+                        disabled={isLoading || (!isAuthenticated && (state.lecture_question === true))}
+                        // TODO: fix this to only disabled if not authenticated and is lecture question
                     />
 
                     <button

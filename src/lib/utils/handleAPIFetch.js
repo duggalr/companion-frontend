@@ -1,14 +1,3 @@
-// type DataDict = {
-//     [key: string]: string;
-// }
-
-// export default async function handleAPIFetch(
-//     endpoint_url: string,
-//     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
-//     access_token: string | null,
-//     data: DataDict | null
-// ): Promise<any | null> {
-
 export default async function handleAPIFetch(endpoint_url, method, access_token, data) {
 
     try {
@@ -66,7 +55,7 @@ export default async function handleAPIFetch(endpoint_url, method, access_token,
             }
 
         }
-        
+
         if (!apiResponse.ok) {
             return {
                 'success': false,

@@ -1,19 +1,22 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencil, faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faPlay, faSpinner, faArrowRight, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
 import useUserContext from "@/lib/hooks/useUserContext";
 import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/localStorageUtils";
 import { updateUserQuestion } from '@/lib/backend_api/updateUserQuestion';
 import addQIDParam from '@/lib/utils/addQidParam';
-import { _handleUserSaveCode } from "@/lib/utils/handleSaveUserCode";
+import { handleSaveUserCode } from "@/lib/utils/handleSaveUserCode";
+import handleAndSetSolutionSubmission from "@/lib/utils/handleAndSetSolutionSubmission";
+
+import { marked } from 'marked';
 
 
-const ProblemLayout = ({ }) => {
+const ProblemLayout = ({ setActiveTab }) => {
 
     const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_API_BACKEND_URL;
 
@@ -24,15 +27,19 @@ const ProblemLayout = ({ }) => {
     const { state, dispatch } = usePlaygroundContext();
     const [editing, setEditing] = useState(false);
     const [questionName, setQuestionName] = useState("");
+
     const [questionText, setQuestionText] = useState("");
+    const [rawQuestionText, setRawQuestionText] = useState("");
     
     const [inputOutputLoading, setInputOutputLoading] = useState(false);
     const [currentProblemIOList, setCurrentProblemIOList] = useState([]);
+    console.log('currentProblemIOList-NEW:', currentProblemIOList);
 
     useEffect(() => {
-
         setQuestionName(currentProblemState.name);
-        setQuestionText(currentProblemState.question);
+        const marked_question = marked(currentProblemState.question);
+        setQuestionText(marked_question);
+        setRawQuestionText(currentProblemState.question);
         setCurrentProblemIOList(currentProblemState.input_output_list);
     }, [currentProblemState])
 
@@ -42,7 +49,8 @@ const ProblemLayout = ({ }) => {
     }
 
     const _handleQuestionValueChange = (e) => {
-        setQuestionText(e.target.value);
+        // setQuestionText(e.target.value);
+        setRawQuestionText(e.target.value);
     }
 
     const _handleQuestionNameChange = (e) => {
@@ -53,83 +61,78 @@ const ProblemLayout = ({ }) => {
 
         setEditing(false);
         setInputOutputLoading(true);
+        
         let current_question_id = currentProblemState.question_id;
         let current_q_name = questionName;
-        let current_q_text = questionText;
-
-        if (isAuthenticated) {
-
-            let response_data = await updateUserQuestion(
-                userAccessToken,
-                null,
-                current_question_id,
-                current_q_name,
-                current_q_text
-            );
-
-            if (response_data['success'] === true){
-                let response_json_data = response_data['data'];
-                let example_io_list = JSON.parse(response_json_data['example_io_list']);
+        // let current_q_text = questionText;
+        let current_q_text = rawQuestionText;
     
-                setCurrentProblemIOList(example_io_list);
-                setInputOutputLoading(false);
+        let current_anon_user_id = getFromLocalStorage("user_id");
+        let update_user_question_response = await updateUserQuestion(
+            userAccessToken,
+            current_anon_user_id,
+            current_question_id,
+            current_q_name,
+            current_q_text
+        );
+        console.log('update_user_question_response:', update_user_question_response);
 
-                dispatch({
-                    type: "SET_QUESTION_INPUT_OUTPUT",
-                    question_id: response_json_data['unique_question_id'],
-                    name: response_json_data['question_name'],
-                    question: response_json_data['question_text'],
-                    input_output_list: example_io_list,
-                    code: currentProblemState.code
-                });
-                
+        if (update_user_question_response['success'] === true){
+
+            let response_json_data = update_user_question_response['data'];
+            let example_io_list = JSON.parse(response_json_data['example_io_list']);
+            
+            setCurrentProblemIOList(example_io_list);
+            setInputOutputLoading(false);
+
+            dispatch({
+                type: "SET_PLAYGROUND_STATE",
+
+                question_id: response_json_data['unique_question_id'],
+                name: response_json_data['question_name'],
+                question: response_json_data['question_text'],
+                input_output_list: example_io_list,
+                code: currentProblemState.code,
+                console_output: state.console_output,
+
+                lecture_question: false,
+                test_case_list: [],
+                all_test_cases_passed: null,
+                program_output_result: [],
+                ai_tutor_feedback: null,
+
+                user_code_submission_history_objects: []
+            });
+
+            if (isAuthenticated){
+
                 addQIDParam(response_json_data['unique_question_id']);
 
             }
+            else {
 
-        } else { 
-    
-            let current_anon_user_id = getFromLocalStorage("user_id");
-
-            // TODO:
-            let response_data = await updateUserQuestion(
-                null,
-                current_anon_user_id,
-                current_question_id,
-                current_q_name,
-                current_q_text
-            );
-
-            // let response_data = await generateQuestionTestCases(current_q_name, current_q_text);
-            // // console.log('response_data:', response_data);
-
-            if (response_data['success'] === true){
-                let response_json_data = response_data['data'];
-                let example_io_list = JSON.parse(response_json_data['example_io_list']);
-    
-                setCurrentProblemIOList(example_io_list);
-                setInputOutputLoading(false);
-    
-                let tmp_d = {
+                const tmp_dict = {
                     question_id: response_json_data['unique_question_id'],
                     name: response_json_data['question_name'],
                     question: response_json_data['question_text'],
                     input_output_list: example_io_list,
                     code: currentProblemState.code,
+                    console_output: state.console_output,
+
+                    lecture_question: false,
+                    test_case_list: [],
+                    all_test_cases_passed: null,
+                    program_output_result: [],
+                    ai_tutor_feedback: null,
+
+                    user_code_submission_history_objects: []
                 };
-                saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
+                saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_dict));
 
-                dispatch({
-                    type: "SET_QUESTION_INPUT_OUTPUT",
-                    question_id: response_json_data['unique_question_id'],
-                    name: response_json_data['question_name'],
-                    question: response_json_data['question_text'],
-                    input_output_list: example_io_list,
-                    code: currentProblemState.code
-                });
+            };
 
-            }
-
+        } else {
+            console.log('Failed to update question...')
         }
 
     }
@@ -191,52 +194,8 @@ const ProblemLayout = ({ }) => {
         }
     };
 
-    const handleSaveCodeInternal = async (payload) => {
-
-        let user_save_code_response_dict = await _handleUserSaveCode(
-            userAccessToken,
-            payload
-        );
-
-        if (isAuthenticated){
-
-            dispatch({
-                type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: user_save_code_response_dict['question_id'],
-                name: state.name,
-                question: state.question,
-                input_output_list: state.input_output_list,
-                code: state.code
-            });
-            
-            addQIDParam(user_save_code_response_dict['question_id']);
-
-        } else {
-
-            let tmp_d = {
-                question_id: user_save_code_response_dict['question_id'],
-                name: state.name,
-                question: state.question,
-                input_output_list: state.input_output_list,
-                code: state.code
-            };
-
-            dispatch({
-                type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: user_save_code_response_dict['question_id'],
-                name: state.name,
-                question: state.question,
-                input_output_list: state.input_output_list,
-                code: state.code
-            });
-            saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
-
-        }
-        
-    }
-
     // Run Code
-    const handleRun = () => {
+    const handleRun = async () => {
 
         dispatch({
             type: "UPDATE_CONSOLE_OUTPUT",
@@ -257,45 +216,144 @@ const ProblemLayout = ({ }) => {
             'question_name': state.name,
             'question_text': state.question,
             'example_input_output_list': state.input_output_list,
-        }
+            'lecture_question': state.lecture_question,
+            'code': current_user_code,
+            'user_id': null
+        };
 
-        dispatch({
-            type: "UPDATE_CODE_STATE",
-            code: current_user_code,
-        });
+        const saveCodeResponse = await handleSaveUserCode(
+            payload,
+            dispatch, 
+            isAuthenticated,
+            userAccessToken,
+            currentProblemState
+        );
 
-        // anon case - code saving
-        if (isAuthenticated){
-
-            payload['user_id'] = null;
-            payload['code'] = current_user_code;
-
-            handleSaveCodeInternal(
-                payload
-            )
-
-        } else {
-
-            // _saveUserCodeInBackend(current_user_code);
-
-            let anon_user_id = getFromLocalStorage("user_id");
-            // let payload = {
-            //     'user_id': anon_user_id,
-            //     'question_id': state.question_id,
-            //     'code': current_user_code
-            // }
-
-            payload['user_id'] = anon_user_id;
-            payload['code'] = current_user_code;
-            // saveUserCode(null, payload);
-
-            handleSaveCodeInternal(
-                payload
-            );
-
+        if ('error' in saveCodeResponse){
+            console.log('Could not save user code...');
         }
       
     };
+
+    const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+
+    const _handleSubmitButtonClick = async () => {
+
+        setIsSubmitLoading(true);
+        let lecture_qid = currentProblemState.question_id;
+        let code = currentProblemState.code;
+
+        const solutionSubmitResponse = await handleAndSetSolutionSubmission(
+            lecture_qid,
+            code,
+            userAccessToken,
+            state,
+            dispatch
+        );
+
+        if (solutionSubmitResponse['success'] != true){
+            console.log('Error submitting solution:', solutionSubmitResponse);
+        };
+
+        setIsSubmitLoading(false);
+        setActiveTab("submission");
+
+    }
+
+
+    const _handleProblemSetNextPartClick = async () => {
+
+        const next_ps_part = state.problem_set_next_part;
+        console.log('next_ps_part', next_ps_part);
+
+        const problem_set_question_list = state.problem_set_question_list;
+        console.log('ps-question-list:', problem_set_question_list);
+        
+        const next_problem_set_data = problem_set_question_list[next_ps_part];
+        console.log('next_problem_set_data:', next_problem_set_data);
+
+        // const current_pg_code = currentProblemState.code;
+        // const current_question_code = next_problem_set_data['code'];
+
+        // let new_pg_code = current_pg_code.trim() + '\n\n' + current_question_code + '\n\n';
+
+        // TODO: refactor and consolidate this function and the set problem set to single place
+        const current_pg_code = currentProblemState.code;
+
+        // Update View
+        dispatch({
+            type: "SET_PROBLEM_SET_PLAYGROUND_STATE",
+
+            question_id: next_problem_set_data['question_id'],
+            name: next_problem_set_data['name'],
+            question: next_problem_set_data['question'],
+            input_output_list: next_problem_set_data['input_output_list'],
+            code: current_pg_code,
+
+            lecture_question: next_problem_set_data['lecture_question'],
+            test_case_list: next_problem_set_data['test_case_list'],
+            
+            // submission history
+            all_test_cases_passed: null,
+            program_output_result: [],
+            ai_tutor_feedback: null,
+            user_code_submission_history_objects: next_problem_set_data['user_code_submission_history_objects'],
+
+            next_lecture_number: next_problem_set_data['next_lecture_number'],
+            next_question_object_id: next_problem_set_data['next_question_object_id'],
+
+            problem_set_object_id: state.problem_set_object_id,
+            problem_set_question: true,
+            problem_set_current_part: next_problem_set_data['problem_set_current_part'],
+            problem_set_next_part: next_problem_set_data['problem_set_next_part'],
+            problem_set_question_list: problem_set_question_list
+        });
+        
+    };
+
+    // TODO: finalize problem set
+
+    const _handleProblemSetLastPartClick = async () => {
+        // TODO: in this case, only update the question and related, not the code
+
+        const problem_set_question_list = state.problem_set_question_list;
+        console.log('ps-question-list:', problem_set_question_list);
+        
+        const last_ps_part = state.problem_set_current_part - 1;
+        const last_problem_set_data = problem_set_question_list[last_ps_part];
+        console.log('last_problem_set_data:', last_problem_set_data);
+
+        const current_pg_code = currentProblemState.code;
+
+        // Update View
+        dispatch({
+            type: "SET_PROBLEM_SET_PLAYGROUND_STATE",
+
+            question_id: last_problem_set_data['question_id'],
+            name: last_problem_set_data['name'],
+            question: last_problem_set_data['question'],
+            input_output_list: last_problem_set_data['input_output_list'],
+            code: current_pg_code,
+
+            lecture_question: last_problem_set_data['lecture_question'],
+            test_case_list: last_problem_set_data['test_case_list'],
+
+            // submission history
+            all_test_cases_passed: null,
+            program_output_result: [],
+            ai_tutor_feedback: null,
+            user_code_submission_history_objects: last_problem_set_data['user_code_submission_history_objects'],
+
+            next_lecture_number: last_problem_set_data['next_lecture_number'],
+            next_question_object_id: last_problem_set_data['next_question_object_id'],
+
+            problem_set_question: true,
+            problem_set_current_part: last_problem_set_data['problem_set_current_part'],
+            problem_set_next_part: last_problem_set_data['problem_set_next_part'],
+            problem_set_question_list: problem_set_question_list
+        });
+    }
+
 
     return (
 
@@ -303,11 +361,238 @@ const ProblemLayout = ({ }) => {
     
             <MathJax>
 
-                <div className="p-2 pl-4 pt-4">
+                <div className="p-2 pl-4 pt-2">
 
-                    {/* <Button>Random Question</Button> */}
+                    <div className="mt-1 flex justify-between items-center  border-b-[1px] border-gray-300  w-full">
 
-                    <div className="flex items-center justify-between pb-2">
+                        {state.lecture_question && (
+
+                            isAuthenticated ? (
+                                <div className="mt-0">
+                                    <span className="text-[11.5px] text-gray-600 dark:text-gray-500">
+                                        (Ctrl / Cmd) + S to save code | Submissions will take about 10-15 seconds.
+                                    </span>
+                                </div>
+                            ) : (
+                                
+                                <div className="mt-0">
+                                    <span className="text-[11.5px] text-gray-600 dark:text-gray-500">
+                                    Make a {" "}
+                                        <a
+                                            className='text-blue-600 dark:text-blue-500 hover:underline cursor-pointer'
+                                            href="/api/auth/login"
+                                        >
+                                            free account
+                                        </a> to submit and work on the lecture exercises!
+                                    </span>
+                                </div>
+                               
+                            )
+                        )}
+
+                        {/* Save Code Text */}
+                        {/* <div className="mt-0">
+                            <span className="text-[11.5px] text-gray-600 dark:text-gray-500">
+                                Shortcut: (Ctrl / Cmd) + S to save code
+                            </span>
+                        </div> */}
+
+
+                        {/* Button Div */}
+                        <div className="space-x-2 text-right pb-2">
+                            
+                            {(isAuthenticated === true) ? (
+                                
+                                <button
+                                    onClick={handleRun}
+                                    disabled={isRunLoading}
+                                    className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all 
+                                        ${isRunLoading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+                                    >
+                                    {isRunLoading ? (
+                                        <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faPlay} className="text-white pr-2" />
+                                    )}
+                                    {isRunLoading ? "Running..." : "Run Code"}
+                                </button>
+
+                            ): (isAuthenticated === false && currentProblemState.lecture_question === false) ? (
+
+                                <button
+                                    onClick={handleRun}
+                                    disabled={isRunLoading}
+                                    className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all 
+                                        ${isRunLoading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+                                    >
+                                    {isRunLoading ? (
+                                        <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faPlay} className="text-white pr-2" />
+                                    )}
+                                    {isRunLoading ? "Running..." : "Run Code"}
+                                </button>
+
+                            ) : (isAuthenticated === false && currentProblemState.lecture_question === true) ? (
+
+                                <button
+                                    onClick={handleRun}
+                                    disabled={true}
+                                    className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all bg-gray-400 cursor-not-allowed`}
+                                    >
+                                    {isRunLoading ? (
+                                        <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faPlay} className="text-white pr-2" />
+                                    )}
+                                    {isRunLoading ? "Running..." : "Run Code"}
+                                </button>
+
+                            ): (null)
+                            
+                            }
+
+
+                            {/* Run Code Button */}
+                            {/* {(isAuthenticated === true) ? (
+
+                                <button
+                                    onClick={handleRun}
+                                    disabled={isRunLoading}
+                                    className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all 
+                                        ${isRunLoading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+                                    >
+                                    {isRunLoading ? (
+                                        <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faPlay} className="text-white pr-2" />
+                                    )}
+                                    {isRunLoading ? "Running..." : "Run Code"}
+                                </button>
+
+                                ): (
+
+                                <button
+                                    onClick={handleRun}
+                                    disabled={true}
+                                    className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all bg-gray-400 cursor-not-allowed`}
+                                    >
+                                    {isRunLoading ? (
+                                        <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faPlay} className="text-white pr-2" />
+                                    )}
+                                    {isRunLoading ? "Running..." : "Run Code"}
+                                </button>
+                            
+                                )
+                            } */}
+                        
+
+                            {/* Submit Solution Button */}
+                            {/* {state.lecture_question ? (
+
+                                isAuthenticated ? (
+                                    <Button
+                                        disabled={isSubmitLoading}    
+                                        className="w-[130px] py-4 mr-2 mt-1 text-[14px] text-white font-medium rounded-xl transition-all bg-green-400 hover:bg-green-500"
+                                        onClick={_handleSubmitButtonClick}
+                                    >
+                                        {isSubmitLoading ? (
+                                            <>
+                                                <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                                Running...
+                                            </>
+                                        ) : (
+                                            <>
+                                                Submit Solution
+                                            </>
+                                        )}
+                                    </Button>
+                                ) : (
+                                    <Button
+                                    className="w-[130px] py-2 text-[14px] text-white font-medium rounded-xl transition-all bg-gray-400 cursor-not-allowed"
+                                    disabled
+                                    >
+                                        Submit Solution
+                                    </Button>
+                                )
+
+                            ): (
+
+                                <Button
+                                    disabled={true}
+                                    className="bg-gray-400 text-gray-700 cursor-not-allowed" // Add disabled styles
+                                >
+                                    Run Test Cases (coming soon...)
+                                </Button>
+
+                            )} */}
+
+                            {
+                                state.lecture_question && state.problem_set_question ? (
+                                    isAuthenticated ? (
+                                    <Button
+                                        disabled={isSubmitLoading}    
+                                        className="w-[130px] py-4 mr-2 mt-1 text-[14px] text-white font-medium rounded-xl transition-all bg-green-400 hover:bg-green-500"
+                                        onClick={_handleSubmitButtonClick}
+                                    >
+                                        {isSubmitLoading ? (
+                                        <>
+                                            <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                            Running...
+                                        </>
+                                        ) : (
+                                        <>Submit Part</>
+                                        )}
+                                    </Button>
+                                    ) : (
+                                    <Button
+                                        className="w-[130px] py-2 text-[14px] text-white font-medium rounded-xl transition-all bg-gray-400 cursor-not-allowed"
+                                        disabled
+                                    >
+                                        Submit Part
+                                    </Button>
+                                    )
+                                ) : state.lecture_question ? (
+                                    isAuthenticated ? (
+                                    <Button
+                                        disabled={isSubmitLoading}    
+                                        className="w-[130px] py-4 mr-2 mt-1 text-[14px] text-white font-medium rounded-xl transition-all bg-green-400 hover:bg-green-500"
+                                        onClick={_handleSubmitButtonClick}
+                                    >
+                                        {isSubmitLoading ? (
+                                        <>
+                                            <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                            Running...
+                                        </>
+                                        ) : (
+                                        <>Submit Solution</>
+                                        )}
+                                    </Button>
+                                    ) : (
+                                    <Button
+                                        className="w-[130px] py-2 text-[14px] text-white font-medium rounded-xl transition-all bg-gray-400 cursor-not-allowed"
+                                        disabled
+                                    >
+                                        Submit Solution
+                                    </Button>
+                                    )
+                                ) : (
+                                    <Button
+                                    disabled={true}
+                                    className="bg-gray-400 text-gray-700 cursor-not-allowed" // Add disabled styles
+                                    >
+                                    Run Test Cases (coming soon...)
+                                    </Button>
+                                )
+                            }
+
+                        </div>
+
+                    </div>
+                    
+                    <div className="flex items-center pb-2 mt-4">
                         
                         {editing ? (
 
@@ -322,24 +607,88 @@ const ProblemLayout = ({ }) => {
                             />
 
                         ):(
-                            
-                            <>
-                                <h1 className="font-semibold text-[17px] mr-2">
-                                    Question: {questionName}
-                                </h1>
+                            (state.problem_set_question === true) ? (
 
-                                <div className="flex space-x-4 mr-4">
-                                    <span 
-                                        className="text-[12px] text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-400 dark:hover:text-blue-400"
-                                        onClick={(e) => _handleEditQuestion(e)}
+                                <>
+                                    <h1 className="font-semibold text-[17px] mr-2">
+                                        Question: {questionName}
+                                    </h1>
+
+                                    {/* {(state.problem_set_current_part > 0) && <span
+                                        className="text-[13px] text-gray-700 hover:text-blue-400 cursor-pointer"
+                                        onClick={_handleProblemSetLastPartClick}
                                     >
-                                        <FontAwesomeIcon icon={faPencil} className="pr-1"/> 
-                                        edit question
-                                    </span>
-                                    
-                                </div>
+                                        <FontAwesomeIcon icon={faArrowLeft} className="pl-1"/> Last Part
+                                    </span>}
+
+                                    {state.problem_set_next_part && <span
+                                        className="text-[13px] text-gray-700 hover:text-blue-400 cursor-pointer pr-4"
+                                        onClick={_handleProblemSetNextPartClick}
+                                    >
+                                        Next Part <FontAwesomeIcon icon={faArrowRight} className="pl-1"/>
+                                    </span>} */}
+
+                                    {/* Last / Next Part */}
+                                    <div className="ml-4">
+                                        {(state.problem_set_current_part > 0) && (
+                                            <span
+                                                className="text-[12px] text-blue-500 hover:text-blue-400 cursor-pointer pr-3"
+                                                onClick={_handleProblemSetLastPartClick}
+                                            >
+                                                <FontAwesomeIcon icon={faArrowLeft} className="pr-1" /> Last Part
+                                            </span>
+                                        )}
+
+                                        <span className="px-0"></span>
+                                        {state.problem_set_next_part && (
+                                            <span
+                                                className="text-[12px] text-blue-500 hover:text-blue-400 cursor-pointer"
+                                                onClick={_handleProblemSetNextPartClick}
+                                            >
+                                                Next Part <FontAwesomeIcon icon={faArrowRight} className="pl-1"/>
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* {(state['lecture_question'] !== true) && (
+                                        <div className="flex space-x-4 mr-4">
+                                            <span 
+                                                className="text-[12px] text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-400 dark:hover:text-blue-400"
+                                                onClick={(e) => _handleEditQuestion(e)}
+                                            >
+                                                <FontAwesomeIcon icon={faPencil} className="pr-1"/> 
+                                                edit question
+                                            </span>
+
+                                        </div>
+                                    )} */}
+                                
+                                </>
+
+                            ) : (
+
+                                <>
+                                    <h1 className="font-semibold text-[17px] mr-2">
+                                        Question: {questionName}
+                                    </h1>
+
+                                    {(state['lecture_question'] !== true) && (
+                                        <div className="flex space-x-4 mr-4 ml-2">
+                                            <span 
+                                                className="text-[12px] text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-400 dark:hover:text-blue-400"
+                                                onClick={(e) => _handleEditQuestion(e)}
+                                            >
+                                                <FontAwesomeIcon icon={faPencil} className="pr-1"/> 
+                                                edit question
+                                            </span>
+
+                                        </div>
+                                    )}
+                                
+                                </>
+
+                            )
                             
-                            </>
 
                         )}
                       
@@ -360,7 +709,7 @@ const ProblemLayout = ({ }) => {
 
                             <textarea
                                 // value={currentProblemState.question}
-                                value={questionText}
+                                value={rawQuestionText}
                                 className="mt-3 w-full text-[14px] flex-grow resize-y p-3 bg-gray-50 dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 mr-2"
                                 placeholder="enter your question..."
                                 rows={2}
@@ -378,9 +727,13 @@ const ProblemLayout = ({ }) => {
                         </div>
                         
                     ) : (
-                        
-                        <p className="px-1 pt-2 leading-7 text-[14px] text-gray-900 dark:text-gray-300">
-                            {questionText}
+
+                        <p 
+                            // className="px-1 pt-2 leading-7 text-[14px] text-gray-900 dark:text-gray-300"
+                            className="px-1 pt-2 leading-7 text-[14px] text-gray-900 dark:text-gray-300 break-words whitespace-normal w-full max-w-[700px] overflow-x-auto"
+                            dangerouslySetInnerHTML={{ __html: questionText }}
+                        >
+                            {/* {questionText} */}
                         </p>
 
                     )}
@@ -457,61 +810,6 @@ const ProblemLayout = ({ }) => {
                         )
     
                     )}
-
-                    
-                    <div className="space-x-3 pt-8">
-
-                        {/* Run Code Button */}
-                        <button
-                            onClick={handleRun}
-                            disabled={isRunLoading}
-                            className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all 
-                                ${isRunLoading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
-                            >
-                            {isRunLoading ? (
-                                <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
-                            ) : (
-                                <FontAwesomeIcon icon={faPlay} className="text-white pr-2" />
-                            )}
-                            {isRunLoading ? "Running..." : "Run Code"}
-                        </button>
-
-                        {/* Save Code Button */}
-                        {/* <button
-                            disabled={isRunLoading}
-                            className={`w-[110px] py-2 text-[14px] text-white font-medium rounded-xl transition-all 
-                                ${isRunLoading ? "bg-gray-500 cursor-not-allowed" : "bg-green-700 hover:bg-green-500 text-white"}`}
-                            >
-                            <FontAwesomeIcon icon={faSave} className="text-white pr-2" />
-                            Save Code
-                        </button> */}
-
-                        {/* TODO: on feedback click -> route to tutor with message populated */}
-                        {/* <Button
-                            // onClick={submitCode}
-                        >Get Feedback</Button> */}
-                        
-                        {/* <Button
-                            onClick={chatWithTutor}
-                            // className="bg-black text-white"
-                        >
-                            Chat with Tutor
-                        </Button> */}
-
-                        <Button
-                            // onClick={submitCode}
-                            disabled={true} // Disable the button
-                            className="bg-gray-400 text-gray-700 cursor-not-allowed" // Add disabled styles
-                        >
-                            Run Test Cases (coming soon...)
-                        </Button>
-                    </div>
-
-                    <div className="mt-1">
-                    <span className="text-[11.5px] text-gray-600 dark:text-gray-500">
-                        Shortcut: (Ctrl / Cmd) + S to save code
-                    </span>
-                    </div>
 
                 </div>
 

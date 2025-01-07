@@ -21,18 +21,19 @@ export default function Dashboard() {
     // Updatiing user context
     useEffect(() => {
 
-        if (userContext) {
+        // if (userContext) {
 
-            if (userContext.isAuthenticated === false){
-                router.push('/');
-            } else {
-                setLoading(false);
-            }
+        //     if (userContext.isAuthenticated === false){
+        //         router.push('/');
+        //     } else {
+        //         setLoading(false);
+        //     }
 
-        }
+        // }
+
+        setLoading(false);
 
     }, [userContext, router]);
-
 
     return (
 

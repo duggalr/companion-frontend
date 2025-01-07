@@ -4,20 +4,8 @@ import { usePlaygroundContext } from "./usePlaygroundContext";
 import { getFromLocalStorage, saveToLocalStorage } from "../utils/localStorageUtils";
 import { fetchChatMessages } from "@/lib/backend_api/fetchChatMessages";
 import { saveUserQuestion } from "@/lib/backend_api/saveUserQuestion";
-// import { saveUserCode } from "../backend_api/saveUserCode";
-// // import { getFromLocalStorage, saveToLocalStorage } from "../../../lib/utils/localStorageUtils";
-// import { getFromLocalStorage, saveToLocalStorage } from "../utils/localStorageUtils";
-// import { saveUserRunCode } from "../api/saveUserRunCode";
-
 
 interface MessagePayload {
-    // parent_playground_object_id: string,
-    // text: string,
-    // user_code: string,
-    // all_user_messages_str: string,
-    // sender: string,
-    // type: string,
-
     parent_question_object_id: string,
     current_problem_name: string,
     current_problem_question: string,
@@ -53,6 +41,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     const _sendMessage = async (payload: MessagePayload) => {
 
+        console.log('PAYLOAD-WEBSOCKET:', payload);
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
             wsRef.current.send(JSON.stringify(payload));
         }
@@ -69,9 +58,9 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 "question_id": state.question_id,
                 "question_name": state.name,
                 "question_text": state.question,
-                "example_input_output_list": state.input_output_list
+                "example_input_output_list": state.input_output_list,
+                'lecture_question': state.lecture_question
             }
-
 
         } else {
 
@@ -81,7 +70,8 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 "question_id": state.question_id,
                 "question_name": state.name,
                 "question_text": state.question,
-                "example_input_output_list": state.input_output_list
+                "example_input_output_list": state.input_output_list,
+                'lecture_question': state.lecture_question
             }
 
         }
@@ -92,32 +82,47 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 userAccessToken,
                 qdict
             );
-    
             const new_question_object_id = save_user_response['data']['question_id'];
-    
-            dispatch({
-                type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: new_question_object_id,
-                name: state.name,
-                question: state.question,
-                input_output_list: state.input_output_list,
-                code: state.code
-            });
-    
-            if (!isAuthenticated){
+        
+            dispatch({type: 'UPDATE_QUESTION_ID', question_id: new_question_object_id});
 
-                const pg_question_dict = {
+            if (!isAuthenticated) {
+
+                // Update state dict in localStorage
+                const new_state_dict = {
+                    ...state,
                     question_id: new_question_object_id,
-                    name: state.name,
-                    question: state.question,
-                    input_output_list: state.input_output_list,
-                    code: state.code
-                }
-                saveToLocalStorage('playground_question_dict', JSON.stringify(pg_question_dict));
-    
+                };
+                saveToLocalStorage('playground_question_dict', JSON.stringify(new_state_dict));
+
             }
-    
+
             return new_question_object_id;
+
+            // dispatch({
+            //     type: "SET_QUESTION_INPUT_OUTPUT",
+            //     question_id: new_question_object_id,
+            //     name: state.name,
+            //     question: state.question,
+            //     input_output_list: state.input_output_list,
+            //     code: state.code,
+            //     lecture_question: state.lecture_question
+            // });
+    
+            // if (!isAuthenticated){
+
+            //     const pg_question_dict = {
+            //         question_id: new_question_object_id,
+            //         name: state.name,
+            //         question: state.question,
+            //         input_output_list: state.input_output_list,
+            //         code: state.code
+            //     }
+            //     saveToLocalStorage('playground_question_dict', JSON.stringify(pg_question_dict));
+    
+            // }
+    
+            // return new_question_object_id;
 
         } else {
 
@@ -141,15 +146,14 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
             }
         }
 
-        // const new_question_object_id = state.question_id;
-        
-        const qid = await _handleGetUserQuestion(
-            // new_question_object_id,
-            // isAuthenticated
-        );
+        let qid;
+        if (state.lecture_question === true){
+            qid = state.question_id;
+        } else {
+            qid = await _handleGetUserQuestion();
+        }
 
-        if (isAuthenticated){
-
+        if (isAuthenticated) {
             const user_current_code = state.code;
             const messageForBackend = {
                 parent_question_object_id: qid,
@@ -158,13 +162,16 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 text: current_user_message,
                 user_code: user_current_code,
                 all_user_messages_str: all_chat_messages_str,
+                lecture_question: state.lecture_question,
                 sender: 'user',
                 type: 'user_message',
+
+                problem_set_question: state.problem_set_question,
+                problem_set_object_id: state.problem_set_object_id
             };
 
             setMessages((messages) => [...messages, messageForBackend]);
             _sendMessage(messageForBackend);
-
         }
         else {
 
@@ -178,6 +185,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
                 user_code: user_current_code,
                 example_input_output_list: state.input_output_list,
                 all_user_messages_str: all_chat_messages_str,
+                lecture_question: state.lecture_question,
                 sender: 'user',
                 type: 'user_message',
             };
@@ -189,12 +197,7 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     }
 
-    // const sendMessage = useCallback((message: string) => {
-    //     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-    //         wsRef.current.send(message);
-    //     }
-    // }, []);
-
+    // TODO:
     useEffect(() => {
 
         const socket = new WebSocket(url);
@@ -235,34 +238,36 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     }, [url]);
 
 
-    const _handleAuthenticatedChatMessageInitialization = async (question_object_id: string) => {
+    const _handleAuthenticatedChatMessageInitialization = async (question_object_id: string, problem_set_question: boolean) => {
 
         if (userAccessToken){
             const user_chat_msg_list = await fetchChatMessages(
                 userAccessToken,
-                question_object_id
+                question_object_id,
+                state.lecture_question,
+                problem_set_question
             );
+
+            console.log('user_chat_msg_list:', user_chat_msg_list);
 
             if (user_chat_msg_list['data'].length > 0){
 
-                // const messageForBackend = {
-                //     parent_question_object_id: state.question_id,
-                //     current_problem_name: state.name,
-                //     current_problem_question: state.question,
-                //     text: current_user_message,
-                //     user_code: user_current_code,
-                //     all_user_messages_str: all_chat_messages_str,
-                //     sender: 'user',
-                //     type: 'user_message',
-                // };
-                setMessages(user_chat_msg_list['data']);
+                const initial_message = {
+                    text: `Welcome! 😄 I'm Companion, your personal programming tutor.
+    
+If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
+                    sender: "bot",
+                }
+                const user_chat_msg_list_data = user_chat_msg_list['data'];
+                user_chat_msg_list_data.unshift(initial_message);
+                setMessages(user_chat_msg_list_data);
     
             } else {
     
                 setMessages([{
                     text: `Welcome! 😄 I'm Companion, your personal programming tutor.
     
-    If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
+If you are running into a problem such as a bug in your code, a LeetCode problem, or need help understanding a concept, ask me and I will be more than happy to help.`,
                     sender: "bot",
                 }]);
     
@@ -274,19 +279,37 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
 
     useEffect(() => {
 
-        // TODO:
-        //    test below and finalize; go from there
-
         if (isAuthenticated){
-            // TODO:
-                // fetch messages for the question (qid)
+
             const url_search_params = new URLSearchParams(window.location.search);
+
+            const problem_set_object_id = url_search_params.get('psid');
+            const lesson_question_object_id = url_search_params.get('lesson_quid');
             const question_object_id = url_search_params.get('qid');
 
-            if (question_object_id){
+            if (problem_set_object_id){
+
+                // TODO:
+                console.log('problem question id:', problem_set_object_id);
+                console.log('PROBLEM SET STATE - WEBSOCKET:', state);
                 _handleAuthenticatedChatMessageInitialization(
-                    question_object_id
-                )
+                    problem_set_object_id,
+                    true
+                );
+
+            } else if (lesson_question_object_id){
+
+                console.log('lesson question id:', lesson_question_object_id);
+                _handleAuthenticatedChatMessageInitialization(
+                    lesson_question_object_id,
+                    false
+                );
+
+            } else if (question_object_id){
+                _handleAuthenticatedChatMessageInitialization(
+                    question_object_id,
+                    false
+                );
             } else {
                 setMessages([{
                     text: `Welcome! 😄 I'm Companion, your personal programming tutor.
@@ -300,9 +323,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
         else {
             
             // // Anon Case
-            
-            // // Fetch or initialize Anon User ID
-            // let current_user_id = getFromLocalStorage('user_id');
 
             // Fetch Messages
             const user_chat_messages = getFromLocalStorage("user_chat_messages");
@@ -332,7 +352,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     // Chat Messages Event Listener for Local Storage
     useEffect(() => {
         if (messages.length > 0) {
-            // localStorage.setItem('user_chat_messages', JSON.stringify(messages));
             saveToLocalStorage('user_chat_messages', JSON.stringify(messages));
         }
     }, [messages]);
@@ -341,7 +360,6 @@ If you are running into a problem such as a bug in your code, a LeetCode problem
     return {
         _handleUserMessageSend,
         _handleResetChatMessages,
-        // sendMessage,
         messages,
         generatedMessage,
         isGeneratingMessage,

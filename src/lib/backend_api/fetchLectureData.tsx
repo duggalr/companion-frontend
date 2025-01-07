@@ -2,14 +2,14 @@ import handleAPIFetch from "../utils/handleAPIFetch";
 
 const API_BACKEND_URL = process.env.NEXT_PUBLIC_API_BACKEND_URL;
 
-export async function fetchQuestionData(
-    question_object_id: string | null,
+export async function fetchLectureData(
+    lecture_number: string,
     token: string | null
 ) {
-
-    const endPointUrl = API_BACKEND_URL + '/fetch_question_data';
+    
+    const endPointUrl = API_BACKEND_URL + '/fetch_lecture_data';
     const payload = {
-        'question_id': question_object_id,
+        'lecture_number': lecture_number
     }
 
     const apiResponse = await handleAPIFetch(

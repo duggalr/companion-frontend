@@ -12,7 +12,13 @@ export const saveToLocalStorage = (key, value) => {
 export const getFromLocalStorage = (key) => {
     try {
         const serializedValue = localStorage.getItem(key);
-        return serializedValue ? JSON.parse(serializedValue) : null;
+        try {
+            if (serializedValue === null) return null;
+            return JSON.parse(serializedValue);
+        } catch (e) {
+            console.error("Error parsing JSON from localStorage:", e);
+            return serializedValue;  // Return original value if parsing fails
+        }
     } catch (error) {
         console.error(`Error getting data from localStorage: ${error}`);
         return null;

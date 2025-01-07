@@ -1,26 +1,14 @@
-import { useEffect, useState, useRef } from "react";
-// import { ResizableBox } from "react-resizable";
+import React, { useEffect, useState, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import useUserContext from "@/lib/hooks/useUserContext";
 import { usePlaygroundContext } from "@/lib/hooks/usePlaygroundContext";
-import { getFromLocalStorage, saveToLocalStorage } from "@/lib/utils/localStorageUtils";
-// import { saveUserCode } from "@/lib/backend_api/saveUserCode";
-import { _handleUserSaveCode } from "@/lib/utils/handleSaveUserCode";
-import addQIDParam from '@/lib/utils/addQidParam';
+import { handleSaveUserCode } from "@/lib/utils/handleSaveUserCode";
 
 
-const NewCodeEditor = ({ }) => {
+const NewCodeEditor = () => {
 
     const { isAuthenticated, userAccessToken } = useUserContext();
-
     const { state, dispatch } = usePlaygroundContext();
-    // let currentProblemState = state;
-
-    // const monacoRef = useRef(null);
-    // const editorRef = useRef(null);
-    // const modelRef = useRef(null);
-    // const [isEditorReady, setIsEditorReady] = useState(false);
-
     const [currentCode, setCurrentCode] = useState("");
     const codeRef = useRef("");
 
@@ -112,76 +100,39 @@ const NewCodeEditor = ({ }) => {
     }, []);
 
 
-    // const _handleUserSaveCode = async (user_access_token, payload) => {
+    const _handleSaveUserCodeRequest = async () => {
 
-    //     let saveCodeRes = await saveUserCode(
-    //         user_access_token,
-    //         payload
-    //     );
-    //     console.log('SAVED-CODE-RES:', saveCodeRes);
-
-    //     let question_object_id = saveCodeRes['data']['question_object_id'];
-
-    //     dispatch({
-    //         type: "SET_QUESTION_INPUT_OUTPUT",
-    //         question_id: question_object_id,
-    //         name: state.name,
-    //         question: state.question,
-    //         input_output_list: state.input_output_list,
-    //         code: codeRef.current
-    //     });
-
-    //     let tmp_d = {
-    //         question_id: question_object_id,
-    //         name: state.name,
-    //         question: state.question,
-    //         input_output_list: state.input_output_list,
-    //         code: codeRef.current
-    //     };
-
-    //     saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
-
-    // };
-
-    const handleSaveCodeInternal = async (payload) => {
-
-        let user_save_code_response_dict = await _handleUserSaveCode(
-            userAccessToken,
-            payload
-        );
-
-        if (isAuthenticated){
-
-            dispatch({
-                type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: user_save_code_response_dict['question_id'],
-                name: state.name,
-                question: state.question,
-                input_output_list: state.input_output_list,
-                code: codeRef.current
-            });
-
-            addQIDParam(user_save_code_response_dict['question_id']);
+        if (state.lecture_question === true && !isAuthenticated){
             
-        } else {
+            console.log('Not saving in this case...')
 
-            let tmp_d = {
-                question_id: user_save_code_response_dict['question_id'],
-                name: state.name,
-                question: state.question,
-                input_output_list: state.input_output_list,
-                code: codeRef.current
+        }
+        else {
+
+            showTemporaryAlert();
+
+            let payload = {
+                'question_id': state.question_id,
+                'question_name': state.name,
+                'question_text': state.question,
+                'example_input_output_list': state.input_output_list,
+                'lecture_question': state.lecture_question,
+                'code': codeRef.current,
+                'user_id': null
             };
-
-            dispatch({
-                type: "SET_QUESTION_INPUT_OUTPUT",
-                question_id: user_save_code_response_dict['question_id'],
-                name: state.name,
-                question: state.question,
-                input_output_list: state.input_output_list,
-                code: codeRef.current
-            });
-            saveToLocalStorage('playground_question_dict', JSON.stringify(tmp_d));
+            console.log('payload-SAVE:', payload);
+    
+            const saveCodeResponse = await handleSaveUserCode(
+                payload,
+                dispatch, 
+                isAuthenticated,
+                userAccessToken,
+                state
+            );
+    
+            if ('error' in saveCodeResponse){
+                console.log('Could not save user code...');
+            };
 
         }
 
@@ -194,74 +145,8 @@ const NewCodeEditor = ({ }) => {
             if ((event.metaKey || event.ctrlKey) && event.key === 's') {
                 event.preventDefault();
 
-                // _handleCodeStateChange(codeRef.current);
-
-                showTemporaryAlert();
-
-                let payload = {
-                    'question_id': state.question_id,
-                    'question_name': state.name,
-                    'question_text': state.question,
-                    'example_input_output_list': state.input_output_list,
-                };
-
-                dispatch({type: "UPDATE_CODE_STATE", code: codeRef.current});
-
-                if (isAuthenticated){
-
-                    // // // TODO: modify this and go from there
-                    // // let payload = {
-                    // //     'user_id': null,
-                    // //     'question_id': state.question_id,
-                    // //     'code': codeRef.current
-                    // // };
-                    
-                    payload['user_id'] = null;
-                    payload['code'] = codeRef.current;
-                    // saveUserCode(
-                    //     userAccessToken,
-                    //     payload
-                    // )
-
-                    // _handleUserSaveCode(
-                    //     userAccessToken,
-                    //     payload
-                    // );
-
-                    handleSaveCodeInternal(
-                        payload
-                    );
-
-                } else {
-                
-                    // Anon Case
-                    let anon_user_id = getFromLocalStorage("user_id");
-
-                    // let payload = {
-                    //     'user_id': anon_user_id,
-                    //     'question_id': state.question_id,
-                    //     'code': codeRef.current
-                    // };
-
-                    payload['user_id'] = anon_user_id;
-                    payload['code'] = codeRef.current;                    
-
-                    // saveUserCode(
-                    //     null,
-                    //     payload
-                    // );
-
-                    // _handleUserSaveCode(
-                    //     null,
-                    //     payload
-                    // );
-
-                    handleSaveCodeInternal(
-                        payload
-                    );
-
-                }
-                
+                // Save User Code and Update State
+                _handleSaveUserCodeRequest();
             }
         };
 
