@@ -33,7 +33,8 @@ export default function HeroPrimary() {
 
     useEffect(() => {
 
-        let current_theme = getFromLocalStorage('theme');
+        // let current_theme = getFromLocalStorage('theme');
+        let current_theme = localStorage.getItem('theme');
         setCurrentTheme(current_theme);
 
     }, []);
