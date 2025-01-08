@@ -7,7 +7,6 @@ import AnimatedShinyText from '@/components/ui/animated-shiny-text';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { MagicCard } from "@/components/ui/magic-card";
-import { getFromLocalStorage } from '@/lib/utils/localStorageUtils';
 
 
 export default function HeroPrimary() {
@@ -33,7 +32,7 @@ export default function HeroPrimary() {
 
     useEffect(() => {
 
-        let current_theme = getFromLocalStorage('theme');
+        let current_theme = localStorage.getItem('theme');
         setCurrentTheme(current_theme);
 
     }, []);
