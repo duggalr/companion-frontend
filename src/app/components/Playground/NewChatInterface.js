@@ -99,7 +99,7 @@ const NewChatInterface = () => {
 
                     {(messages.length > 1 && !isAuthenticated) && (
                         <button className="text-blue-500 text-xs" onClick={handleClearMessages}>
-                            Clear text
+                            Clear Chat
                         </button>
                     )}
                 </div>
