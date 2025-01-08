@@ -277,25 +277,33 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
                 if (current_pg_qdict){
                     const current_pg_qdict_json = JSON.parse(current_pg_qdict);
 
-                    dispatch({
-                        type: "SET_PLAYGROUND_STATE",
+                    if (!('question' in current_pg_qdict_json)){  // invalid playground dict in localstorage so set random question
 
-                        // question info
-                        question_id: current_pg_qdict_json['question_id'],
-                        name: current_pg_qdict_json['name'],
-                        question: current_pg_qdict_json['question'],
-                        input_output_list: current_pg_qdict_json['input_output_list'],
-                        code: current_pg_qdict_json['code'],
-                        console_output: state.console_output,
-                        lecture_question: false,
-                        test_case_list: [],
+                        _setRandomQuestion();
 
-                        // submission feedback
-                        all_test_cases_passed: null,
-                        program_output_result: [],
-                        ai_tutor_feedback: null,
-                        user_code_submission_history_objects: []
-                    });
+                    } else {
+
+                        dispatch({
+                            type: "SET_PLAYGROUND_STATE",
+    
+                            // question info
+                            question_id: current_pg_qdict_json['question_id'],
+                            name: current_pg_qdict_json['name'],
+                            question: current_pg_qdict_json['question'],
+                            input_output_list: current_pg_qdict_json['input_output_list'],
+                            code: current_pg_qdict_json['code'],
+                            console_output: state.console_output,
+                            lecture_question: false,
+                            test_case_list: [],
+    
+                            // submission feedback
+                            all_test_cases_passed: null,
+                            program_output_result: [],
+                            ai_tutor_feedback: null,
+                            user_code_submission_history_objects: []
+                        });
+
+                    }
 
                 }
                 
