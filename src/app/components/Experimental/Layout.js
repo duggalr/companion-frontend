@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faComment, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faComment, faXmark, faQuestion } from "@fortawesome/free-solid-svg-icons";
 
 
 const ExperimentalLayout = () => {
@@ -38,11 +38,11 @@ const ExperimentalLayout = () => {
                 </div>
 
                 {/* Next Chapter */}
-                <div className="text-right flex text-[15px] tracking-normal">
+                {/* <div className="text-right flex text-[15px] tracking-normal">
                     <h1 className="text-gray-900 hover:text-blue-400 cursor-pointer">
                         Next Chapter <FontAwesomeIcon icon={faArrowRight} className="pl-1 text-[14px]" />
                     </h1>
-                </div>
+                </div> */}
 
             </div>
 
@@ -58,10 +58,22 @@ const ExperimentalLayout = () => {
                     </p>
                 </div>
 
-                <div className="mt-6 text-center space-x-2">
-                    <button type="button" className="py-3 px-6 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Ask a Question</button>
+                <div className="mt-8 text-center space-x-4">
+                    <button
+                        type="button"
+                        className="py-3 px-7 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                    >
+                        <FontAwesomeIcon icon={faQuestion} className="pr-1" />
+                        Ask a Question
+                    </button>
 
-                    <button type="button" className="text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-3 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Next</button>
+                    <button
+                        type="button"
+                        className="py-3 px-7 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                    >
+                        Proceed to an Example
+                        <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
+                    </button>
                 </div>
 
             </div>

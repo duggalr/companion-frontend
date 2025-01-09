@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from 'react';
-import ExperimentalLayout from '@/app/components/Experimental/Layout';
+import ExampleLayout from '@/app/components/Experimental/ExampleLayout';
 
 
 export default function Home() {
@@ -16,7 +16,7 @@ export default function Home() {
     return (
 
         <main className="h-screen">
-            <ExperimentalLayout/>
+            <ExampleLayout />
         </main>
 
     );
