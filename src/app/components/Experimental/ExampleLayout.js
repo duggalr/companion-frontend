@@ -88,7 +88,7 @@ const ExampleLayout = () => {
 
                 {/* Right Side: Code Editor and Console */}
                 <div className="w-2/3 ml-6 flex flex-col pt-3 border-l-2 border-gray-50">
-                    
+
                     {/* Editor */}
                     <div className="flex-grow p-4 pb-0">
                         

@@ -122,7 +122,7 @@ const NewChatInterface = () => {
                             </MathJax>
                         </div>
                     ))}
-                    
+
                     {/* Display the streaming message here */}
                     {isGeneratingMessage && (
                         <div className="self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-3 rounded-lg w-full max-w-full break-words text-[13px] whitespace-pre-wrap">
