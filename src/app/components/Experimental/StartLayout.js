@@ -36,57 +36,20 @@ const StartLayout = () => {
     const [userGoalSummary, setUserGoalSummary] = useState("");
     const userGoalSummaryRef = useRef("");
 
-    // User Summary Generation
-    const generateAndDisplayUserSummary = async () => {
-
-        let user_messages = JSON.parse(getFromLocalStorage('new_course_chat_messages'));
-        console.log('user_messages:', user_messages);
-        
-        let all_chat_messages_str = "";
-        for (let i = 0; i <= messages.length-1; i++) {
-            if (messages[i].sender == 'user'){
-                all_chat_messages_str += "USER: " + messages[i].text + "\n";
-            } else {
-                all_chat_messages_str += "AI: " + messages[i].text + "\n";
-            }
-        };
-
-        console.log('all-chat-messages:', all_chat_messages_str);
-
-        let user_conversation_data = {'user_conversation_string': all_chat_messages_str};
-        console.log('user-summary-data:', user_conversation_data);
-
-        const endPointUrl = 'http://127.0.0.1:8000/generate_user_goal_summary';
-        const apiResponse = await fetch(endPointUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(user_conversation_data)
-        });
-
-        console.log('api-response:', apiResponse);
-
-        if (apiResponse['success'] === true){
-
-            setUserGoalSummary(apiResponse['ai_response_message_string']);
-            setShowUserCourseModule(true);
-
-        }
-
-    }
-
     // Websocket Chat Messages
     const wsRef = useRef(null);
     const accumulatedMessageRef = useRef("");
+
+//     I will get you very familiar with Python and will always be there provide feedback and answer any questions you may have, as you go through the course!
+// Before we start, I'm curious as to why you want to learn Python? Are you just curious? Do you want to become a developer? Do you have a specific project in mind? Maybe you can briefly tell me in a sentence or two...
+// By giving me this information, I can be of better assistance as you progress the course.
+
     const [messages, setMessages] = useState([{
-        text: `Welcome! 👋 I'm Companion, your AI teacher and tutor.
+        text: `Welcome! 👋 I'm Companion, your AI teacher and tutor, guiding you through the course.
 
-I will get you very familiar with Python and will always be there provide feedback and answer any questions you may have, as you go through the course!
+Before we get started, I want to learn just a litle bit more about you, to help ensure the course is as personalized for you as possible.
 
-Before we start, I'm curious as to why you want to learn Python? Are you just curious? Do you want to become a developer? Do you have a specific project in mind? Maybe you can briefly tell me in a sentence or two...
-
-By giving me this information, I can be of better assistance as you progress the course.`,
+What's your name?`,
         sender: "bot",
         }
     ]);
@@ -119,6 +82,7 @@ By giving me this information, I can be of better assistance as you progress the
                 if (msg_text === "DONE"){
 
                     console.log('MESSAGING COMPLETE...')
+
                     // Generate Summary
                     setMessagesDisabled(true);                    
                     
@@ -197,46 +161,6 @@ By giving me this information, I can be of better assistance as you progress the
                 }
 
             }
-
-            // if (message === 'DONE') {
-
-            //     console.log('done...');
-
-            //     setMessages((prevMessages) => [
-            //         ...prevMessages,
-            //         { text: accumulatedMessageRef.current, sender: "bot" },
-            //     ]);
-
-            //     setTimeout(() => {
-            //         setGeneratedMessage("");
-            //         setIsGeneratingMessage(false);
-            //         setIsLoading(false);
-            //     }, 50);
-
-            //     // Generate Summary
-            //     setMessagesDisabled(true);
-            //     generateAndDisplayUserSummary();
-
-            // } else if (message === "MODEL_GEN_COMPLETE") {
-
-            //     setMessages((prevMessages) => [
-            //         ...prevMessages,
-            //         { text: accumulatedMessageRef.current, sender: "bot" },
-            //     ]);
-
-            //     setTimeout(() => {
-            //         setGeneratedMessage("");
-            //         setIsGeneratingMessage(false);
-            //         setIsLoading(false);
-            //     }, 50);
-
-            // } 
-            
-            // else {
-            //     accumulatedMessageRef.current += message;
-            //     setGeneratedMessage((prev) => prev + message);
-            //     setIsGeneratingMessage(true);
-            // }
 
         };
 
@@ -759,7 +683,7 @@ By giving me this information, I can be of better assistance as you progress the
             {(showUserCourseModule === true) ? 
 
                 (
-                    
+
                     <div className="flex flex-col items-center min-h-screen mt-0">
 
                         <div className="flex flex-grow w-full max-w-[1020px] py-0">
@@ -767,20 +691,14 @@ By giving me this information, I can be of better assistance as you progress the
                             {/* Left Column */}
                             <div className="w-1/2 p-0 pt-0">
                                 <h2 className="text-[19px] font-semibold text-gray-800 mb-4">
-                                    So Rahul, let&apos;s proceed...
+                                    Shall we now begin... 😅
                                 </h2>
 
                                 {/* Summary */}
                                 <div className="space-y-4">
                                     <div>
-                                        {/* <h3 className="text-gray-700 font-medium">Title</h3> */}
                                         <p className="text-gray-600 text-[15.5px] tracking-normal leading-9 pt-2">
                                             {userGoalSummary}
-                                            {/* To summarize, you want to learn python because lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                                            <br/><br/>
-                                            Vestibulum gravida, sapien non mattis dictum, nulla eros consequat nisl, tristique blandit sem ante sit amet urna. Pellentesque nisi mi, blandit vel varius non, sollicitudin eget tortor. Quisque dictum nulla.
-                                            <br/><br/>
-                                            Pellentesque nisi mi, blandit vel varius non, sollicitudin eget tortor. Quisque dictum nulla. */}
                                         </p>
                                     </div>
                                 </div>
@@ -856,31 +774,6 @@ By giving me this information, I can be of better assistance as you progress the
 
                     </div>
 
-                    // <div className="flex flex-col items-center min-h-screen mt-20">
-                    // <div className="flex flex-grow w-full max-w-[1020px] py-0">
-                        
-                    //     <div className="w-1/2 p-0 pt-8">
-
-                    //         <h2 className="text-[19px] font-semibold text-gray-800 mb-4">
-                    //             To summarize:
-                    //         </h2>
-                            
-                    //         <p>
-                    //         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis et blandit magna, at lobortis tellus. Sed suscipit vehicula nisl non ullamcorper. Sed maximus, nunc sed tempor pretium, nisi leo vestibulum lectus, mollis sollicitudin sapien mi lobortis tellus.
-                    //         </p>
-                            
-                    //     </div>
-
-                    //     <div className="w-1/2 p-0 pt-8">
-
-                    //         <h2 className="text-[19px] font-semibold text-gray-800 mb-4">
-                    //             Column Two
-                    //         </h2>
-
-                    //     </div>
-
-                    // </div>
-
                 ): (
 
                     (showChatLayout === true) ? (
@@ -918,24 +811,6 @@ By giving me this information, I can be of better assistance as you progress the
                                         {generatedMessage}
                                     </div>
                                 )}
-        
-                                {/* <div
-                                    className={`self-end bg-blue-400 text-white p-3 rounded-lg w-full max-w-full break-words text-[14px] leading-6 whitespace-pre-wrap`}
-                                >
-                                    Welcome! 👋 I&apos;m <strong>Companion</strong>, your AI teacher and tutor.
-                                    <br/><br/>
-                                    I will get you very familiar with Python and will always be there provide feedback and answer any questions you may have, as you go through the course!
-                                    <br/><br/>
-                                    Before we start, I&apos;m curious as to why you want to learn Python? Are you just curious? Do you want to become a developer? Do you have a specific project in mind? Maybe you can briefly tell me in a sentence or two...
-                                    <br/><br/>
-                                    By giving me this information, I can be of better assistance as you progress the course.
-                                </div> */}
-        
-                                {/* <div
-                                    className={`self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-3 rounded-lg w-full max-w-full break-words text-[14px] leading-6 whitespace-pre-wrap`}
-                                >
-                                    Phasellus risus orci, malesuada aliquam dui a, suscipit pulvinar velit. Ut tempor fringilla nisi vitae ultrices.
-                                </div> */}
         
                             </div>
         
