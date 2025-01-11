@@ -674,7 +674,7 @@ What's your name?`,
 
         }
 
-    ]
+    ];
 
     return (
 
