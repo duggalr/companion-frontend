@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faComment, faXmark, faQuestion } from "@fortawesome/free-solid-svg-icons";
-import ExampleLayout from "@/app/components/Experimental/ExampleLayout";
+// import ExampleLayout from "@/app/components/Experimental/ExampleLayout";
+import FloatingChat from "@/app/components/Experimental/FloatingChat";
+import NoteParentLayout from "@/app/components/Experimental/NoteParentLayout";
+import SecondNoteParentLayout from "@/app/components/Experimental/SecondNoteParentLayout";
+import TypeWriter from "@/app/components/Experimental/TypeWriter";
+
 
 // Course Module List
 const course_syllabus_list = [
@@ -243,38 +248,90 @@ const course_syllabus_list = [
 
     {
         "id": 'cb6e8ad4-e457-430f-8641-1241c4d93f2d',
-        "chapter_name": "Chapter 3: Lists",
+        "chapter_number": 3,
+        "chapter_name": "Lists",
         "chapter_description": "This chapter introduces and explains the concept of lists in Python.",
 
         "module_list": [
             {
-                "module_name": "Introduction to Lists in Python",
+                "module_number": 1,
+                "module_name": "Introduction to Lists",
                 "order": [
+
                     {
-                        "type": "notes",
-                        "text": "A list is a collection of items in a particular order. Lists allow you to store multiple items in a single variable and are defined by square brackets `[]`. Unlike arrays in many other programming languages, Python lists can contain elements of different types. Lists are mutable, meaning their content can be changed after their creation.",
+                        "title": "What is a List?",
+                        "description": "So, **what is a list?** Think of a list like a container where you can keep a bunch of items in a specific order. So, if you're building a card game like poker, you might want to keep track of a deck of cards, and the order of those cards matters. Here's an example..",
+                        "key_points": [
+                            "A list is just a collection of things that are ordered (so the order *counts*! 👀).",
+                            "Lists let you group multiple items into one variable (like a deck of cards).",
+                            "In Python, we define a list using square brackets `[]`."
+                        ],
+                        "example": "[1, 2, 3, 4]",
+                        "try_it": "Try creating your own list on the IDE to the right with 3 numbers of your choice and print it out. Remember, use square brackets and separate the items with commas."
                     },
+
                     {
-                        "type": "example",
-                        "problem_description": "Create a simple list of bicycle brands.",
-                        "code": "bicycles = ['trek', 'cannondale', 'redline', 'specialized']\nprint(bicycles)"
+                        "title": "How to Create a List",
+                        "description": "Creating a list in Python is pretty simple. You just need to use square brackets `[]`, and separate your items with commas. For example, imagine you're starting a simple list of cards for a game. You might just put numbers, like this: [1, 2, 5, 3, 4, 'Ace', 'King']",
+                        "key_points": [
+                            "Use square brackets `[]` to create your list.",
+                            "Items inside the list are separated by commas.",
+                            "The items can be anything—numbers, words, or even more lists!"
+                        ],
+                        "example": "[\"apple\", 1, 3.14, True]",
+                        "try_it": "Try creating a list with 3 different types of items—like a string, an integer, and a float—and print it out."
                     },
+
                     {
-                        "type": "example",
-                        "problem_description": "Using lists to store numeric and mixed data types.",
-                        "code": "mixed_list = [1, 'apple', 3.14, True]\nprint(mixed_list)"
+                        "title": "Lists Can Hold Different Types of Items",
+                        "description": "To expand on the last section examples further, here’s something cool about Python lists: you can store different types of data in the same list! In many other programming languages, you’d need to stick with one type of data per list (like all numbers or all strings). But in Python, you can mix and match—this is super useful when you want to track a variety of things, like card values and suits.",
+                        "key_points": [
+                            "Lists in Python are flexible — different types of items can live in the same list.",
+                            "You could mix numbers, strings, booleans, etc. in one list. Imagine a list with card values and suits!",
+                            "This is way easier than some other languages where you’d need separate arrays for different types."
+                        ],
+                        "example": "[1, \"banana\", 3.14, False, 'Ace', 42, 'Game of Life']",
+                        "try_it": "Try creating a list with 4 items: a number, a string, a boolean, and a float. Print your list to see how Python handles the mix of types."
                     },
+
                     {
-                        "type": "exercise",
-                        "question": "Create a list of your favorite fruits and print the entire list.",
-                        "solution": "#TODO:"
+                        "title": "Lists are Ordered",
+                        "description": "One important thing to know is that **order matters** in lists. So, if you're creating a deck of cards for a game, the order of the cards will stay the same unless you change it. This could be really useful when you need to shuffle a deck or pick cards from a specific spot.",
+                        "key_points": [
+                          "The items in a list stay in the same order you put them in.",
+                          "You can access any item in the list by its position, or **index**. The first item is at position 0, the second at position 1, and so on."
+                        ],
+                        "example": "[\"apple\", \"banana\", \"cherry\"]",
+                        "indexing_example": "\"If you want the first item, it's at index 0. So `list[0]` will give you 'apple'.\"",
+                        "try_it": "Create a list of 5 items (any items you want). Try accessing the first item using `list[0]`, then access the last item using `list[-1]`."
                     },
+
                     {
-                        "type": "exercise",
-                        "question": "Create a list that contains a combination of strings, integers, and floats. Print the list and verify the types of each element.",
-                        "solution": "#TODO:"
+                        "title": "Lists are Mutable",
+                        "description": "A key thing to know about lists is that they are **mutable**. This just means that you can change them after you create them. Let’s say you make a list of some cards, and you want to swap one of the cards for another—no problem! You can update lists easily.",
+                        "key_points": [
+                            "You can change the items in a list at any time.",
+                            "This is different from other data types in Python (like strings or tuples) that you can’t change after they're created."
+                        ],
+                        "example": "[1, 2, 3]",
+                        "modification_example": "If you do `list[0] = 10`, the list will change to `[10, 2, 3]`.",
+                        "try_it": "Create a list of 3 numbers, then change the second number by assigning a new value to `list[1]`. Print the list before and after the change."
                     },
-                ]
+
+                    {
+                        "title": "Quick Recap & Practice",
+                        "description": "Okay, let’s recap everything we’ve learned so far. You’ve got a good grasp of what lists are and how they work. Now let’s do a little practice to make sure it sticks!",
+                        "key_points": [
+                          "Lists are collections of ordered items.",
+                          "You can store different types of items in the same list.",
+                          "Lists are mutable—meaning you can change them anytime!"
+                        ],
+                        "exercise": "Create a list with 3 different items: one number, one word, and one boolean. Then, change one of the items in your list. For example, you could change a number to another number or swap a word.",
+                        "try_it": "Now that you’ve practiced creating and modifying lists, try to create a list with 5 items (mix up the data types) and change one of the middle items. Print your list before and after the change."
+                    }
+                      
+                ],
+                
             },
 
             {
@@ -467,25 +524,9 @@ const course_syllabus_list = [
 
 
 const ModuleLayout = ({ module_id }) => {
+
     const [isChatOpen, setIsChatOpen] = useState(false);
     const chatRef = useRef(null);
-
-    const handleClickOutside = (event) => {
-      if (chatRef.current && !chatRef.current.contains(event.target)) {
-        setIsChatOpen(false);
-      }
-    };
-
-    useEffect(() => {
-        if (isChatOpen) {
-            document.addEventListener("mousedown", handleClickOutside);
-        } else {
-            document.removeEventListener("mousedown", handleClickOutside);
-        }
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [isChatOpen]);
 
     const [currentModuleInfoDict, setCurrentModuleInfoDict] = useState({});
     const [currentSubModuleFullList, setCurrentSubModuleFullList] = useState([]);
@@ -495,46 +536,17 @@ const ModuleLayout = ({ module_id }) => {
     const [currentSubModuleMaterialDict, setCurrentSubModuleMaterialDict] = useState({});
     const [nextType, setNextType] = useState(null);
 
-    useEffect(() => {
+    // Initial State Loading
+    const [isLoading, setLoading] = useState(true);
 
-        console.log('MODULE ID:', module_id);
 
-        let module_dict = course_syllabus_list[module_id];
-        let current_sub_module_list = module_dict['module_list'];
-        setCurrentSubModuleFullList(current_sub_module_list);
-
-        // id: '509266a3-2c78-47f1-93ab-1080e8761404',
-        // chapter_number: 2,
-        // chapter_name: "Variables and Data Types",
-        // chapter_description: "This chapter introduces and explains the concept of variables and common data types in Python."
-
-        setCurrentModuleInfoDict({
-            id: module_dict['id'],
-            chapter_number: module_dict['chapter_number'],
-            chapter_name: module_dict['chapter_name'],
-            chapter_description: module_dict['chapter_description']
-        });
-
-        setCurrentSubModuleOrderIndex(0);
-
-        console.log('current-sub-mod-dict:', current_sub_module_list[0]);
-        setCurrentSubModule(current_sub_module_list[0]);
-        
-        // set to first
-        let first_info = current_sub_module_list[0]['order'][0];
-        console.log('first_info:', first_info);
-        setCurrentSubModuleMaterialDict(first_info);
-
-        let next_type = current_sub_module_list[0]['order'][1]['type'];
-        console.log('next-type:', next_type);
-        setNextType(next_type);
-
-    }, [module_id]);
-
+    const handleClickOutside = (event) => {
+        if (chatRef.current && !chatRef.current.contains(event.target)) {
+            setIsChatOpen(false);
+        }
+    };
 
     const handleSubModuleNextClick = async () => {
-
-        console.log('tmp one');
 
         let current_idx = currentSubModuleOrderIndex + 1;
         console.log('current_idx', current_idx);
@@ -548,7 +560,7 @@ const ModuleLayout = ({ module_id }) => {
         let first_info = li[0]['order'][current_idx];
         console.log('tmp-first-info-new:', first_info);
         setCurrentSubModuleMaterialDict(first_info);
-        
+       
         // console.log('first_info:', first_info);
         // setCurrentSubModuleMaterialDict(first_info);        
 
@@ -560,18 +572,101 @@ const ModuleLayout = ({ module_id }) => {
     };
 
 
+    useEffect(() => {
+        if (isChatOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+        } else {
+            document.removeEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isChatOpen]);
+
+
+    useEffect(() => {
+
+        console.log('MODULE ID:', module_id);
+
+        let module_dict = course_syllabus_list[module_id];
+        console.log('module-dict:', module_dict);
+
+        setCurrentModuleInfoDict({
+            id: module_dict['id'],
+            chapter_number: module_dict['chapter_number'],
+            chapter_name: module_dict['chapter_name'],
+            chapter_description: module_dict['chapter_description']
+        });
+
+        let current_sub_module_list = module_dict['module_list'];
+        setCurrentSubModuleFullList(current_sub_module_list);
+
+        // Always start at first sub-module (unless otherwise specifed from backend)
+        let current_sub_module_index = 0;
+        setCurrentSubModuleOrderIndex(current_sub_module_index);
+        setCurrentSubModule(current_sub_module_list[current_sub_module_index]);
+
+        // Start and show the first information dict in the order list
+        let first_material_to_present = current_sub_module_list[current_sub_module_index]['order'][0];
+        console.log('first_material_to_present:', first_material_to_present);
+        setCurrentSubModuleMaterialDict(first_material_to_present);
+
+        let next_material_to_present = current_sub_module_list[current_sub_module_index]['order'][1]['type'];
+        console.log('next-type:', next_material_to_present);
+        setNextType(next_material_to_present);
+
+        // TODO: 
+        setLoading(false);
+
+        // let first_info = current_sub_module_list[0]['order'][0];
+        // console.log('first_info:', first_info);
+        // setCurrentSubModuleMaterialDict(first_info);
+
+        // // id: '509266a3-2c78-47f1-93ab-1080e8761404',
+        // // chapter_number: 2,
+        // // chapter_name: "Variables and Data Types",
+        // // chapter_description: "This chapter introduces and explains the concept of variables and common data types in Python."
+        
+        // console.log('current-sub-mod-dict:', current_sub_module_list[0]);
+        // setCurrentSubModule(current_sub_module_list[0]);
+        
+        // // set to first
+        // let first_info = current_sub_module_list[0]['order'][0];
+        // console.log('first_info:', first_info);
+        // setCurrentSubModuleMaterialDict(first_info);
+
+        // let next_type = current_sub_module_list[0]['order'][1]['type'];
+        // console.log('next-type:', next_type);
+        // setNextType(next_type);
+
+    }, [module_id]);
+
+
+    if (isLoading === true) return(
+        <span>Loading</span>
+    );
+
     return (
 
-        <div className="flex flex-col items-center min-h-screen mt-24">
+        // items-center
+        <div className="flex flex-col min-h-screen mt-12 ml-44">
 
             {/* Top Header */}
-            <div className="flex justify-between items-center w-full max-w-5xl py-4 border-b border-gray-300">
+            <div className="flex justify-between w-full max-w-5xl py-2 border-b border-gray-300">
 
                 {/* Current Chapter and Title */}
                 <div className="text-left flex text-[16px] tracking-normal">
-                    <h1 className="font-semibold text-gray-900">Chapter {currentModuleInfoDict.chapter_number}: </h1>
-                    <p className="text-gray-600 pl-2 text-[15px]">{currentModuleInfoDict.chapter_name}</p>
+                    <h1 className="font-semibold text-gray-900">Chapter {currentModuleInfoDict.chapter_number}: {currentModuleInfoDict.chapter_name}</h1>
+                    <span className="px-2">
+                    |
+                    </span>
+                    <p className="text-gray-500 text-[14px] pt-0.5">
+                       Current Module {currentSubModule.module_number}: {currentSubModule.module_name}
+                    </p>
+                    {/* <p className="text-gray-600 pl-2 text-[15px]">{currentModuleInfoDict.chapter_name}</p> */}
                 </div>
+                {/* "chapter_number": 3,
+        "chapter_name": "Lists", */}
 
                 {/* Next Chapter */}
                 {/* <div className="text-right flex text-[15px] tracking-normal">
@@ -584,156 +679,92 @@ const ModuleLayout = ({ module_id }) => {
 
             <div>
 
-            {/* {
-                "module_number": 1,
-                "module_name": "Introduction to Running Python Programs",
-                "notes": "This module introduces the basics of running a Python script. We look at how a simple script like 'hello_world.py' is executed by Python. Python interprets the code line by line and prints output on the console. Understanding the role of the Python interpreter and syntax highlighting in code editors is also covered.",
-                "examples": [
-                    {
-                        "description": "Running a simple Python program.",
-                        "code": "print(\"Hello Python world!\")"
-                    },
-                    {
-                        "description": "Observing syntax highlighting in an editor.",
-                        "code": "message = \"Hello World!\"\nprint(message)"
-                    }
-                ],
-                "exercises": [
-                    {
-                        "question": "Create a Python file named 'greet.py' and write a program to print 'Hello, Python Learner!'.",
-                        "difficulty": "Beginner"
-                    },
-                    {
-                        "question": "What is syntax highlighting, and how does it help in writing Python programs?",
-                        "difficulty": "Beginner"
-                    }
-                ]
-            }, */}
-
                 {/* Notes Section */}
-                <div className="w-full max-w-[950px] mt-14">
-                    <h3 className="text-[18px] tracking-normal font-semibold text-gray-800 mb-6">
+                <div className="w-full max-w-full mt-6">
+                    {/* <h3 className="text-[18px] tracking-normal font-semibold text-gray-800 mb-6">
                         Module: {currentSubModule.module_name}
-                    </h3>
+                    </h3> */}
+
+                    <SecondNoteParentLayout
+                        chapterDict={currentModuleInfoDict}
+                        noteDict={currentSubModuleMaterialDict}
+                    />
+
+                    {/* <TypeWriter text={"Testing One"} /> */}
+                    {/* Testing One */}
                     
-                    {/* {currentSubModule.notes} */}
-                    {(currentSubModuleMaterialDict.type === "notes") ? (
-
-                        <p className="text-gray-700 p-1 leading-10">
-                            {currentSubModuleMaterialDict.text}
-                        </p>
-
-                    ) : (
-                        (currentSubModuleMaterialDict.type === "example") ? (
-
-                            <ExampleLayout />
-
-                        ) : (
-
-                            <h1>tmp</h1>
-
-                        )
-
-                    )}
-                        
                 </div>
 
                 <div className="mt-8 text-center space-x-4">
                     <button
                         type="button"
                         className="py-3 px-7 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                    >
-                        <FontAwesomeIcon icon={faQuestion} className="pr-1" />
-                        Ask a Question
+                    >                        
+                        Question
+                        <FontAwesomeIcon icon={faQuestion} className="pl-1" />
                     </button>
 
-                    {(nextType === "example") ? (
+                    <button
+                        type="button"
+                        className="py-3 px-7 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                        onClick={handleSubModuleNextClick}
+                    >
                         
-                        <button
-                            type="button"
-                            className="py-3 px-7 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                            onClick={handleSubModuleNextClick}
-                        >
-                            Proceed to an Example
-                            <FontAwesomeIcon
-                                icon={faArrowRight}
-                                className="pl-1"                                
-                            />
-                        </button>
+                        {(nextType === "example") ? (
 
-                    ) : (
+                            <>                                
+                                <span>
+                                See an Example
+                                </span>
+                                <FontAwesomeIcon
+                                    icon={faArrowRight}
+                                    className="pl-1"                                
+                                />
+                            </>
 
-                        <button
-                            type="button"
-                            className="py-3 px-7 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                        >
-                            Tmp 
-                            <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
-                        </button>
-                        
-                    )}
+                        ) : (
+                            
+                            (nextType === 'exercise') ? (
+
+                                <>
+                                    <FontAwesomeIcon
+                                        icon={faArrowRight}
+                                        className="pl-1"                                
+                                    />
+                                    <span>
+                                    Proceed to Exercise
+                                    </span>
+                                </>
+
+                            ) : (
+
+                                (nextType === 'notes') ? (
+
+                                    <>
+                                        <FontAwesomeIcon
+                                            icon={faArrowRight}
+                                            className="pl-1"                                
+                                        />
+                                        <span>
+                                        Proceed to Next Note
+                                        </span>
+                                    </>
+
+                                ) : (
+                                    null
+                                )
+
+                            ) 
+                        )}
+
+                    </button>
                    
                 </div>
 
             </div>
             
             {/* Chat Interface */}
-            <div className="fixed bottom-4 right-4">
-
-                {/* Chat Toggle Button */}
-                { (isChatOpen === true) ? (
-
-                    <button
-                        onClick={() => setIsChatOpen(!isChatOpen)}
-                        className="bg-gray-500 text-white p-0 px-3 py-1 rounded-full shadow-lg hover:bg-gray-600 focus:outline-none"
-                    >
-                    <FontAwesomeIcon icon={faXmark} className="" />
-                    </button>
-
-                ) : (
-
-                    <button
-                        onClick={() => setIsChatOpen(!isChatOpen)}
-                        className="bg-blue-500 text-white p-0 px-4 py-2 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    >
-                    <FontAwesomeIcon icon={faComment} className="" />
-                    </button>
-
-                )}
-
-                {/* TODO:
-                    - start here
-                        - a lot of work
-                            - break it down by first creating the nice rendering between the order-sub-modules and then, the actual sub-modules themselves
-                            - proceed from there to implementing actual implementation / exercise completion, tutor q/a from there <-- local-storage
-                            - **get done asap** (but properly)
-                 */}
-
-                {/* Chat Window */}
-                {isChatOpen && (
-                    <div
-                        ref={chatRef}
-                        className="w-80 h-96 bg-white rounded-lg shadow-lg flex flex-col overflow-hidden mt-2"
-                    >
-                        <div className="bg-blue-500 text-white px-4 py-2 text-lg font-medium">AI Tutor Chat</div>
-                        <div className="flex-1 p-4 overflow-y-auto space-y-3">
-                            <div className="bg-gray-200 text-gray-800 p-3 rounded-lg self-start w-fit">
-                                <p className="text-sm">AI Tutor: How can I help you today?</p>
-                            </div>
-                            <div className="bg-blue-500 text-white p-3 rounded-lg self-end w-fit">
-                                <p className="text-sm">You: Can you explain variables?</p>
-                            </div>
-                        </div>
-                        <div className="border-t border-gray-300 p-2">
-                            <input
-                                type="text"
-                                placeholder="Type your message..."
-                                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                        </div>
-                    </div>
-                )}
-            </div>
+            <FloatingChat />
 
         </div>
 

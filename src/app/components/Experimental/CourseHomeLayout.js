@@ -493,7 +493,7 @@ const CourseHomeLayout = () => {
             </h1> */}
 
             <h1 className="mb-4 text-[24px] font-extrabold leading-none tracking-tight text-gray-900 dark:text-white">
-                Modules - Introoduction to Python
+                Modules - Introduction to Python
             </h1>
 
             <ol className="relative border-s border-gray-200 dark:border-gray-700 mt-6">
@@ -507,14 +507,13 @@ const CourseHomeLayout = () => {
 
                         <a
                             className="cursor-pointer"
-                            href='/'
+                            href={`/learn-python/module/${index}`}
                         >
                             <h3 
                                 className="inline text-lg font-semibold text-blue-600 hover:text-blue-400"
                             >
                                 {item.chapter_name}
                             </h3>
-                           
                         </a>
 
                         {(showSubModulesIDList.includes(index)) ? (
