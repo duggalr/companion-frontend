@@ -17,7 +17,7 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
                 'description': "#Below is a list with 4 elements.\n#You can run the code by clicking the Run Button on the top right.\n\nlist_one = [1, 2, 3, 4]\nprint(list_one)\n"
             },
             'try_exercise': {
-                'description': "Try creating your own list on the IDE to the right with 3 numbers of your choice and print it out. Remember, use square brackets and separate the items with commas."
+                'description': "Try creating your own list on the IDE to the right with 3 numbers of your choice and print them out. Remember, use square brackets and separate the items with commas."
             }
         },
     ];
@@ -34,9 +34,14 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
 
     const [showExampleButton, setShowExampleButton] = useState(false);
     const [showExample, setShowExample] = useState(false);
+    const [showTryChallenge, setShowTryChallenge] = useState(false);
 
     const [showTryExerciseButton, setShowTryExerciseButton] = useState(false);
     const [showSubmitExerciseButton, setShowSubmitExerciseButton] = useState(false);
+
+    const [currentActiveTab, setCurrentActiveTab] = useState('note');
+    // const [noteTabVisible, setNoteTabVisible] = useState(false);
+    const [tryExerciseVisible, setTryExerciseVisible] = useState(false);
 
     const [consoleOutput, setConsoleOutput] = useState('Console Output');
 
@@ -55,7 +60,7 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
                 // Recursive call with the next index
                 _createTypewriterEffect(text, set_text_fn, current_index + 1, text_type);  
                 
-            }, 10);
+            }, 5);
 
         } else {
 
@@ -84,6 +89,9 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
             'show_example_button'
         );
 
+        setCurrentActiveTab('note');
+        // setNoteTabVisible(true);
+
     };
 
     const _showExample = async () => {
@@ -93,7 +101,7 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
             example_element.description,
             setCurrentExampleText,
             0,
-            null
+            'show_try_exercise_button'
         );
 
     };
@@ -107,7 +115,8 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
             0,
             'show_try_exercise_button'
         );
-
+        setCurrentActiveTab('challenge');
+        // setNoteTabVisible(false);
     }
 
     const handleShowExampleClick = async () => {
@@ -120,13 +129,20 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
     };
 
     const handleShowTryExerciseClick = async () => {
+    
         setShowExampleButton(false);
-        setShowExample(false);
+        // setShowExample(false);
         setShowTryExerciseButton(false);
 
         // show submit exercise button
         setShowSubmitExerciseButton(true);
-        _showTryExercise();
+        
+        // setShowTryChallenge(true);
+
+        // _showTryExercise();
+
+        // setTryExer
+        // // showTryExerciseButton
     };
 
 
@@ -172,20 +188,78 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
                     className={`p-0 pt-2 ${(showExample === true) ? "w-1/2" : "w-full"}`}
                 >
 
-                    <div className="space-y-4">
-                        <div>
-                            <h3 className="text-gray-900 font-bold">
-                                {noteDict.title}
-                            </h3>
-                            <p className="text-[15px] tracking-normal leading-9 pt-4">
-                                {/* <TypeWriter text={noteDict.description} /> */}
-                                {/* <Markdown> */}
-                                    {currentNoteText}
-                                {/* </Markdown> */}
-                            </p>
-
+                    {/* Tab Menu */}
+                    {(showTryChallenge) && (
+                        <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 mb-6">
+                            <ul className="flex flex-wrap -mb-px">
+                                <li className="me-2">
+                                    {/* <a href="#" className="inline-block p-0 px-4 pb-1 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active 
+                                    dark:text-blue-500 dark:border-blue-500" aria-current="page">Dashboard</a> */}
+                                    <a
+                                        href="#"
+                                        className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg ${
+                                            (currentActiveTab === 'note')
+                                            ? 'text-blue-600 border-blue-600 font-bold dark:text-blue-500 dark:border-blue-500'
+                                            : 'text-gray-600 border-transparent dark:text-gray-400'
+                                        }`}
+                                        aria-current={currentActiveTab ? 'page' : undefined}
+                                    >
+                                        Dashboard
+                                    </a>
+                                </li>
+                                <li className="me-2">
+                                    {/* <a href="#" className="inline-block p-0 px-4 pb-1 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">Challenge</a> */}
+                                    <a
+                                        href="#"
+                                        className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg ${
+                                            (currentActiveTab === 'challenge')
+                                            ? 'text-blue-600 border-blue-600 font-bold dark:text-blue-500 dark:border-blue-500'
+                                            : 'text-gray-600 border-transparent dark:text-gray-400'
+                                        }`}
+                                        aria-current={currentActiveTab ? 'page' : undefined}
+                                    >
+                                        Challenge
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
-                    </div>
+
+                    )}
+                    
+                    {(currentActiveTab === 'note') && (
+
+                        <div className="space-y-4">
+                            <div>
+                                <h3 className="text-gray-900 font-bold">
+                                    {noteDict.title}
+                                </h3>
+                                <p className="text-[15px] tracking-normal leading-9 pt-4">
+                                    {/* <TypeWriter text={noteDict.description} /> */}
+                                    {/* <Markdown> */}
+                                        {currentNoteText}
+                                    {/* </Markdown> */}
+                                </p>
+
+                            </div>
+                        </div>
+
+                    )}
+
+                    {(currentActiveTab === 'challenge') && (
+
+                        <div className="space-y-4">
+                            <div>
+                                <p className="text-[15px] tracking-normal leading-9 pt-4">
+                                    {/* <TypeWriter text={noteDict.description} /> */}
+                                    {/* <Markdown> */}
+                                        {currentTryExerciseText}
+                                    {/* </Markdown> */}
+                                </p>
+
+                            </div>
+                        </div>
+
+                    )}
 
                     {/* Buttons */}
                     <div className="mt-6 text-center space-x-2">
@@ -197,33 +271,58 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
                                 className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                                 onClick={handleShowExampleClick}
                             >
-                                Show Example
-                                <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
+                                Show Me An Example
+                                {/* <FontAwesomeIcon icon={faArrowRight} className="pl-1" /> */}
                             </button>
                         )}
 
                         {/* Try Exercise Button */}
                         {(showTryExerciseButton === true) && (
-                            <button
-                                type="button"
-                                className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                                onClick={handleShowTryExerciseClick}
-                            >
-                                Challenge
-                                <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
-                            </button>
+
+                            <div>
+                                {/* <button
+                                    type="button"
+                                    className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                    onClick={handleShowTryExerciseClick}
+                                    >
+                                    Ask a Question
+                                    <FontAwesomeIcon icon={faQuestion} className="pl-1" />
+                                </button> */}
+                                <button 
+                                    type="button"
+                                    className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                                >
+                                    Ask a Question
+                                    {/* <FontAwesomeIcon icon={faQuestion} className="pl-1" /> */}
+                                </button>
+
+                                <button 
+                                    type="button"
+                                    className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                                >
+                                    Generate Another Example
+                                    {/* <FontAwesomeIcon icon={faQuestion} className="pl-1" /> */}
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                    onClick={handleShowTryExerciseClick}
+                                >
+                                    Try a Challenge
+                                    {/* <FontAwesomeIcon icon={faArrowRight} className="pl-1" /> */}
+                                </button>
+                            </div>
                         )}
 
                         {/* Submit Button */}
-                        {(showSubmitExerciseButton === true) && (
+                        {/* {(showSubmitExerciseButton === true) && (
+                            // TODO: change this color to green and then show the tabs, and set to challenge tab; proceed from there
                             <button
                                 type="button"
-                                className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                            >
-                                Submit
-                                <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
-                            </button>
-                        )}
+                                className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                            >Submit</button>
+                        )} */}
                         
                     </div>
 
@@ -246,6 +345,13 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
                                     >
                                         <FontAwesomeIcon icon={faPlay} className="pl-1 pr-1 text-[12px]"/>{" "}Run
                                     </button>
+
+                                {/* TODO: start here by getting submit layout shown with challenge submissions and proceed from there */}
+                                    <button
+                                        type="button"
+                                        className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                    >Submit</button>
+
                                 </div>
                                 
                                 <textarea
