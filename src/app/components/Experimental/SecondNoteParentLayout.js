@@ -11,7 +11,7 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
         {
             'note': {
                 // "title": "What is a List?",
-                "description": "## What is a List?\n\nSo, **what is a list?** Think of a list like a container where you can keep a bunch of items in a specific order. So, if you're building a card game like poker, you might want to keep track of a deck of cards, and the order of those cards matters.\n\n\n### **Key Points:**\n- A list is just a collection of things that are ordered (so the order *counts*! 👀).\n- Lists let you group multiple items into one variable (like a deck of cards).\n- In Python, we define a list using square brackets `[]`."
+                "description": "**What is a List?**\\n\\nSo, **what is a list?** Think of a list like a container where you can keep a bunch of items in a specific order. So, if you're building a card game like poker, you might want to keep track of a deck of cards, and the order of those cards matters.\\n\\n### **Key Points:**\\n- A list is just a collection of things that are ordered (so the order *counts*! 👀).\\n- Lists let you group multiple items into one variable (like a deck of cards).\\n- In Python, we define a list using square brackets `[]`."
             },
             'example': {
                 'description': "#Below is a list with 4 elements.\n#You can run the code by clicking the Run Button on the top right.\n\nlist_one = [1, 2, 3, 4]\nprint(list_one)\n"
@@ -20,6 +20,21 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
                 'description': "Try creating your own list on the IDE to the right with 3 numbers of your choice and print them out. Remember, use square brackets and separate the items with commas."
             }
         },
+
+    // TODO: start here by getting markdown and go from there <-- get 1-4 complete by afternoon and proceed from there to serious testing/iteration
+        {
+            'note': {
+                // "title": "What is a List?",
+                "description": "## Lists with Different Types\n\nCreating a list in Python is pretty simple. You just need to use square brackets `[]`, and separate your items with commas. For example, imagine you're starting a simple list of cards for a game. You might just put numbers, like this: [1, 2, 5, 3, 4, 'Ace', 'King'].\n\n\n### **Key Points:**\nUse square brackets `[]` to create your list.\nItems inside the list are separated by commas.\nThe items can be anything—numbers, words, or even more lists!\n"
+            },
+            'example': {
+                'description': "Below is a list with 4 elements.\n#You can run the code by clicking the Run Button on the top right.\n\nlist_with_different_types = [\"apple\", 1, 3.14, True]\nprint(list_one)\n"
+            },
+            'try_exercise': {
+                'description': "Try creating a list with 3 different types of items—like a string, an integer, and a float—and print it out."
+            }
+        },
+
     ];
 
     // const [currentIndex, setCurrentIndex] = useState(0);
@@ -44,8 +59,11 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
     const [tryExerciseVisible, setTryExerciseVisible] = useState(false);
     const [submissionFeedback, setSubmissionFeedback] = useState('');
 
-
     const [consoleOutput, setConsoleOutput] = useState('Console Output');
+    const currentModuleIndex = useRef(0);
+    const currentModuleDict = useRef({});
+
+    const [showNextModuleDictButton, setShowNextModuleDictButton] = useState(false);
 
 
     const _createTypewriterEffect = (text, set_text_fn, current_index, text_type) => {
@@ -79,9 +97,6 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
         }
     };
     
-    const currentModuleIndex = useRef(0);
-    const currentModuleDict = useRef({});
-
     const _showNote = async () => {
 
         let note_element = currentModuleDict.current['note'];
@@ -149,12 +164,38 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
 
     const handleRunButtonClick = async () => {
         setConsoleOutput('>>> example run...')
-    }
+    };
 
     const handleSubmitButtonClick = async () => {
 
         setConsoleOutput('>>> example run...');
         setSubmissionFeedback('Sample Submission Feedback... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sem dui, aliquet at leo vehicula, porttitor ornare quam.');
+
+        // Show next button if submission is successful
+        
+        // TODO:
+        setShowSubmitExerciseButton(false);
+        setShowNextModuleDictButton(true);
+
+    };
+
+
+    const handleNextLessonButtonClick = async () => {
+
+        // increase current module-dict-index by 1
+
+        // set current module dict
+        currentModuleIndex.current = currentModuleIndex.current + 1;
+        currentModuleDict.current = tmp_list[currentModuleIndex.current];
+        
+        // Reset to default again
+        setShowNextModuleDictButton(false);
+        setCurrentNoteText('');
+        setCurrentExampleText('');
+        setCurrentTryExerciseText('');
+        setCurrentActiveTab('note');
+
+        _showNote();
 
     };
 
@@ -239,14 +280,14 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
 
                         <div className="space-y-4 pr-2">
                             <div>
-                                <h3 className="text-gray-900 font-bold">
+                                {/* <h3 className="text-gray-900 font-bold">
                                     {noteDict.title}
-                                </h3>
-                                <p className="text-[15px] tracking-normal leading-9 pt-4">
+                                </h3> */}
+                                <p className="text-[15px] tracking-normal leading-9 pt-0">
                                     {/* <TypeWriter text={noteDict.description} /> */}
-                                    {/* <Markdown> */}
+                                    <Markdown>
                                         {currentNoteText}
-                                    {/* </Markdown> */}
+                                    </Markdown>
                                 </p>
 
                             </div>
@@ -264,9 +305,9 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
                             </p>
                                 <p className="text-[15px] tracking-normal leading-9 pt-4">
                                     {/* <TypeWriter text={noteDict.description} /> */}
-                                    {/* <Markdown> */}
+                                    <Markdown>
                                         {currentTryExerciseText}
-                                    {/* </Markdown> */}
+                                    </Markdown>
                                 </p>
                             </div>
 
@@ -302,7 +343,7 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr
+                                    {/* <tr
                                         className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                                     >
                                         <td className="p-3">
@@ -322,13 +363,11 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
                                             >
                                                 View Code
                                             </span>
-                                            {/* View Code */}
                                         </td>
 
                                         <td 
                                             className="p-3"
                                         >
-                                            {/* View Feedback */}
                                             <span 
                                                 className="hover:text-blue-500 hover:font-semibold cursor-pointer"
                                             >
@@ -336,7 +375,7 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
                                             </span>
                                         </td>
 
-                                    </tr>
+                                    </tr> */}
 
                                 </tbody>
                             </table>
@@ -437,6 +476,19 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
                                             className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
                                             onClick={handleSubmitButtonClick}
                                         >Submit</button>
+                                    )}
+
+                                    {(showNextModuleDictButton === true) && (
+
+                                        <button
+                                            type="button"
+                                            className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                            onClick={handleNextLessonButtonClick}
+                                        >
+                                            Next
+                                            <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
+                                        </button>
+
                                     )}
 
                                 </div>
