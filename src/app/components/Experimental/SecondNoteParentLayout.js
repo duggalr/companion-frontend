@@ -42,6 +42,8 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
     const [currentActiveTab, setCurrentActiveTab] = useState('note');
     // const [noteTabVisible, setNoteTabVisible] = useState(false);
     const [tryExerciseVisible, setTryExerciseVisible] = useState(false);
+    const [submissionFeedback, setSubmissionFeedback] = useState('');
+
 
     const [consoleOutput, setConsoleOutput] = useState('Console Output');
 
@@ -70,6 +72,8 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
             } else if (text_type === 'show_try_exercise_button'){
                 // TODO:
                 setShowTryExerciseButton(true);
+            } else if (text_type === 'show_submit_button'){
+                setShowSubmitExerciseButton(true);
             }
 
         }
@@ -113,7 +117,7 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
             try_exercise_element.description,
             setCurrentTryExerciseText,
             0,
-            'show_try_exercise_button'
+            'show_submit_button'
         );
         setCurrentActiveTab('challenge');
         // setNoteTabVisible(false);
@@ -136,19 +140,23 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
 
         // show submit exercise button
         setShowSubmitExerciseButton(true);
-        
-        // setShowTryChallenge(true);
 
-        // _showTryExercise();
+        setShowTryChallenge(true);
+        _showTryExercise();
 
-        // setTryExer
-        // // showTryExerciseButton
     };
 
 
     const handleRunButtonClick = async () => {
         setConsoleOutput('>>> example run...')
     }
+
+    const handleSubmitButtonClick = async () => {
+
+        setConsoleOutput('>>> example run...');
+        setSubmissionFeedback('Sample Submission Feedback... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sem dui, aliquet at leo vehicula, porttitor ornare quam.');
+
+    };
 
 
     useEffect(() => {
@@ -196,27 +204,28 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
                                     {/* <a href="#" className="inline-block p-0 px-4 pb-1 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active 
                                     dark:text-blue-500 dark:border-blue-500" aria-current="page">Dashboard</a> */}
                                     <a
-                                        href="#"
-                                        className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg ${
+                                        className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg cursor-pointer ${
                                             (currentActiveTab === 'note')
                                             ? 'text-blue-600 border-blue-600 font-bold dark:text-blue-500 dark:border-blue-500'
                                             : 'text-gray-600 border-transparent dark:text-gray-400'
                                         }`}
                                         aria-current={currentActiveTab ? 'page' : undefined}
+                                        onClick={() => setCurrentActiveTab('note')}
                                     >
-                                        Dashboard
+                                        Note
                                     </a>
                                 </li>
                                 <li className="me-2">
                                     {/* <a href="#" className="inline-block p-0 px-4 pb-1 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">Challenge</a> */}
                                     <a
                                         href="#"
-                                        className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg ${
+                                        className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg cursor-pointer ${
                                             (currentActiveTab === 'challenge')
                                             ? 'text-blue-600 border-blue-600 font-bold dark:text-blue-500 dark:border-blue-500'
                                             : 'text-gray-600 border-transparent dark:text-gray-400'
                                         }`}
                                         aria-current={currentActiveTab ? 'page' : undefined}
+                                        onClick={() => setCurrentActiveTab('challenge')}
                                     >
                                         Challenge
                                     </a>
@@ -225,10 +234,10 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
                         </div>
 
                     )}
-                    
+
                     {(currentActiveTab === 'note') && (
 
-                        <div className="space-y-4">
+                        <div className="space-y-4 pr-2">
                             <div>
                                 <h3 className="text-gray-900 font-bold">
                                     {noteDict.title}
@@ -247,16 +256,91 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
 
                     {(currentActiveTab === 'challenge') && (
 
-                        <div className="space-y-4">
+                        <div className="space-y-4 pr-2">
                             <div>
+
+                            <p className="text-[16px] font-bold pt-2">
+                                Question
+                            </p>
                                 <p className="text-[15px] tracking-normal leading-9 pt-4">
                                     {/* <TypeWriter text={noteDict.description} /> */}
                                     {/* <Markdown> */}
                                         {currentTryExerciseText}
                                     {/* </Markdown> */}
                                 </p>
-
                             </div>
+
+                            {/* <p className='text-[16px] font-bold pb-2'>Submissions</p> */}                        
+
+                            <p className="text-[16px] font-bold pt-4">
+                                Current Solution Feedback
+                            </p>
+                            <p className="leading-9 text-[15px]">
+                                {(submissionFeedback.length === 0) && "Write your code and submit your solution to get feedback from the AI!"}
+                                {submissionFeedback}
+                            </p>
+
+                            <p className="text-[16px] font-bold pt-4">
+                                Past Submissions
+                            </p>
+
+                            <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                    <tr>
+                                        <th scope="col" className="px-2 py-3">
+                                            Date
+                                        </th>
+                                        <th scope="col" className="px-2 py-3">
+                                            Passed
+                                        </th>
+                                        <th scope="col" className="px-2 py-3">
+                                            Code
+                                        </th>
+                                        <th scope="col" className="px-2 py-3">
+                                            AI Feedback
+                                        </th>                            
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr
+                                        className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                                    >
+                                        <td className="p-3">
+                                            2025-01-10
+                                        </td>
+                                        
+                                        <td
+                                            className="p-3 text-green-400"
+                                        >
+                                            Success
+                                        </td>
+                                        <td 
+                                            className="p-3"
+                                        >
+                                            <span 
+                                                className="hover:text-blue-500 hover:font-semibold cursor-pointer"
+                                            >
+                                                View Code
+                                            </span>
+                                            {/* View Code */}
+                                        </td>
+
+                                        <td 
+                                            className="p-3"
+                                        >
+                                            {/* View Feedback */}
+                                            <span 
+                                                className="hover:text-blue-500 hover:font-semibold cursor-pointer"
+                                            >
+                                                View Feedback
+                                            </span>
+                                        </td>
+
+                                    </tr>
+
+                                </tbody>
+                            </table>
+
                         </div>
 
                     )}
@@ -309,7 +393,7 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
                                     className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                                     onClick={handleShowTryExerciseClick}
                                 >
-                                    Try a Challenge
+                                    Proceed to Challenge
                                     {/* <FontAwesomeIcon icon={faArrowRight} className="pl-1" /> */}
                                 </button>
                             </div>
@@ -346,11 +430,14 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
                                         <FontAwesomeIcon icon={faPlay} className="pl-1 pr-1 text-[12px]"/>{" "}Run
                                     </button>
 
-                                {/* TODO: start here by getting submit layout shown with challenge submissions and proceed from there */}
-                                    <button
-                                        type="button"
-                                        className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                                    >Submit</button>
+                                    {/* Submit Solution Button */}
+                                    {(showSubmitExerciseButton === true) && (
+                                        <button
+                                            type="button"
+                                            className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                            onClick={handleSubmitButtonClick}
+                                        >Submit</button>
+                                    )}
 
                                 </div>
                                 
