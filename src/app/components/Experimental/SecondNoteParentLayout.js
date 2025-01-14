@@ -21,7 +21,6 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
             }
         },
 
-    // TODO: start here by getting markdown and go from there <-- get 1-4 complete by afternoon and proceed from there to serious testing/iteration
         {
             'note': {
                 // "title": "What is a List?",
