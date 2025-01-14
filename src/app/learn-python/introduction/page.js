@@ -7,15 +7,12 @@ export default function Home() {
 
     // Update page title
     useEffect(() => {
-
         document.title = "Learn Python with an AI"; 
-        
     }, []);
 
     return (
 
         <main className="h-screen">
-            {/* <ExperimentalLayout/> */}
             <StartLayout />
         </main>
 

@@ -31,8 +31,12 @@ const StartLayout = () => {
     };
 
 
-    // TODO: Show Course Module with User Goals
+    const loadingCourseTextList = ["Loading...", "Fetching data...", "Almost there...", "Hang tight..."];
     const [showUserCourseModule, setShowUserCourseModule] = useState(false);
+    const [showUserCourseModuleLoading, setShowUserCourseModuleLoading] = useState(false);
+    const courseLoadingIndexRef = useRef(0);
+    const [showCourseLoadingText, setShowCourseLoadingText] = useState("");
+
     const [userGoalSummary, setUserGoalSummary] = useState("");
     const userGoalSummaryRef = useRef("");
 
@@ -40,16 +44,12 @@ const StartLayout = () => {
     const wsRef = useRef(null);
     const accumulatedMessageRef = useRef("");
 
-//     I will get you very familiar with Python and will always be there provide feedback and answer any questions you may have, as you go through the course!
-// Before we start, I'm curious as to why you want to learn Python? Are you just curious? Do you want to become a developer? Do you have a specific project in mind? Maybe you can briefly tell me in a sentence or two...
-// By giving me this information, I can be of better assistance as you progress the course.
-
     const [messages, setMessages] = useState([{
-        text: `Welcome! 👋 I'm Companion, your AI teacher and tutor, guiding you through the course.
+        text: `Why hello there! 👋 I'm Companion, your AI teacher, that will help you individually learn Python. Together, we will achieve your learning goals!
 
-Before we get started, I want to learn just a litle bit more about you, to help ensure the course is as personalized for you as possible.
+This is a project-based course and in the end, you will implement a project that you chose to complete. Also, this course is entirely generated from scratch, just for you, and it is not pre-generated or defined, to make it as personalized to your goals as possible! 😅
 
-What's your name?`,
+To start, I need to learn a little bit more about you. What's your name my good friend? 🤔`,
         sender: "bot",
         }
     ]);
@@ -57,8 +57,7 @@ What's your name?`,
     const [isGeneratingMessage, setIsGeneratingMessage] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const [messagesDisabled, setMessagesDisabled] = useState(false);
-
+    const [messagesDisabled, setMessagesDisabled] = useState(false);    
 
     // Websocket
     useEffect(() => {
@@ -101,9 +100,25 @@ What's your name?`,
                         'user_chat_history_string': all_chat_messages_str
                     };
                     console.log('tmp-payload-new:', tmp_payload);
-
+                    
+                    // TODO: here, set the screen to loading with dynamic messages showing and go from there
                     wsRef.current.send(JSON.stringify(tmp_payload));
                     setShowUserCourseModule(true);
+                    setShowUserCourseModuleLoading(true);
+                    
+                    // TODO: test everything out and fix
+                    const interval = setInterval(() => {
+                        let idx = courseLoadingIndexRef.current;
+                        if (idx >= loadingCourseTextList.length-1){
+                            idx = 0;
+                            courseLoadingIndexRef.current = 0;
+                            setShowCourseLoadingText(loadingCourseTextList[idx + 1]);
+                        } else {
+                            courseLoadingIndexRef.current = idx + 1;
+                            setShowCourseLoadingText(loadingCourseTextList[idx + 1]);
+                        }
+                    }, 3000); 
+                    return () => clearInterval(interval);
 
                 }
                 else if (msg_text === "MODEL_GEN_COMPLETE") {
@@ -187,7 +202,6 @@ What's your name?`,
 
     const handleUserMessageSend = () => {
         let current_user_msg = currentUserInputMessageRef.current;
-     
         accumulatedMessageRef.current = "";
 
         let all_chat_messages_str = "";
@@ -680,8 +694,13 @@ What's your name?`,
 
         <div className="flex-grow overflow-y-scroll no-scrollbar mt-16">
         
-            {(showUserCourseModule === true) ? 
+            {
+                
+                (showUserCourseModule === true && showUserCourseModuleLoading === false)
+                
+                ?
 
+                // Show Course Layout
                 (
 
                     <div className="flex flex-col items-center min-h-screen mt-0">
@@ -766,113 +785,140 @@ What's your name?`,
                                     ))}
                                 </ol>
 
-                                {/* TODO: show modules */}
-
                             </div>
 
                         </div>
 
                     </div>
 
-                ): (
-
-                    (showChatLayout === true) ? (
-                    
-                        // Center this 
-                        <div className="flex flex-col h-4/5 dark:bg-gray-900 p-4 max-w-4xl mx-auto min-h-[80vh] max-h-[80vh]">
-        
-                            <h1 className="mb-6 text-[24px] font-bold leading-none tracking-tight text-gray-900 dark:text-white">
-                                Before we start with the course, let&apos;s learn a bit more about you...
-                            </h1>
-        
-                            {/* Messages Area */}
-                            <div
-                                // bg-[#F3F4F6] dark:bg-gray-800
-                                className="flex-grow overflow-y-auto p-4 space-y-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50"
-                            >
-        
-                                {/* Message List */}
-                                {messages.map((msg, idx) => (
-                                    <div
-                                        key={idx}
-                                        className={`${
-                                        msg.sender === "user"
-                                            ? "self-end bg-blue-400 text-white"
-                                            : "self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                        } p-3 rounded-lg w-full max-w-full break-words text-[13px] whitespace-pre-wrap`}
-                                    >
-                                        {msg.text}
-                                    </div>
-                                ))}
-        
-                                {/* Display the streaming message here */}
-                                {isGeneratingMessage && (
-                                    <div className="self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-3 rounded-lg w-full max-w-full break-words text-[13px] whitespace-pre-wrap">
-                                        {generatedMessage}
-                                    </div>
-                                )}
-        
-                            </div>
-        
-                            {/* Input area - textarea */}
-                            <div className="flex items-center border-t border-gray-300 dark:border-gray-600 pt-2 mt-2">
-        
-                                <textarea
-                                    value={currentUserInputMessage}
-                                    onChange={(e) => handleNewInputValue(e)}                            
-                                    className="text-[14px] flex-grow resize-y p-3 bg-gray-50 dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 mr-2"
-                                    placeholder="type a message..."
-                                    rows={1}
-                                    style={{ minHeight: '50px', maxHeight: '120px' }}
-                                    disabled={messagesDisabled}
-                                />
-        
-                                <button
-                                    // className={`${"w-[100px] py-2 text-[14px] bg-blue-600 text-white opacity-90 font-medium rounded-xl hover:bg-blue-700 transition-all cursor-pointer"}`}
-                                    className={`${messagesDisabled ?
-                                        "w-[100px] py-2 text-[14px] bg-blue-600 text-white opacity-90 font-medium rounded-xl hover:bg-blue-700 transition-all cursor-pointer" : 
-                                        "w-[100px] py-2 text-[14px] text-white dark:text-black bg-blue-500 dark:bg-gray-500 cursor-not-allowed font-medium rounded-xl"
-                                    }`}
-                                    onClick={handleUserMessageSend}
-                                    disabled={messagesDisabled}
-                                >
-                                    <FontAwesomeIcon icon={faPaperPlane} className="text-white pr-2" />
-                                    Send
-                                </button>
-        
-                            </div>
-                        
-                        </div>
-        
-        
-                    ): (
-        
-                        <div className="flex flex-col items-center min-h-screen">
-        
-                            <h1 className="mb-4 text-[32px] font-extrabold leading-none tracking-tight text-gray-900 dark:text-white">Learn Python with an <span className="text-blue-600 dark:text-blue-500">AI Teacher</span>.</h1>
-        
-                            <p className="mb-4 mt-1 text-lg font-normal tracking-wide text-gray-500 dark:text-gray-400">
-                                This is intended for those who never programmed in Python before...
-                            </p>
-        
-                            <button
-                                type="button"
-                                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-3 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mt-2"
-                                onClick={handleStartCourseBtnClick}
-                            >
-                                Let&apos;s Begin! <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
-                            </button>
-        
-                            </div>
-        
-                    )
-                    
                 )
+                
+                :
+                (
+                 
+                    (showUserCourseModule === true && showUserCourseModuleLoading === true)
+                    
+                    ?
+                    
+                    // Show Loading
+                    (
+                        <div className="flex flex-col items-center min-h-screen text-white">
+                            {/* Spinner */}
+                            <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    
+                            {/* Dynamic Text */}
+                            <p className="mt-4 text-lg font-normal text-gray-800">{showCourseLoadingText}</p>
+                        </div>
+
+                    )
+
+                    :
+
+                    (
+                        (showChatLayout === true) ? (
+                    
+                            // Center this 
+                            <div className="flex flex-col h-4/5 dark:bg-gray-900 p-4 max-w-4xl mx-auto min-h-[80vh] max-h-[80vh]">
+            
+                                <h1 className="mb-6 text-[24px] font-bold leading-none tracking-tight text-gray-900 dark:text-white">
+                                    To generate a python course for we, let&apos;s learn a bit more about you first...
+                                </h1>
+            
+                                {/* Messages Area */}
+                                <div
+                                    // bg-[#F3F4F6] dark:bg-gray-800
+                                    className="flex-grow overflow-y-auto p-4 space-y-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50"
+                                >
+            
+                                    {/* Message List */}
+                                    {messages.map((msg, idx) => (
+                                        <div
+                                            key={idx}
+                                            className={`${
+                                            msg.sender === "user"
+                                                ? "self-end bg-blue-400 text-white"
+                                                : "self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            } p-3 rounded-lg w-full max-w-full break-words text-[13px] whitespace-pre-wrap`}
+                                        >
+                                            {msg.text}
+                                        </div>
+                                    ))}
+            
+                                    {/* Display the streaming message here */}
+                                    {isGeneratingMessage && (
+                                        <div className="self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-3 rounded-lg w-full max-w-full break-words text-[13px] whitespace-pre-wrap">
+                                            {generatedMessage}
+                                        </div>
+                                    )}
+            
+                                </div>
+            
+                                {/* Input area - textarea */}
+                                <div className="flex items-center border-t border-gray-300 dark:border-gray-600 pt-2 mt-2">
+            
+                                    <textarea
+                                        value={currentUserInputMessage}
+                                        onChange={(e) => handleNewInputValue(e)}                            
+                                        className="text-[14px] flex-grow resize-y p-3 bg-gray-50 dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 mr-2"
+                                        placeholder="type a message..."
+                                        rows={1}
+                                        style={{ minHeight: '50px', maxHeight: '120px' }}
+                                        disabled={messagesDisabled}
+                                    />
+            
+                                    <button
+                                        // className={`${"w-[100px] py-2 text-[14px] bg-blue-600 text-white opacity-90 font-medium rounded-xl hover:bg-blue-700 transition-all cursor-pointer"}`}
+                                        className={`${messagesDisabled ?
+                                            "w-[100px] py-2 text-[14px] bg-blue-600 text-white opacity-90 font-medium rounded-xl hover:bg-blue-700 transition-all cursor-pointer" : 
+                                            "w-[100px] py-2 text-[14px] text-white dark:text-black bg-blue-500 dark:bg-gray-500 cursor-not-allowed font-medium rounded-xl"
+                                        }`}
+                                        onClick={handleUserMessageSend}
+                                        disabled={messagesDisabled}
+                                    >
+                                        <FontAwesomeIcon icon={faPaperPlane} className="text-white pr-2" />
+                                        Send
+                                    </button>
+            
+                                </div>
+                            
+                            </div>
+            
+            
+                        ): (
+            
+                            <div className="flex flex-col items-center min-h-screen">
+            
+                                <h1 className="mb-4 text-[32px] font-extrabold leading-none tracking-tight text-gray-900 dark:text-white">Learn Python with an <span className="text-blue-600 dark:text-blue-500">AI Teacher</span>.</h1>
+            
+                                <p className="mb-0 mt-4 text-[17.5px] font-normal tracking-wide text-gray-500 dark:text-gray-400">
+                                    Let an AI generate a personalized course based on your goals.
+                                </p>
+    
+                                <p className="mb-5 mt-2 text-[17.5px] font-normal tracking-wide text-gray-500 dark:text-gray-400">
+                                    This is primarily intended for those who never programmed in Python before...
+                                </p>
+    
+                                <button
+                                    type="button"
+                                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-3 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mt-2"
+                                    onClick={handleStartCourseBtnClick}
+                                >
+                                    Let&apos;s Begin! <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
+                                </button>
+            
+                                </div>
+            
+                        )
+
+                    )
+
+                )
+                
 
             }
 
         </div>
-        
+
     )
 
 };
