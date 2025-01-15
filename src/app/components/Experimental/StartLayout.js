@@ -61,6 +61,29 @@ To start, I need to learn a little bit more about you. What's your name my good 
 
     const [messagesDisabled, setMessagesDisabled] = useState(false);    
 
+    const tmp_one = async (task_id) => {
+
+        // const response = await fetch(`http://127.0.0.1:8000/course-gen-task-status/${task_id}`);
+        // const data = await response.json();
+        // console.log('Course Status Data:', data);
+
+        const interval = setInterval(async () => {
+            const response = await fetch(`http://127.0.0.1:8000/course-gen-task-status/${task_id}`);
+            const data = await response.json();
+            console.log('Course Status Data:', data);
+            // setProgress(data.progress);
+            // setStatus(data.state);
+
+            if (data.state === "SUCCESS" || data.state === "FAILURE") {
+                clearInterval(interval);
+            }
+        }, 1000); // Poll every second
+
+        // TODO: test out and fix all bugs; etc. + finalize
+        return () => clearInterval(interval);
+
+    }
+    
     // Websocket
     useEffect(() => {
 
@@ -97,14 +120,17 @@ To start, I need to learn a little bit more about you. What's your name my good 
                         }
                     };
 
-                    // // TODO:
+                    // TODO:
+                    let anon_user_id = getFromLocalStorage('user_id');
                     let tmp_payload = {
-                        'user_chat_history_string': all_chat_messages_str
+                        'user_chat_history_string': all_chat_messages_str,
+                        'anon_user_id': anon_user_id
                     };
                     console.log('tmp-payload-new:', tmp_payload);
                     
                     // TODO: here, set the screen to loading with dynamic messages showing and go from there
                     wsRef.current.send(JSON.stringify(tmp_payload));
+
                     setShowUserCourseModule(true);
                     setShowUserCourseModuleLoading(true);
                     
@@ -212,21 +238,22 @@ To start, I need to learn a little bit more about you. What's your name my good 
                 const course_gen_task_id = message['task_id'];
                 console.log('current-course-gen-task-id:', course_gen_task_id);
 
-                const interval = setInterval(async () => {
-                    const response = await fetch(`/api/course-gen-task-status/${course_gen_task_id}`);
-                    const data = await response.json();
-                    console.log('Course Status Data:', data);
-                    // setProgress(data.progress);
-                    // setStatus(data.state);
-        
-                    if (data.state === "SUCCESS" || data.state === "FAILURE") {
-                        clearInterval(interval);
-                    }
-                }, 1000); // Poll every second
-        
-                // TODO: test out and fix all bugs; etc. + finalize
+                tmp_one(course_gen_task_id);
 
-                return () => clearInterval(interval);
+                // const interval = setInterval(async () => {
+                //     const response = await fetch(`/course-gen-task-status/${course_gen_task_id}`);
+                //     const data = await response.json();
+                //     console.log('Course Status Data:', data);
+                //     // setProgress(data.progress);
+                //     // setStatus(data.state);
+        
+                //     if (data.state === "SUCCESS" || data.state === "FAILURE") {
+                //         clearInterval(interval);
+                //     }
+                // }, 1000); // Poll every second
+        
+                // // TODO: test out and fix all bugs; etc. + finalize
+                // return () => clearInterval(interval);
              
 
             }
@@ -267,11 +294,13 @@ To start, I need to learn a little bit more about you. What's your name my good 
             }
         };
 
+        let current_anon_user_id = getFromLocalStorage('user_id');
         const messageForBackend = {
             text: current_user_msg,
             past_messages_string: all_chat_messages_str,
             sender: 'user',
             type: 'user_message',
+            anon_user_id: current_anon_user_id
         };
         console.log('message-for-backend:', messageForBackend);
 
