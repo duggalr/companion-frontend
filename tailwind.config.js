@@ -68,7 +68,8 @@ module.exports = {
   			'spin-around': 'spin-around calc(var(--speed) * 2) infinite linear',
   			'shiny-text': 'shiny-text 8s infinite',
   			rainbow: 'rainbow var(--speed, 2s) infinite linear',
-  			rippling: 'rippling var(--duration) ease-out'
+  			rippling: 'rippling var(--duration) ease-out',
+  			gradient: 'gradient 8s linear infinite'
   		},
   		keyframes: {
   			'shimmer-slide': {
@@ -113,6 +114,11 @@ module.exports = {
   				'100%': {
   					transform: 'scale(2)',
   					opacity: '0'
+  				}
+  			},
+  			gradient: {
+  				to: {
+  					backgroundPosition: 'var(--bg-size) 0'
   				}
   			}
   		}

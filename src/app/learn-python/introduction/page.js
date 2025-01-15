@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect } from 'react';
-import StartLayout from "@/app/components/Experimental/StartLayout";
+// import StartLayout from "@/app/components/Experimental/StartLayout";
+import HeroLanding from "@/app/components/Experimental/HeroLanding";
 
 
 export default function Home() {
@@ -13,7 +14,8 @@ export default function Home() {
     return (
 
         <main className="h-screen">
-            <StartLayout />
+            {/* <StartLayout /> */}
+            <HeroLanding />
         </main>
 
     );
