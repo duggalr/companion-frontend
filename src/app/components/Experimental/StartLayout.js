@@ -311,6 +311,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
         let current_user_msg = currentUserInputMessageRef.current;
         accumulatedMessageRef.current = "";
         currentUserInputMessageRef.current = "";
+        setSendBtnEnabled(false);
 
         let all_chat_messages_str = "";
         for (let i = 0; i <= messages.length-1; i++) {
@@ -393,7 +394,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
         if ((event.code === "Enter" || event.code === "NumpadEnter") && !event.shiftKey){
             event.preventDefault();
 
-            if (currentUserInputMessageRef.current.length > 0){
+            if (currentUserInputMessageRef.current.trim() !== ""){
             
                 handleUserMessageSend();
                 setCurrentUserInputMessage("");
@@ -403,6 +404,11 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
             // _handleUserMessageSend(current_user_msg);
         }
     };
+
+
+    const handleBeginCourseClick = () => {
+        window.location.href = '/learn-python/home';
+    }
 
 
     // Initial Type Writer Text Effect
@@ -417,6 +423,9 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
             );
         }
     }, [initialMessageConstant]);
+
+
+    
 
 
     return (
@@ -438,6 +447,26 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
 
                         <div className="flex flex-col items-center min-h-screen mt-4">
 
+                            {/* <div className="max-w-[1000px] ml-0 flex flex-col pt-0 border-l-[1px] border-gray-100 dark:border-gray-600 pl-6">
+                                    
+                                <h2 
+                                    // className="text-lg font-semibold text-gray-800 mb-6 ml-8"
+                                    className="mb-6 text-[24px] font-bold leading-none tracking-tight text-gray-900 dark:text-white"
+                                    data-aos="fade-down"
+                                >
+                                    {userGeneratedCourseDict['course_name']}{" "}🎯
+                                </h2>
+
+                                <p 
+                                    className="text-gray-500 dark:text-gray-400 text-[15.5px] tracking-normal leading-9 pt-2 pr-1"
+                                    data-aos="fade-down"
+                                >
+                                    {userGeneratedCourseDict['course_description']}
+                                </p>
+
+                            </div> */}
+
+
                             <div className="flex flex-grow w-full max-w-[1100px] py-0">
 
                                 {/* Left Column */}
@@ -451,43 +480,35 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                         Your journey <span className="text-blue-600 dark:text-blue-500">begins now...</span> 😅
                                     </h2>
 
-                                    {/* <h1 
-                                        className="mb-6 text-[24px] font-bold leading-none tracking-tight text-gray-900 dark:text-white"
-                                        data-aos="fade-down"
-                                    >
-                                        Welcome! 👋 To begin, let's learn a bit about <span className="text-blue-600 dark:text-blue-500">you...</span>
-                                    </h1> */}
-
-                                    {/* <div className="space-y-4"> */}
                                     <p
                                         className="text-gray-500 dark:text-gray-400 text-[15.5px] tracking-normal leading-9 pt-2 pr-1"
                                         data-aos="fade-down"
                                     >
-                                        {userGeneratedCourseDict['summary']}
+                                        {/* {userGeneratedCourseDict['summary']} */}
+                                        {userGeneratedCourseDict['course_description']}
                                     </p>
-                                    {/* </div> */}
 
                                     <div
                                         className="mt-10 mr-6 text-center space-x-0"
-                                        data-aos="fade-in"
+                                        data-aos="fade-up"
                                     >
-                                        {/* <button
-                                            type="button"
-                                            className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                                        >
-                                            Let&apos;s Start!
-                                            <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
-                                        </button> */}
-                                        <InteractiveHoverButton text="Begin!" className="mt-0 text-[17.5px]"/>
+                                        <InteractiveHoverButton 
+                                            text="Begin!"
+                                            className="mt-0 text-[17.5px]"
+                                            onClick={handleBeginCourseClick}
+                                        />
                                     </div>
                                     
                                 </div>
 
+                                {/* TODO: pick it up from here tomorrow <-- first reflect + concentration */}
 
                                 {/* Right Column */}
-                                <div className="w-1/2 ml-0 flex flex-col pt-0 border-l-[1px] border-gray-100 dark:border-gray-600 pl-6">
+                                <div
+                                    className="w-1/2 ml-0 flex flex-col pt-0 border-l-[1px] border-gray-100 dark:border-gray-600 pl-6"
+                                >
                                     
-                                    <h2 
+                                    {/* <h2 
                                         // className="text-lg font-semibold text-gray-800 mb-6 ml-8"
                                         className="mb-6 text-[24px] font-bold leading-none tracking-tight text-gray-900 dark:text-white"
                                         data-aos="fade-down"
@@ -495,28 +516,27 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                         {userGeneratedCourseDict['course_name']}{" "}🎯
                                     </h2>
 
-                                    {/* <p className="text-gray-600 text-[15.5px] tracking-normal leading-9 pt-2"> */}
                                     <p 
                                         className="text-gray-500 dark:text-gray-400 text-[15.5px] tracking-normal leading-9 pt-2 pr-1"
                                         data-aos="fade-down"
                                     >
                                         {userGeneratedCourseDict['course_description']}
-                                    </p>
+                                    </p> */}
                                         
-                                    <hr className="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700" />
+                                    {/* <hr className="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700" /> */}
 
                                     <h2 
                                         // className="text-lg font-semibold text-gray-800 mb-6 ml-8"
-                                        className="mt-2 mb-6 text-[20px] font-bold leading-none tracking-tight text-gray-900 dark:text-white"
-                                        data-aos="fade-in"
+                                        className="mt-1 mb-6 text-[24px] font-bold leading-none tracking-tight text-gray-900 dark:text-white"
+                                        data-aos="fade-down"
                                     >
-                                        Syllabus
+                                        Course Syllabus{" "}🎯
                                     </h2>
 
                                     <ol
-                                        data-aos="fade-in"
+                                        data-aos="fade-up"
                                         // className="relative border-s border-gray-200 dark:border-gray-700"
-                                        // className=""
+                                        className="pt-2"
                                     >
                                         {userGeneratedCourseDict['student_syllabus'].map((item) => (
                                             <li
@@ -524,15 +544,11 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                                 key={item.id}
                                             >
 
-                                                {/* <div
-                                                    className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700"
-                                                ></div> */}
-
                                                 <a
                                                     className="cursor-pointer"
                                                 >
                                                     <h3 
-                                                        className="inline text-lg font-semibold text-blue-600 hover:text-blue-400"
+                                                        className="inline text-lg font-semibold text-blue-500 hover:text-blue-400"
                                                     >
                                                         {item.module_name}
                                                     </h3>
@@ -540,9 +556,18 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                                 </a>
 
                                                 <p
-                                                    className="mb-4 pt-1 text-[15px] font-normal text-gray-400 dark:text-gray-400"
+                                                    className="mb-4 pt-2 leading-6 text-[14.5px] tracking-normal font-normal text-gray-400 dark:text-gray-400"
                                                 >
+                                                    <FontAwesomeIcon icon={faArrowRight} className="pr-2" />
                                                     {item.module_description}
+
+                                                    {/* <a href="#" className="block max-w-lg p-6 bg-white  rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                                                    
+                                                        <p className="font-normal text-gray-700 dark:text-gray-400">
+                                                        {item.module_description}
+                                                        </p>
+                                                    </a> */}
+
                                                 </p>
 
                                             </li>
@@ -572,7 +597,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                 <div className="w-9 h-9 border-4 border-blue-500 border-t-transparent rounded-full animate-spin "></div>
                                 {/* <p className="mt-4 text-lg font-normal text-gray-800">{showCourseLoadingText}</p> */}
                                 <p className="mt-6 text-[16px] font-normal text-gray-500 tracking-normal">
-                                    Generating your course syllabus... it will take about 10-15 seconds...
+                                    I'm generating your course syllabus... it will take about 10-20 seconds...
                                 </p>
 
                             </div>
@@ -586,22 +611,22 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                         
                                 // Center this 
                                 <div
-                                    className="flex flex-col dark:bg-gray-900 p-4 max-w-4xl mx-auto min-h-[88vh] max-h-[90vh] mt-0" 
+                                    className="flex flex-col p-4 max-w-4xl mx-auto min-h-[88vh] max-h-[90vh] mt-0" 
                                     data-aos="fade-in"
                                 >
-                
+                                    {/* dark:bg-gray-900 */}
                                     <h1 
-                                        className="mb-6 text-[24px] font-bold leading-none tracking-tight text-gray-900 dark:text-white"
+                                        className="mb-6 text-[24px] font-bold leading-none tracking-tight text-gray-900 dark:text-gray-300"
                                         data-aos="fade-down"
                                     >
                                         {/* To generate a python course for we, let&apos;s learn a bit more about you first... */}
-                                        Welcome! 👋 To begin, let's learn a bit about <span className="text-blue-600 dark:text-blue-500">you...</span>
+                                        Welcome! 👋 To begin, let&apos;s learn a bit about <span className="text-blue-600 dark:text-blue-500">you...</span>
                                     </h1>
 
                                     {/* Messages Area */}
                                     <div
                                         // bg-[#F3F4F6] dark:bg-gray-800
-                                        className="flex-grow overflow-y-auto p-4 space-y-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50"
+                                        className="flex-grow overflow-y-auto p-4 space-y-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-800"
                                     >
                 
                                         {/* TODO: have the initial text larger and with type-writer effect --> proceed from there to UI finalization and functionality */}
