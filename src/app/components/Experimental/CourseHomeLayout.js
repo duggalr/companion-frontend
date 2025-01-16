@@ -1,7 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faArrowRight, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
-// import {  getFromLocalStorage, saveToLocalStorage } from '@/lib/utils/localStorageUtils';
+import 'aos/dist/aos.css'; // Import AOS styles
+import AOS from 'aos';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheckCircle, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { getFromLocalStorage, saveToLocalStorage, removeFromLocalStorage } from '@/lib/utils/localStorageUtils';
+import DashboardTopNavBar from "@/app/components/Experimental/DashboardTopNavBar";
+import { Progress } from "@/components/ui/progress";
 
 
 const CourseHomeLayout = () => {
@@ -457,7 +461,7 @@ const CourseHomeLayout = () => {
                 }
             ]
 
-        }
+        },
 
     ];
 
@@ -480,102 +484,266 @@ const CourseHomeLayout = () => {
         });
     };
 
+
+    const _handleUserCourseModuleFetch = async () => {
+
+        let anon_user_id = getFromLocalStorage('user_id');
+        const payload = {'user_id': anon_user_id};
+
+        const apiResponse = await fetch(`http://127.0.0.1:8000/fetch_user_course_details`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+        console.log('course-api-response:', apiResponse);
+
+    };
+
+    
+    // TODO: 
+    useEffect(() => {
+
+        // // Fetch the course modules for the user
+        // _handleUserCourseModuleFetch();
+
+        // Initial Animations
+        AOS.init({
+            duration: 1000, // Animation duration in milliseconds
+            once: true,     // Trigger animation only once
+        });
+
+    }, []);
+
+
     return (
 
-        <div className="flex flex-col min-h-screen mt-12 ml-0 items-center">
+        <>
 
-            {/* <h2 className="text-[19px] font-semibold text-gray-800 mb-4">
-                Modules - Introoduction to Python
-            </h2> */}
+            {/* Dashboard Top NavBar */}
+            <DashboardTopNavBar />
 
-            {/* <h1 className="mb-4 text-xl font-extrabold leading-none tracking-tight text-gray-900">
-                Modules - Introoduction to Python
-            </h1> */}
+            {/* Course Home Layout */}
 
-            <h1 className="mb-4 text-[24px] font-extrabold leading-none tracking-tight text-gray-900 dark:text-white">
-                Modules - Introduction to Python
-            </h1>
+            {/* max-w-[1100px] */}
+            {/* <div className="flex flex-col min-h-screen mt-8"> */}
+            <div className="flex flex-col items-start min-h-screen mt-8 mx-auto w-[80%] sm:w-[63%]">
 
-            <ol className="relative border-s border-gray-200 dark:border-gray-700 mt-6">
-                {course_syllabus_list.map((item, index) => (
-                    <li
-                        className="mb-8 ms-4"
-                        key={item.id}
+                {/* <h1 className="mb-4 text-[24px] font-extrabold leading-none tracking-tight text-gray-900 dark:text-white">
+                    Python Fundamentals for Card Game Development
+                </h1>
+                <Progress value={33} /> */}
+                {/* <div className="flex items-center justify-between"> */}
+                    <h1
+                        className="mb-4 text-[24px] font-extrabold leading-none tracking-tight text-gray-900 dark:text-white"
+                        data-aos="fade-down"
                     >
+                        Mastering Python for Card Game Development: The War Edition! 🎯
+                    </h1>
 
-                        <div className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                    <p
+                        className="text-gray-400 text-[13.5px] mb-2 mt-1"
+                        data-aos="fade-down"
+                    >
+                        We'll start by sharpening your existing skills and then dive into the core concepts necessary for implementing class-based structures and game logic. 🚀
+                    </p>
 
-                        <a
-                            className="cursor-pointer"
-                            href={`/learn-python/module/${index}`}
+                    <div 
+                        className="flex items-center space-x-2 pt-2"
+                        data-aos="fade-down"
+                    >
+                        <span className="text-gray-800 dark:text-white text-[13px] font-medium">
+                            Your Course Progress: (2%)
+                        </span>
+                        <Progress value={2} className="w-40" />
+                        
+                        <span className='px-1 text-[12px]'>|</span>
+
+                        <span className="text-gray-800 dark:text-white text-[13px] font-medium">
+                            AI Course Generation Progress: (33%)
+                        </span>
+                        <Progress value={33} className="w-40" />
+                        {/* <span className="text-gray-600 dark:text-white text-[13px] font-normal">33%</span> */}                        
+                    </div>
+                {/* </div> */}
+
+                <hr className="h-px mt-4 bg-gray-300 border-1 dark:bg-gray-700 w-[95%]"data-aos="fade-up" />
+
+                {/* <p
+                    className="text-gray-400"
+                >
+                    We'll start by sharpening your existing skills and then dive into the core concepts necessary for implementing class-based structures and game logic. 🚀
+                </p> */}
+
+                {/* Course Syllabus List */}
+                <ol 
+                    className="relative border-s border-gray-200 dark:border-gray-700 mt-8"
+                >
+                    {course_syllabus_list.map((item, index) => (
+                        <li
+                            className="mb-8 ms-4"
+                            key={item.id}
                         >
-                            <h3 
-                                className="inline text-lg font-semibold text-blue-600 hover:text-blue-400"
+                            <div
+                                data-aos="fade-in"
+                             className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+
+                            <a
+                                className="cursor-pointer"
+                                href={`/learn-python/module/${index}`}
+                                data-aos="fade-in"
                             >
-                                {item.chapter_name}
-                            </h3>
-                        </a>
-
-                        {(showSubModulesIDList.includes(index)) ? (
-
-                            // TODO:
-                                // Start here with transitioning from module to module home page, etc.
-
-                            <div>
-                                <p className="mb-1 pt-2 text-[15px] font-normal text-gray-500 dark:text-gray-400">
-                                    {item.chapter_description}
-                                </p>
-
-                                <span
-                                    className="text-red-500 text-[14px] cursor-pointer hover:text-red-300"
-                                    onClick={() => removeFromModuleIdList(index)}
+                                <h3 
+                                    className="inline text-lg font-semibold text-blue-500 hover:text-blue-600"
                                 >
-                                Hide Modules
-                                </span>
+                                    {item.chapter_name}
+                                </h3>
+                            </a>
 
-                                <ol className="relative mt-4">
-                                    {item['module_list'].map((module_item) => (
-                                        
-                                        <li
-                                            className="mb-4 ms-4"
-                                            key={module_item.module_number}
-                                        >
-                                            <h3
-                                                // hover:text-blue-600 dark:text-blue-400 hover:dark:text-blue-500 cursor-pointer
-                                                className="inline text-base font-normal text-blue-400"
+                            {(showSubModulesIDList.includes(index)) ? (
+
+                                <div data-aos="fade-in">
+                                    <p className="mb-1 pt-2 text-[14.5px] font-normal text-gray-500 dark:text-gray-400">
+                                        {item.chapter_description}
+                                    </p>
+
+                                    <span
+                                        className="text-red-500 text-[13px] cursor-pointer hover:text-red-300"
+                                        onClick={() => removeFromModuleIdList(index)}
+                                    >
+                                        Hide Modules
+                                    </span>
+
+                                    <ol className="relative mt-4">
+                                        {item['module_list'].map((module_item) => (
+
+                                            <li
+                                                className="mb-2 ms-4"
+                                                key={module_item.module_number}
                                             >
-                                                Module: {module_item.module_name}
-                                            </h3>
-                                        </li>
+                                                <h3
+                                                    className="inline text-[14px] font-normal text-blue-400 cursor-pointer hover:font-semibold"
+                                                >
+                                                    {/* <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 pr-2 dark:text-white w-4 h-4" /> */}
+                                                    {/* <FontAwesomeIcon icon={faCheckCircle} className="text-gray-400 pr-2 dark:text-white w-4 h-4" /> */}
+                                                    Module: {module_item.module_name}
+                                                </h3>
+                                            </li>
 
-                                    ))}
-                                </ol>
-                            </div>
+                                        ))}
+                                    </ol>
+                                </div>
 
-                        ) : (
+                            ) : (
 
-                            <div>
+                                <div data-aos="fade-in">
 
-                                <p className="mb-1 pt-2 text-[15px] font-normal text-gray-500 dark:text-gray-400">
-                                    {item.chapter_description}
-                                </p>
+                                    <p className="mb-2 pt-2 text-[14.5px] font-normal text-gray-500 dark:text-gray-400 tracking-normal">
+                                        {item.chapter_description}
+                                    </p>
 
-                                <span
-                                    className="text-blue-400 text-[14px] cursor-pointer hover:text-blue-600"
-                                    onClick={() => addToModuleIdList(index)}
-                                >
-                                    Show Modules
-                                </span>
+                                    <span
+                                        className="text-blue-400 text-[13px] cursor-pointer hover:text-blue-600"
+                                        onClick={() => addToModuleIdList(index)}
+                                    >
+                                        Show Modules
+                                    </span>
 
-                            </div>
+                                </div>
 
-                        )}
+                            )}
 
-                    </li>
-                ))}
-            </ol>
+                        </li>
+                    ))}
+                </ol>
 
-        </div>
+            </div>
+
+        </>
+
+        // <div className="flex flex-col min-h-screen mt-12 ml-0 items-center">
+
+        //     <h1 className="mb-4 text-[24px] font-extrabold leading-none tracking-tight text-gray-900 dark:text-white">
+        //         Modules - Introduction to Python
+        //     </h1>
+
+            // <ol className="relative border-s border-gray-200 dark:border-gray-700 mt-6">
+            //     {course_syllabus_list.map((item, index) => (
+            //         <li
+            //             className="mb-8 ms-4"
+            //             key={item.id}
+            //         >
+
+            //             <div className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+
+            //             <a
+            //                 className="cursor-pointer"
+            //                 href={`/learn-python/module/${index}`}
+            //             >
+            //                 <h3 
+            //                     className="inline text-lg font-semibold text-blue-600 hover:text-blue-400"
+            //                 >
+            //                     {item.chapter_name}
+            //                 </h3>
+            //             </a>
+
+            //             {(showSubModulesIDList.includes(index)) ? (
+
+            //                 <div>
+            //                     <p className="mb-1 pt-2 text-[15px] font-normal text-gray-500 dark:text-gray-400">
+            //                         {item.chapter_description}
+            //                     </p>
+
+            //                     <span
+            //                         className="text-red-500 text-[14px] cursor-pointer hover:text-red-300"
+            //                         onClick={() => removeFromModuleIdList(index)}
+            //                     >
+            //                     Hide Modules
+            //                     </span>
+
+            //                     <ol className="relative mt-4">
+            //                         {item['module_list'].map((module_item) => (
+                                        
+            //                             <li
+            //                                 className="mb-4 ms-4"
+            //                                 key={module_item.module_number}
+            //                             >
+            //                                 <h3
+            //                                     className="inline text-base font-normal text-blue-400"
+            //                                 >
+            //                                     Module: {module_item.module_name}
+            //                                 </h3>
+            //                             </li>
+
+            //                         ))}
+            //                     </ol>
+            //                 </div>
+
+            //             ) : (
+
+            //                 <div>
+
+            //                     <p className="mb-1 pt-2 text-[15px] font-normal text-gray-500 dark:text-gray-400">
+            //                         {item.chapter_description}
+            //                     </p>
+
+            //                     <span
+            //                         className="text-blue-400 text-[14px] cursor-pointer hover:text-blue-600"
+            //                         onClick={() => addToModuleIdList(index)}
+            //                     >
+            //                         Show Modules
+            //                     </span>
+
+            //                 </div>
+
+            //             )}
+
+            //         </li>
+            //     ))}
+            // </ol>
+
+        // </div>
 
     );
 

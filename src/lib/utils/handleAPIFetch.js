@@ -26,7 +26,7 @@ export default async function handleAPIFetch(endpoint_url, method, access_token,
                     },
                     body: JSON.stringify(data)
                 });
-                    
+
             }
 
         } else {

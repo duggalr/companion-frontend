@@ -481,6 +481,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                     </h2>
 
                                     <p
+                                    // text-gray-400 dark:text-gray-400
                                         className="text-gray-500 dark:text-gray-400 text-[15.5px] tracking-normal leading-9 pt-2 pr-1"
                                         data-aos="fade-down"
                                     >
@@ -560,13 +561,6 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                                 >
                                                     <FontAwesomeIcon icon={faArrowRight} className="pr-2" />
                                                     {item.module_description}
-
-                                                    {/* <a href="#" className="block max-w-lg p-6 bg-white  rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                                                    
-                                                        <p className="font-normal text-gray-700 dark:text-gray-400">
-                                                        {item.module_description}
-                                                        </p>
-                                                    </a> */}
 
                                                 </p>
 
