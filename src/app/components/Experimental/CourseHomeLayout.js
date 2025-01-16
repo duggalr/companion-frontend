@@ -485,6 +485,10 @@ const CourseHomeLayout = () => {
     };
 
 
+    const [courseCompletedModuleList, setCourseCompletedModuleList] = useState([]);
+    const [isCourseGenerating, setIsCourseGenerating] = useState(false);
+    const [courseGenerationProgress, setCourseGenerationProgress] = useState(null);
+
     const _handleUserCourseModuleFetch = async () => {
 
         let anon_user_id = getFromLocalStorage('user_id');
@@ -497,22 +501,69 @@ const CourseHomeLayout = () => {
             },
             body: JSON.stringify(payload)
         });
-        console.log('course-api-response:', apiResponse);
+        const response_data = await apiResponse.json();
+        console.log('Response Data:', response_data);
+
+        if (response_data['success'] === true){
+            let user_course_rv_dict = response_data['user_course_object'];
+            let is_course_generating = user_course_rv_dict['is_course_generating'];
+
+            // TODO: first update the course module state and then update the is-generating stuff
+
+            setCourseCompletedModuleList(user_course_rv_dict['current_course_module_list']);
+
+            if (is_course_generating === true){
+
+                setIsCourseGenerating(true);
+
+                const interval = setInterval(async () => {
+                    const response = await fetch(`http://127.0.0.1:8000/course-gen-task-status/${task_id}`);
+                    const data = await response.json();
+                    console.log('Course Status Data:', data);
+
+                    setCourseGenerationProgress(data.progress);
+
+                    // setProgress(data.progress);
+                    // setStatus(data.state);
+        
+                    if (data.state === "SUCCESS" || data.state === "FAILURE") {
+                        clearInterval(interval);
+                        setIsCourseGenerating(false);
+                        setCourseGenerationProgress(100);
+                    }
+
+                    // TODO: 
+                        // add the sub-modules 
+                    
+
+                }, 2000); // Poll every second
+        
+                // TODO: test out and fix all bugs; etc. + finalize
+                return () => clearInterval(interval);
+
+            }
+
+        }
 
     };
 
-    
-    // TODO: 
+    // handle animations
     useEffect(() => {
-
-        // // Fetch the course modules for the user
-        // _handleUserCourseModuleFetch();
 
         // Initial Animations
         AOS.init({
             duration: 1000, // Animation duration in milliseconds
             once: true,     // Trigger animation only once
         });
+
+    }, []);
+
+
+    // TODO: handle course fetch
+    useEffect(() => {
+
+        // Fetch the course modules for the user
+        _handleUserCourseModuleFetch();
 
     }, []);
 
@@ -557,13 +608,19 @@ const CourseHomeLayout = () => {
                             Your Course Progress: (2%)
                         </span>
                         <Progress value={2} className="w-40" />
-                        
-                        <span className='px-1 text-[12px]'>|</span>
 
-                        <span className="text-gray-800 dark:text-white text-[13px] font-medium">
-                            AI Course Generation Progress: (33%)
-                        </span>
-                        <Progress value={33} className="w-40" />
+                        {
+                            (isCourseGenerating === true) && (
+                                <>
+                                    <span className='px-1 text-[12px]'>|</span>
+                                    <span className="text-gray-800 dark:text-white text-[13px] font-medium">
+                                        AI Course Generation Progress: (33%)
+                                    </span>
+                                    <Progress value={courseGenerationProgress} className="w-40" />
+                                </>
+                            )
+                        }
+
                         {/* <span className="text-gray-600 dark:text-white text-[13px] font-normal">33%</span> */}                        
                     </div>
                 {/* </div> */}
@@ -580,24 +637,26 @@ const CourseHomeLayout = () => {
                 <ol 
                     className="relative border-s border-gray-200 dark:border-gray-700 mt-8"
                 >
-                    {course_syllabus_list.map((item, index) => (
+                    {/* {course_syllabus_list.map((item, index) => ( */}
+                    {courseCompletedModuleList.map((item, index) => (
                         <li
                             className="mb-8 ms-4"
-                            key={item.id}
+                            key={item.parent_module_object_id}
                         >
                             <div
                                 data-aos="fade-in"
                              className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
 
                             <a
+                                // TODO: course module for the learn-python fastapi endpoint 
                                 className="cursor-pointer"
-                                href={`/learn-python/module/${index}`}
+                                href={`/learn-python/module/${item.parent_module_object_id}`}
                                 data-aos="fade-in"
                             >
                                 <h3 
                                     className="inline text-lg font-semibold text-blue-500 hover:text-blue-600"
                                 >
-                                    {item.chapter_name}
+                                    {item.parent_module_name}
                                 </h3>
                             </a>
 
@@ -605,8 +664,10 @@ const CourseHomeLayout = () => {
 
                                 <div data-aos="fade-in">
                                     <p className="mb-1 pt-2 text-[14.5px] font-normal text-gray-500 dark:text-gray-400">
-                                        {item.chapter_description}
+                                        {item.parent_module_description}
                                     </p>
+
+                                    {/* TODO: test and finalize this; get all functionality + UI complete and finalized for here */}
 
                                     <span
                                         className="text-red-500 text-[13px] cursor-pointer hover:text-red-300"
@@ -616,18 +677,18 @@ const CourseHomeLayout = () => {
                                     </span>
 
                                     <ol className="relative mt-4">
-                                        {item['module_list'].map((module_item) => (
+                                        {item['sub_modules'].map((module_item) => (
 
                                             <li
                                                 className="mb-2 ms-4"
-                                                key={module_item.module_number}
+                                                key={module_item.sub_module_object_id}
                                             >
                                                 <h3
                                                     className="inline text-[14px] font-normal text-blue-400 cursor-pointer hover:font-semibold"
                                                 >
                                                     {/* <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 pr-2 dark:text-white w-4 h-4" /> */}
                                                     {/* <FontAwesomeIcon icon={faCheckCircle} className="text-gray-400 pr-2 dark:text-white w-4 h-4" /> */}
-                                                    Module: {module_item.module_name}
+                                                    Module: {module_item.sub_module_name}
                                                 </h3>
                                             </li>
 
@@ -640,7 +701,7 @@ const CourseHomeLayout = () => {
                                 <div data-aos="fade-in">
 
                                     <p className="mb-2 pt-2 text-[14.5px] font-normal text-gray-500 dark:text-gray-400 tracking-normal">
-                                        {item.chapter_description}
+                                        {item.parent_module_description}
                                     </p>
 
                                     <span

@@ -466,7 +466,6 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
 
                             </div> */}
 
-
                             <div className="flex flex-grow w-full max-w-[1100px] py-0">
 
                                 {/* Left Column */}
@@ -546,7 +545,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                             >
 
                                                 <a
-                                                    className="cursor-pointer"
+                                                    // className="cursor-pointer"
                                                 >
                                                     <h3 
                                                         className="inline text-lg font-semibold text-blue-500 hover:text-blue-400"
