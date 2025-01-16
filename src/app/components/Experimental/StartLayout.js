@@ -1,14 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
+import 'aos/dist/aos.css'; // Import AOS styles
+import AOS from 'aos';
+import InteractiveHoverButton from "@/components/ui/interactive-hover-button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 // import { getFromLocalStorage, saveToLocalStorage } from "../utils/localStorageUtils";
 import {  getFromLocalStorage, saveToLocalStorage, removeFromLocalStorage } from '@/lib/utils/localStorageUtils';
-import  HeroLanding from './HeroLanding';
+import NewHeroNavbar from './NewHeroNavbar';
+// import FlipText from "@/components/ui/flip-text";
 
+
+
+// TODO: show chat and go from there to implementing UI and functionality
 
 const StartLayout = () => {
 
-    const [showChatLayout, setShowChatLayout] = useState(false);
+    const [showChatLayout, setShowChatLayout] = useState(true);
     const currentUserInputMessageRef = useRef("");
     const [currentUserInputMessage, setCurrentUserInputMessage] = useState("");
     const [sendBtnEnabled, setSendBtnEnabled] = useState(false);
@@ -49,12 +56,20 @@ const StartLayout = () => {
     const wsRef = useRef(null);
     const accumulatedMessageRef = useRef("");
 
+    // TODO:
+        // start by creating the type-writer effect for this as it appears
+        // go from there
+
+    const initialMessageConstant = `Hey there! I'm Companion, your AI Teacher here to help you learn Python and achieve your learning goals! 💪
+
+This course is built entirely from scratch, personalized to your unique objectives and the project you want to bring to life. 🎯
+
+We’ll take a hands-on, project-based approach because that’s the best way to learn programming. Together, we’ll choose a project that excites you and make it happen!
+
+Let’s start with something simple: What’s your name, my friend? 🤔`;
+        
     const [messages, setMessages] = useState([{
-        text: `Why hello there! 👋 I'm Companion, your AI teacher, that will help you individually learn Python. Together, we will achieve your learning goals!
-
-This is a project-based course and in the end, you will implement a project that you chose to complete. Also, this course is entirely generated from scratch, just for you, and it is not pre-generated or defined, to make it as personalized to your goals as possible! 😅
-
-To start, I need to learn a little bit more about you. What's your name my good friend? 🤔`,
+        text: initialMessageConstant,
         sender: "bot",
         }
     ]);
@@ -244,27 +259,6 @@ To start, I need to learn a little bit more about you. What's your name my good 
                 removeFromLocalStorage('user_course_state_dict');
                 saveToLocalStorage('user_course_state_dict', user_state_dict);
 
-                // removeFromLocalStorage('student_profile_json_dictionary');
-                // removeFromLocalStorage('student_summary_text');
-                // removeFromLocalStorage('student_syllabus');
-                // removeFromLocalStorage('student_course_name');
-                // removeFromLocalStorage('student_course_description');
-                // saveToLocalStorage(
-                //     'student_profile_json_dictionary', user_profile_dictionary_string
-                // );
-                // saveToLocalStorage(
-                //     'student_summary_text', student_summary_text
-                // );
-                // saveToLocalStorage(
-                //     'student_syllabus', JSON.stringify(student_syllabus)
-                // );
-                // saveToLocalStorage(
-                //     'student_course_name', student_course_name
-                // );
-                // saveToLocalStorage(
-                //     'student_course_description', student_course_description
-                // );
-
                 // Course is currently generating
                 // Set Interval to retrieve update every second on course-generation-progress
                 saveToLocalStorage('course_currently_generating', true);
@@ -316,6 +310,7 @@ To start, I need to learn a little bit more about you. What's your name my good 
     const handleUserMessageSend = () => {
         let current_user_msg = currentUserInputMessageRef.current;
         accumulatedMessageRef.current = "";
+        currentUserInputMessageRef.current = "";
 
         let all_chat_messages_str = "";
         for (let i = 0; i <= messages.length-1; i++) {
@@ -357,240 +352,383 @@ To start, I need to learn a little bit more about you. What's your name my good 
         if (user_course_state_dict){
             
             console.log('saved-user-state-dict:', user_course_state_dict);
-            // setUserGeneratedCourseDict(user_course_state_dict);
-            // setShowUserCourseModule(true);
-            // setShowUserCourseModuleLoading(false);
+            setUserGeneratedCourseDict(user_course_state_dict);
+            setShowUserCourseModule(true);
+            setShowUserCourseModuleLoading(false);
             
         }
 
     }, []);
 
+    
+    // Initial Animations
+    useEffect(() => {
+        AOS.init({
+            duration: 1000, // Animation duration in milliseconds
+            once: true,     // Trigger animation only once
+        });
+    }, []);
+
+    
+    const typeWriterEffectActive = useRef(false);
+    const [initialTypeWritedMessage, setInitialTypeWritedMessage] = useState('');
+    const _createTypewriterEffect = (text, set_text_fn, current_index) => {
+        if (current_index < text.length) {
+
+            // Delay the typing effect by 20ms
+            setTimeout(() => {
+
+                // Append the next character from text
+                set_text_fn(previousText => previousText + text[current_index]);
+    
+                // Recursive call with the next index
+                _createTypewriterEffect(text, set_text_fn, current_index + 1);  
+                
+            }, 5);
+
+        }
+    };
+
+    const handleEnterKey = (event) => {
+        if ((event.code === "Enter" || event.code === "NumpadEnter") && !event.shiftKey){
+            event.preventDefault();
+
+            if (currentUserInputMessageRef.current.length > 0){
+            
+                handleUserMessageSend();
+                setCurrentUserInputMessage("");
+            }
+
+            // let current_user_msg = currentUserInputMessageRef.current;
+            // _handleUserMessageSend(current_user_msg);
+        }
+    };
+
+
+    // Initial Type Writer Text Effect
+    useEffect(() => {
+        if (typeWriterEffectActive.current === false){
+            typeWriterEffectActive.current = true;
+            console.log('initial-message:', initialMessageConstant)
+            _createTypewriterEffect(
+                initialMessageConstant,
+                setInitialTypeWritedMessage,
+                0,
+            );
+        }
+    }, [initialMessageConstant]);
+
 
     return (
 
-        <div className="flex-grow overflow-y-scroll no-scrollbar mt-0">
+        <>
         
-            {
-                
-                (showUserCourseModule === true && showUserCourseModuleLoading === false)
-                
-                ?
+            <NewHeroNavbar />
 
-                // Show Course Layout
-                (
-
-                    <div className="flex flex-col items-center min-h-screen mt-0">
-
-                        <div className="flex flex-grow w-full max-w-[1100px] py-0">
-
-                            {/* Left Column */}
-                            <div className="w-1/2 p-0 pt-0">
-                                <h2 className="text-[19px] font-semibold text-gray-800 mb-4">
-                                    Shall we now begin... 😅
-                                </h2>
-
-                                <div className="space-y-4">
-                                    <div>
-                                        <p className="text-gray-600 text-[14px] tracking-normal leading-9 pt-2">
-                                            {userGeneratedCourseDict['summary']}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="mt-8 text-center space-x-4">
-                                    <button
-                                        type="button"
-                                        className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                                    >
-                                        Let&apos;s Start!
-                                        <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
-                                    </button>
-                                </div>
-                                
-                            </div>
-
-                            <div className="w-1/2 ml-6 flex flex-col pt-0 border-l-2 border-gray-50">
-                            </div>
-
-                            {/* Right Column */}
-                            {/* <div className="w-2/3 ml-6 flex flex-col pt-0 border-l-2 border-gray-50">
-                                
-                                <h2 className="text-lg font-semibold text-gray-800 mb-6 ml-8">
-                                    {userGeneratedCourseDict['course_name']}
-                                </h2>
-
-                                <p className="text-gray-600 text-[15.5px] tracking-normal leading-9 pt-2">
-                                    {userGeneratedCourseDict['course_description']}
-                                </p>
-                                
-                                <h2 className="text-lg font-semibold text-gray-800 mb-6 ml-8">
-                                    Syllabus
-                                </h2>
-
-                                <ol className="relative border-s border-gray-200 dark:border-gray-700 ml-10">
-                                    {userGeneratedCourseDict['student_syllabus'].map((item) => (
-                                        <li
-                                            className="mb-8 ms-4"
-                                            key={item.id}
-                                        >
-
-                                            <div className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-
-                                            <a
-                                                className="cursor-pointer"
-                                            >
-                                                <h3 
-                                                    className="inline text-lg font-semibold text-blue-600 hover:text-blue-400"
-                                                >
-                                                    {item.module_name}
-                                                </h3>
-                                                
-                                            </a>
-
-                                            <p className="mb-4 pt-1 text-[15px] font-normal text-gray-500 dark:text-gray-400">
-                                                {item.module_description}
-                                            </p>
-
-                                        </li>
-                                    ))}
-                                </ol>
-
-                            </div> */}
-
-                        </div>
-
-                    </div>
-
-                )
-                
-                :
-                (
-                 
-                    (showUserCourseModule === true && showUserCourseModuleLoading === true)
+            <div className="flex-grow overflow-y-scroll no-scrollbar mt-0">
+        
+                {
+                    
+                    (showUserCourseModule === true && showUserCourseModuleLoading === false)
                     
                     ?
-                    
-                    // Show Loading
+
+                    // Show Course Layout
                     (
-                        <div className="flex flex-col items-center min-h-screen text-white">
-                            {/* Spinner */}
-                            <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                    
-                            {/* Dynamic Text */}
-                            <p className="mt-4 text-lg font-normal text-gray-800">{showCourseLoadingText}</p>
+
+                        <div className="flex flex-col items-center min-h-screen mt-4">
+
+                            <div className="flex flex-grow w-full max-w-[1100px] py-0">
+
+                                {/* Left Column */}
+                                <div className="w-1/2 p-0 pt-0 pr-2">
+                                    
+                                    <h2
+                                        // className="text-[20px] font-semibold text-gray-800 mb-4"
+                                        className="mb-6 text-[24px] font-bold leading-none tracking-tight text-gray-900 dark:text-white"
+                                        data-aos="fade-down"
+                                    >
+                                        Your journey <span className="text-blue-600 dark:text-blue-500">begins now...</span> 😅
+                                    </h2>
+
+                                    {/* <h1 
+                                        className="mb-6 text-[24px] font-bold leading-none tracking-tight text-gray-900 dark:text-white"
+                                        data-aos="fade-down"
+                                    >
+                                        Welcome! 👋 To begin, let's learn a bit about <span className="text-blue-600 dark:text-blue-500">you...</span>
+                                    </h1> */}
+
+                                    {/* <div className="space-y-4"> */}
+                                    <p
+                                        className="text-gray-500 dark:text-gray-400 text-[15.5px] tracking-normal leading-9 pt-2 pr-1"
+                                        data-aos="fade-down"
+                                    >
+                                        {userGeneratedCourseDict['summary']}
+                                    </p>
+                                    {/* </div> */}
+
+                                    <div
+                                        className="mt-10 mr-6 text-center space-x-0"
+                                        data-aos="fade-in"
+                                    >
+                                        {/* <button
+                                            type="button"
+                                            className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                        >
+                                            Let&apos;s Start!
+                                            <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
+                                        </button> */}
+                                        <InteractiveHoverButton text="Begin!" className="mt-0 text-[17.5px]"/>
+                                    </div>
+                                    
+                                </div>
+
+
+                                {/* Right Column */}
+                                <div className="w-1/2 ml-0 flex flex-col pt-0 border-l-[1px] border-gray-100 dark:border-gray-600 pl-6">
+                                    
+                                    <h2 
+                                        // className="text-lg font-semibold text-gray-800 mb-6 ml-8"
+                                        className="mb-6 text-[24px] font-bold leading-none tracking-tight text-gray-900 dark:text-white"
+                                        data-aos="fade-down"
+                                    >
+                                        {userGeneratedCourseDict['course_name']}{" "}🎯
+                                    </h2>
+
+                                    {/* <p className="text-gray-600 text-[15.5px] tracking-normal leading-9 pt-2"> */}
+                                    <p 
+                                        className="text-gray-500 dark:text-gray-400 text-[15.5px] tracking-normal leading-9 pt-2 pr-1"
+                                        data-aos="fade-down"
+                                    >
+                                        {userGeneratedCourseDict['course_description']}
+                                    </p>
+                                        
+                                    <hr className="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700" />
+
+                                    <h2 
+                                        // className="text-lg font-semibold text-gray-800 mb-6 ml-8"
+                                        className="mt-2 mb-6 text-[20px] font-bold leading-none tracking-tight text-gray-900 dark:text-white"
+                                        data-aos="fade-in"
+                                    >
+                                        Syllabus
+                                    </h2>
+
+                                    <ol
+                                        data-aos="fade-in"
+                                        // className="relative border-s border-gray-200 dark:border-gray-700"
+                                        // className=""
+                                    >
+                                        {userGeneratedCourseDict['student_syllabus'].map((item) => (
+                                            <li
+                                                className="mb-8 ms-1"
+                                                key={item.id}
+                                            >
+
+                                                {/* <div
+                                                    className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700"
+                                                ></div> */}
+
+                                                <a
+                                                    className="cursor-pointer"
+                                                >
+                                                    <h3 
+                                                        className="inline text-lg font-semibold text-blue-600 hover:text-blue-400"
+                                                    >
+                                                        {item.module_name}
+                                                    </h3>
+                                                    
+                                                </a>
+
+                                                <p
+                                                    className="mb-4 pt-1 text-[15px] font-normal text-gray-400 dark:text-gray-400"
+                                                >
+                                                    {item.module_description}
+                                                </p>
+
+                                            </li>
+                                        ))}
+                                    </ol>
+
+                                </div>
+
+                            </div>
+
                         </div>
 
                     )
-
-                    :
-
-                    (
-                        (showChatLayout === true) ? (
                     
-                            // Center this 
-                            <div className="flex flex-col h-4/5 dark:bg-gray-900 p-4 max-w-4xl mx-auto min-h-[80vh] max-h-[80vh]">
-            
-                                <h1 className="mb-6 text-[24px] font-bold leading-none tracking-tight text-gray-900 dark:text-white">
-                                    To generate a python course for we, let&apos;s learn a bit more about you first...
-                                </h1>
-            
-                                {/* Messages Area */}
-                                <div
-                                    // bg-[#F3F4F6] dark:bg-gray-800
-                                    className="flex-grow overflow-y-auto p-4 space-y-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50"
-                                >
-            
-                                    {/* Message List */}
-                                    {messages.map((msg, idx) => (
-                                        <div
-                                            key={idx}
-                                            className={`${
-                                            msg.sender === "user"
-                                                ? "self-end bg-blue-400 text-white"
-                                                : "self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                            } p-3 rounded-lg w-full max-w-full break-words text-[13px] whitespace-pre-wrap`}
-                                        >
-                                            {msg.text}
-                                        </div>
-                                    ))}
-            
-                                    {/* Display the streaming message here */}
-                                    {isGeneratingMessage && (
-                                        <div className="self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-3 rounded-lg w-full max-w-full break-words text-[13px] whitespace-pre-wrap">
-                                            {generatedMessage}
-                                        </div>
-                                    )}
-            
-                                </div>
-            
-                                {/* Input area - textarea */}
-                                <div className="flex items-center border-t border-gray-300 dark:border-gray-600 pt-2 mt-2">
-            
-                                    <textarea
-                                        value={currentUserInputMessage}
-                                        onChange={(e) => handleNewInputValue(e)}                            
-                                        className="text-[14px] flex-grow resize-y p-3 bg-gray-50 dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 mr-2"
-                                        placeholder="type a message..."
-                                        rows={1}
-                                        style={{ minHeight: '50px', maxHeight: '120px' }}
-                                        disabled={messagesDisabled}
-                                    />
-            
-                                    <button
-                                        // className={`${"w-[100px] py-2 text-[14px] bg-blue-600 text-white opacity-90 font-medium rounded-xl hover:bg-blue-700 transition-all cursor-pointer"}`}
-                                        className={`${messagesDisabled ?
-                                            "w-[100px] py-2 text-[14px] bg-blue-600 text-white opacity-90 font-medium rounded-xl hover:bg-blue-700 transition-all cursor-pointer" : 
-                                            "w-[100px] py-2 text-[14px] text-white dark:text-black bg-blue-500 dark:bg-gray-500 cursor-not-allowed font-medium rounded-xl"
-                                        }`}
-                                        onClick={handleUserMessageSend}
-                                        disabled={messagesDisabled}
-                                    >
-                                        <FontAwesomeIcon icon={faPaperPlane} className="text-white pr-2" />
-                                        Send
-                                    </button>
-            
-                                </div>
-                            
-                            </div>
-            
-            
-                        ): (
-            
-                            null
+                    :
+                    (
+                    
+                        (showUserCourseModule === true && showUserCourseModuleLoading === true)
+                        
+                        ?
+                        
+                        // Show Loading
+                        (
+                            <div className="flex flex-col items-center min-h-screen mt-12">
+                                
+                                {/* Spinner */}
+                                <div className="w-9 h-9 border-4 border-blue-500 border-t-transparent rounded-full animate-spin "></div>
+                                {/* <p className="mt-4 text-lg font-normal text-gray-800">{showCourseLoadingText}</p> */}
+                                <p className="mt-6 text-[16px] font-normal text-gray-500 tracking-normal">
+                                    Generating your course syllabus... it will take about 10-15 seconds...
+                                </p>
 
-                            // <HeroLanding/>
-                            // <div className="flex flex-col items-center min-h-screen">
-            
-                                // <h1 className="mb-4 text-[32px] font-extrabold leading-none tracking-tight text-gray-900 dark:text-white">Learn Python with an <span className="text-blue-600 dark:text-blue-500">AI Teacher</span>.</h1>
-            
-                                // <p className="mb-0 mt-4 text-[17.5px] font-normal tracking-wide text-gray-500 dark:text-gray-400">
-                                //     Let an AI generate a personalized course based on your goals.
-                                // </p>
-    
-                                // <p className="mb-5 mt-2 text-[17.5px] font-normal tracking-wide text-gray-500 dark:text-gray-400">
-                                //     This is primarily intended for those who never programmed in Python before...
-                                // </p>
-    
-                                // <button
-                                //     type="button"
-                                //     className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-3 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mt-2"
-                                //     onClick={handleStartCourseBtnClick}
-                                // >
-                                //     Let&apos;s Begin! <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
-                                // </button>
-            
-                            // </div>
-            
+                            </div>
+
+                        )
+
+                        :
+
+                        (
+                            (showChatLayout === true) ? (                                
+                        
+                                // Center this 
+                                <div
+                                    className="flex flex-col dark:bg-gray-900 p-4 max-w-4xl mx-auto min-h-[88vh] max-h-[90vh] mt-0" 
+                                    data-aos="fade-in"
+                                >
+                
+                                    <h1 
+                                        className="mb-6 text-[24px] font-bold leading-none tracking-tight text-gray-900 dark:text-white"
+                                        data-aos="fade-down"
+                                    >
+                                        {/* To generate a python course for we, let&apos;s learn a bit more about you first... */}
+                                        Welcome! 👋 To begin, let's learn a bit about <span className="text-blue-600 dark:text-blue-500">you...</span>
+                                    </h1>
+
+                                    {/* Messages Area */}
+                                    <div
+                                        // bg-[#F3F4F6] dark:bg-gray-800
+                                        className="flex-grow overflow-y-auto p-4 space-y-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50"
+                                    >
+                
+                                        {/* TODO: have the initial text larger and with type-writer effect --> proceed from there to UI finalization and functionality */}
+
+                                        {/* Message List */}
+
+                                        {messages.length > 1 ? (
+                                            messages.map((msg, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    className={`${
+                                                        msg.sender === "user"
+                                                            ? "self-end bg-blue-400 text-white"
+                                                            : "self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                                    } p-5 rounded-2xl w-full max-w-full break-words text-[13.5px] whitespace-pre-wrap`}
+                                                >
+                                                    {msg.text}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div
+                                                className={`${"self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"} p-5 rounded-2xl w-full max-w-full break-words text-[13.5px] whitespace-pre-wrap`}
+                                            >
+                                                {initialTypeWritedMessage}
+                                            </div>
+                                        )}
+                
+                                        {/* Display the streaming message here */}
+                                        {isGeneratingMessage && (
+                                            <div className="self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-5 rounded-2xl w-full max-w-full break-words text-[13.5px] whitespace-pre-wrap">
+                                                {generatedMessage}
+                                            </div>
+                                        )}
+                
+                                    </div>
+                
+                                    {/* Input area - textarea */}
+                                    <div className="flex items-center border-t border-gray-300 dark:border-gray-600 pt-2 mt-2">
+                
+                                        <textarea
+                                            onKeyDown={handleEnterKey}
+                                            value={currentUserInputMessage}
+                                            onChange={(e) => handleNewInputValue(e)}                            
+                                            className="text-[14px] flex-grow resize-y p-3 bg-gray-50 dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 mr-2"
+                                            placeholder="type a message..."
+                                            rows={1}
+                                            style={{ minHeight: '50px', maxHeight: '120px' }}
+                                            disabled={messagesDisabled}
+                                        />
+                
+                                        {/* <button
+                                            // className={`${"w-[100px] py-2 text-[14px] bg-blue-600 text-white opacity-90 font-medium rounded-xl hover:bg-blue-700 transition-all cursor-pointer"}`}
+                                            className={`${sendBtnEnabled ?
+                                                "w-[100px] py-2 text-[14px] bg-blue-600 text-white opacity-90 font-medium rounded-xl hover:bg-blue-700 transition-all cursor-pointer" : 
+                                                "w-[100px] py-2 text-[14px] text-white dark:text-black bg-blue-500 dark:bg-gray-500 cursor-not-allowed font-medium rounded-xl"
+                                            }`}
+                                            onClick={handleUserMessageSend}
+                                            disabled={sendBtnEnabled}
+                                        >
+                                            <FontAwesomeIcon icon={faPaperPlane} className="text-white pr-2" />
+                                            Send
+                                        </button> */}
+
+                                        <button
+                                            onClick={handleUserMessageSend}
+                                            disabled={isLoading || !sendBtnEnabled} // Disable when loading or when send button is not enabled
+                                            className={`${sendBtnEnabled && !isLoading ? 
+                                                "w-[100px] py-2 text-[14px] bg-blue-600 text-white opacity-90 font-medium rounded-xl hover:bg-blue-700 transition-all cursor-pointer" : 
+                                                "w-[100px] py-2 text-[14px] text-white dark:text-black bg-blue-500 dark:bg-gray-500 cursor-not-allowed font-medium rounded-xl"
+                                            }`}
+                                        >
+                                            {isLoading ? (
+                                                <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                            ) : (
+                                                <FontAwesomeIcon icon={faPaperPlane} className="text-white pr-2" />
+                                            )}
+                                            {isLoading ? "" : "Send"}
+                                        </button>
+                
+                                    </div>
+                                
+                                </div>
+                
+                
+                            ): (
+                
+                                null
+
+                                // <HeroLanding/>
+                                // <div className="flex flex-col items-center min-h-screen">
+                
+                                    // <h1 className="mb-4 text-[32px] font-extrabold leading-none tracking-tight text-gray-900 dark:text-white">Learn Python with an <span className="text-blue-600 dark:text-blue-500">AI Teacher</span>.</h1>
+                
+                                    // <p className="mb-0 mt-4 text-[17.5px] font-normal tracking-wide text-gray-500 dark:text-gray-400">
+                                    //     Let an AI generate a personalized course based on your goals.
+                                    // </p>
+
+                                    // <p className="mb-5 mt-2 text-[17.5px] font-normal tracking-wide text-gray-500 dark:text-gray-400">
+                                    //     This is primarily intended for those who never programmed in Python before...
+                                    // </p>
+
+                                    // <button
+                                    //     type="button"
+                                    //     className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-3 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mt-2"
+                                    //     onClick={handleStartCourseBtnClick}
+                                    // >
+                                    //     Let&apos;s Begin! <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
+                                    // </button>
+                
+                                // </div>
+                
+                            )
+
                         )
 
                     )
+                    
 
-                )
-                
+                }
 
-            }
+            </div>
 
-        </div>
+        
+        </>
+
+
+        
 
     )
 
