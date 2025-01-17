@@ -18,6 +18,7 @@ const NewModuleLayout = ({ module_id }) => {
     const [currentSubModuleInformationList, setCurrentSubModuleInformationList] = useState([]);
     const [currentSubModuleInformationIndex, setCurrentSubModuleInformationIndex] = useState(0);
 
+    const [currentActiveTab, setCurrentActiveTab] = useState('note');
     const [currentNoteText, setCurrentNoteText] = useState("");
     const currentNoteTyping =useRef(false);
     const [showIntroductionNote, setShowIntroductionNote] = useState(false);
@@ -190,10 +191,22 @@ const NewModuleLayout = ({ module_id }) => {
     }, []);
 
     
+    const [consoleOutput, setConsoleOutput] = useState('>>> Console Output');
     const editorRef = useRef(null);
     const handleEditorDidMount = (editor, monaco) => {
         editorRef.current = editor; // Keep a reference to the editor
     };
+
+    const _handleRunButtonClick = async () => {
+
+        // TODO:
+            // add user input (input())
+
+        console.log('run button click...');
+        setConsoleOutput('console output...');
+
+    }
+
 
     return (
 
@@ -240,26 +253,67 @@ const NewModuleLayout = ({ module_id }) => {
                 {/* Layout - Note + Code */}
 
                 {/* max-w-[1020px] */}
-                <div className="flex flex-grow max-w-[1100px] py-0">
+                <div className="flex flex-grow max-w-[1120px] py-0">
 
                     {/* First Half */}
                     <div 
-                        className={`p-0 pt-2 ${(showExample === true) ? "w-1/2" : "w-full"}`}
+                        className={`p-0 pt-0 ${(showExample === true) ? "w-1/2" : "w-5/6"}`}
                     >
 
-                        <div className="space-y-4 pr-2">
+                        <div className="space-y-4 mt-3">
+                            
+                            {/* Tab Menu */}
+                            <div
+                                className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 mb-0"
+                            >
+                                
+                                <ul className="flex flex-wrap -mb-px">
+
+                                    <li className="me-2">
+                                        <a
+                                            className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg cursor-pointer ${
+                                                (currentActiveTab === 'note')
+                                                ? 'text-blue-600 border-blue-600 font-bold dark:text-blue-500 dark:border-blue-500'
+                                                : 'text-gray-600 border-transparent dark:text-gray-400'
+                                            }`}
+                                            aria-current={currentActiveTab ? 'page' : undefined}
+                                            onClick={() => setCurrentActiveTab('note')}
+                                        >
+                                            Note
+                                        </a>
+                                    </li>
+
+                                    <li className="me-2">
+                                        {/* <a href="#" className="inline-block p-0 px-4 pb-1 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">Challenge</a> */}
+                                        <a
+                                            href="#"
+                                            className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg cursor-pointer ${
+                                                (currentActiveTab === 'challenge')
+                                                ? 'text-blue-600 border-blue-600 font-bold dark:text-blue-500 dark:border-blue-500'
+                                                : 'text-gray-600 border-transparent dark:text-gray-400'
+                                            }`}
+                                            aria-current={currentActiveTab ? 'page' : undefined}
+                                            onClick={() => setCurrentActiveTab('challenge')}
+                                        >
+                                            Challenge
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </div>
+                                
+                            
+                            {/* Introductory Note View */}
                             <div>
-                                {/* <h3 className="text-gray-900 font-bold">
-                                    {noteDict.title}
-                                </h3> */}
-                                <p className="text-[15px] tracking-normal leading-9 pt-0">
-                                    {/* <TypeWriter text={noteDict.description} /> */}
+                                <p className="text-[15px] tracking-normal leading-9 pt-0 pr-4">
                                     <Markdown>
                                         {currentSubModuleDict.introduction_note}
                                     </Markdown>
                                 </p>
 
                             </div>
+
                         </div>
 
                     </div>
@@ -267,31 +321,26 @@ const NewModuleLayout = ({ module_id }) => {
 
                     {/* Second Half */}
 
-                    <div className="w-full ml-0 flex flex-col pt-0 border-l-2 border-gray-50">
+                    <div className="w-full mt-2 flex flex-col pt-0 border-l-2 border-gray-50">
 
-                        <div className="flex-grow p-4 pt-0 pb-0">
+                        <div className="flex-grow p-0 pt-0 pb-0 pl-4">
                             
                             <div className="flex justify-between">
-                                <h2 className="text-lg font-semibold text-gray-800 mb-4">Code</h2>
+                                <h2 className="text-[18px] font-semibold text-gray-800 mb-0 pl-1 pt-1">
+                                    Code
+                                </h2>
                                 <button
                                     type="button"
-                                    className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-[13.5px] px-3 py-0 me-0 mb-3 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+                                    className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-[13.5px] px-3 py-2 me-0 mb-3 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+                                    onClick={_handleRunButtonClick}
                                 >
                                     <FontAwesomeIcon icon={faPlay} className="pl-1 pr-1 text-[12px]"/>{" "}Run
-                                </button>
-
-                                <button
-                                    type="button"
-                                    className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                                >
-                                    Next
-                                    <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
                                 </button>
 
                             </div>
                             
                             {/* Monaco Code Editor */}
-                            <div className="h-[400px]">
+                            <div className="h-[450px]">
                                 <Monaco
                                     height="100%"
                                     defaultLanguage="python" // Set language to Python
@@ -309,7 +358,7 @@ const NewModuleLayout = ({ module_id }) => {
                             {/* Console Output */}
                             <div className="flex-grow p-0 pt-4">
                                 <h2 className="text-lg font-semibold text-gray-800 mb-4">Console Output</h2>
-                                <div className="h-40 overflow-auto bg-black text-green-500 p-2 rounded-md font-mono text-sm"></div>
+                                <div className="h-40 overflow-auto bg-black text-green-500 p-2 rounded-md font-mono text-sm">{consoleOutput}</div>
                             </div>
 
                         </div>
