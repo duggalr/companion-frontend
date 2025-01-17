@@ -356,7 +356,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
             setUserGeneratedCourseDict(user_course_state_dict);
             setShowUserCourseModule(true);
             setShowUserCourseModuleLoading(false);
-            
+
         }
 
     }, []);
@@ -473,7 +473,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                     
                                     <h2
                                         // className="text-[20px] font-semibold text-gray-800 mb-4"
-                                        className="mb-6 text-[24px] font-bold leading-none tracking-tight text-gray-900 dark:text-white"
+                                        className="mb-6 text-[25px] font-bold leading-none tracking-tight text-gray-900 dark:text-white"
                                         data-aos="fade-down"
                                     >
                                         Your journey <span className="text-blue-600 dark:text-blue-500">begins now...</span> 😅
@@ -481,7 +481,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
 
                                     <p
                                     // text-gray-400 dark:text-gray-400
-                                        className="text-gray-500 dark:text-gray-400 text-[15.5px] tracking-normal leading-9 pt-2 pr-1"
+                                        className="text-gray-500 dark:text-gray-400 text-[16px] tracking-normal leading-9 pt-2 pr-4"
                                         data-aos="fade-down"
                                     >
                                         {/* {userGeneratedCourseDict['summary']} */}
@@ -495,6 +495,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                         <InteractiveHoverButton 
                                             text="Begin!"
                                             className="mt-0 text-[17.5px]"
+                                            // className='mt-0 text-[18.5px] py-2.5'
                                             onClick={handleBeginCourseClick}
                                         />
                                     </div>
@@ -527,7 +528,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
 
                                     <h2 
                                         // className="text-lg font-semibold text-gray-800 mb-6 ml-8"
-                                        className="mt-1 mb-6 text-[24px] font-bold leading-none tracking-tight text-gray-900 dark:text-white"
+                                        className="mt-1 mb-6 text-[25px] font-bold leading-none tracking-tight text-gray-900 dark:text-white"
                                         data-aos="fade-down"
                                     >
                                         Course Syllabus{" "}🎯
@@ -556,7 +557,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                                 </a>
 
                                                 <p
-                                                    className="mb-4 pt-2 leading-6 text-[14.5px] tracking-normal font-normal text-gray-400 dark:text-gray-400"
+                                                    className="mb-4 pt-2 leading-6 text-[15px] tracking-normal font-normal text-gray-400 dark:text-gray-400"
                                                 >
                                                     <FontAwesomeIcon icon={faArrowRight} className="pr-2" />
                                                     {item.module_description}
@@ -609,7 +610,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                 >
                                     {/* dark:bg-gray-900 */}
                                     <h1 
-                                        className="mb-6 text-[24px] font-bold leading-none tracking-tight text-gray-900 dark:text-gray-300"
+                                        className="mb-6 text-[26px] font-bold leading-none tracking-tight text-gray-900 dark:text-gray-300"
                                         data-aos="fade-down"
                                     >
                                         {/* To generate a python course for we, let&apos;s learn a bit more about you first... */}
@@ -621,8 +622,6 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                         // bg-[#F3F4F6] dark:bg-gray-800
                                         className="flex-grow overflow-y-auto p-4 space-y-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-800"
                                     >
-                
-                                        {/* TODO: have the initial text larger and with type-writer effect --> proceed from there to UI finalization and functionality */}
 
                                         {/* Message List */}
 
@@ -634,14 +633,14 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                                         msg.sender === "user"
                                                             ? "self-end bg-blue-400 text-white"
                                                             : "self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                                    } p-5 rounded-2xl w-full max-w-full break-words text-[13.5px] whitespace-pre-wrap`}
+                                                    } p-5 rounded-2xl w-full max-w-full break-words text-[14.5px] whitespace-pre-wrap`}
                                                 >
                                                     {msg.text}
                                                 </div>
                                             ))
                                         ) : (
                                             <div
-                                                className={`${"self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"} p-5 rounded-2xl w-full max-w-full break-words text-[13.5px] whitespace-pre-wrap`}
+                                                className={`${"self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"} p-5 rounded-2xl w-full max-w-full break-words text-[14.5px] whitespace-pre-wrap`}
                                             >
                                                 {initialTypeWritedMessage}
                                             </div>
@@ -649,7 +648,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                 
                                         {/* Display the streaming message here */}
                                         {isGeneratingMessage && (
-                                            <div className="self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-5 rounded-2xl w-full max-w-full break-words text-[13.5px] whitespace-pre-wrap">
+                                            <div className="self-start bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-5 rounded-2xl w-full max-w-full break-words text-[14.5px] whitespace-pre-wrap">
                                                 {generatedMessage}
                                             </div>
                                         )}

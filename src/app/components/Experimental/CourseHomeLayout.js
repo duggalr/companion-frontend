@@ -485,6 +485,7 @@ const CourseHomeLayout = () => {
     };
 
 
+    const [courseMetaData, setCourseMetaData] = useState({});
     const [courseCompletedModuleList, setCourseCompletedModuleList] = useState([]);
     const [isCourseGenerating, setIsCourseGenerating] = useState(false);
     const [courseGenerationProgress, setCourseGenerationProgress] = useState(null);
@@ -502,13 +503,19 @@ const CourseHomeLayout = () => {
             body: JSON.stringify(payload)
         });
         const response_data = await apiResponse.json();
-        console.log('Response Data:', response_data);
+        console.log('Response Data:', response_data);        
 
         if (response_data['success'] === true){
             let user_course_rv_dict = response_data['user_course_object'];
             let is_course_generating = user_course_rv_dict['is_course_generating'];
 
             // TODO: first update the course module state and then update the is-generating stuff
+
+            setCourseMetaData({
+                "course_name": user_course_rv_dict['course_name'],
+                "course_description": user_course_rv_dict['course_description'],
+                "is_course_generating": user_course_rv_dict['is_course_generating']
+            });
 
             setCourseCompletedModuleList(user_course_rv_dict['current_course_module_list']);
 
@@ -523,18 +530,20 @@ const CourseHomeLayout = () => {
 
                     setCourseGenerationProgress(data.progress);
 
-                    // setProgress(data.progress);
-                    // setStatus(data.state);
+                    const updated_course_data = data['user_course_object'];
+
+                    setCourseMetaData({
+                        "course_name": updated_course_data['course_name'],
+                        "course_description": updated_course_data['course_description'],
+                        "is_course_generating": updated_course_data['is_course_generating']
+                    });
+                    setCourseCompletedModuleList(updated_course_data['current_course_module_list']);
         
                     if (data.state === "SUCCESS" || data.state === "FAILURE") {
                         clearInterval(interval);
                         setIsCourseGenerating(false);
                         setCourseGenerationProgress(100);
                     }
-
-                    // TODO: 
-                        // add the sub-modules 
-                    
 
                 }, 2000); // Poll every second
         
@@ -576,6 +585,7 @@ const CourseHomeLayout = () => {
             <DashboardTopNavBar />
 
             {/* Course Home Layout */}
+            {/* TODO: finalize UI and finish (1) and proceed to (2) */}
 
             {/* max-w-[1100px] */}
             {/* <div className="flex flex-col min-h-screen mt-8"> */}
@@ -587,21 +597,23 @@ const CourseHomeLayout = () => {
                 <Progress value={33} /> */}
                 {/* <div className="flex items-center justify-between"> */}
                     <h1
-                        className="mb-4 text-[24px] font-extrabold leading-none tracking-tight text-gray-900 dark:text-white"
+                        className="mb-4 text-[26px] font-extrabold leading-none tracking-tight text-gray-900 dark:text-white"
                         data-aos="fade-down"
                     >
-                        Mastering Python for Card Game Development: The War Edition! 🎯
+                        {/* Mastering Python for Card Game Development: The War Edition! 🎯 */}
+                        🎯 {courseMetaData.course_name}
                     </h1>
 
                     <p
-                        className="text-gray-400 text-[13.5px] mb-2 mt-1"
+                        className="text-gray-400 text-[15px] leading-8 mb-2 mt-1 pr-10"
                         data-aos="fade-down"
                     >
-                        We'll start by sharpening your existing skills and then dive into the core concepts necessary for implementing class-based structures and game logic. 🚀
+                        {/* We&apos;ll start by sharpening your existing skills and then dive into the core concepts necessary for implementing class-based structures and game logic. 🚀 */}
+                        {courseMetaData.course_description}
                     </p>
 
                     <div 
-                        className="flex items-center space-x-2 pt-2"
+                        className="flex items-center space-x-2 pt-4 mb-0"
                         data-aos="fade-down"
                     >
                         <span className="text-gray-800 dark:text-white text-[13px] font-medium">
@@ -636,6 +648,7 @@ const CourseHomeLayout = () => {
                 {/* Course Syllabus List */}
                 <ol 
                     className="relative border-s border-gray-200 dark:border-gray-700 mt-8"
+                    data-aos="fade-in"
                 >
                     {/* {course_syllabus_list.map((item, index) => ( */}
                     {courseCompletedModuleList.map((item, index) => (
@@ -644,14 +657,12 @@ const CourseHomeLayout = () => {
                             key={item.parent_module_object_id}
                         >
                             <div
-                                data-aos="fade-in"
-                             className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                                className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700"
+                            ></div>
 
                             <a
-                                // TODO: course module for the learn-python fastapi endpoint 
                                 className="cursor-pointer"
-                                href={`/learn-python/module/${item.parent_module_object_id}`}
-                                data-aos="fade-in"
+                                href={`/learn-python/module/${item.parent_module_object_id}`}                                
                             >
                                 <h3 
                                     className="inline text-lg font-semibold text-blue-500 hover:text-blue-600"
@@ -662,7 +673,7 @@ const CourseHomeLayout = () => {
 
                             {(showSubModulesIDList.includes(index)) ? (
 
-                                <div data-aos="fade-in">
+                                <div>
                                     <p className="mb-1 pt-2 text-[14.5px] font-normal text-gray-500 dark:text-gray-400">
                                         {item.parent_module_description}
                                     </p>
@@ -684,10 +695,10 @@ const CourseHomeLayout = () => {
                                                 key={module_item.sub_module_object_id}
                                             >
                                                 <h3
-                                                    className="inline text-[14px] font-normal text-blue-400 cursor-pointer hover:font-semibold"
+                                                    className="inline text-[14px] font-normal text-blue-400 hover:font-semibold"
                                                 >
                                                     {/* <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 pr-2 dark:text-white w-4 h-4" /> */}
-                                                    {/* <FontAwesomeIcon icon={faCheckCircle} className="text-gray-400 pr-2 dark:text-white w-4 h-4" /> */}
+                                                    <FontAwesomeIcon icon={faCheckCircle} className="text-gray-400 pr-2 dark:text-white w-4 h-4" />
                                                     Module: {module_item.sub_module_name}
                                                 </h3>
                                             </li>
@@ -698,18 +709,23 @@ const CourseHomeLayout = () => {
 
                             ) : (
 
-                                <div data-aos="fade-in">
+                                <div>
+                                    {/* data-aos="fade-in" */}
 
                                     <p className="mb-2 pt-2 text-[14.5px] font-normal text-gray-500 dark:text-gray-400 tracking-normal">
                                         {item.parent_module_description}
                                     </p>
 
-                                    <span
-                                        className="text-blue-400 text-[13px] cursor-pointer hover:text-blue-600"
-                                        onClick={() => addToModuleIdList(index)}
-                                    >
-                                        Show Modules
-                                    </span>
+                                    {(item['sub_modules'].length > 0) && (
+
+                                        <span
+                                            className="text-blue-400 text-[13px] cursor-pointer hover:text-blue-600"
+                                            onClick={() => addToModuleIdList(index)}
+                                        >
+                                            Show Modules
+                                        </span>
+
+                                    )}
 
                                 </div>
 

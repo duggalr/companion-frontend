@@ -12,6 +12,7 @@ import AnimatedGradientText from "@/components/ui/animated-gradient-text";
 import HeroVideoDialog from "@/components/ui/hero-video-dialog";
 import ThemeToggle from "@/app/components/Utils/ThemeToggle";
 import NewHeroNavbar from "./NewHeroNavbar";
+import { AuroraText } from "@/components/ui/aurora-text";
 
 
 const pacifico_font = Pacifico({
@@ -61,10 +62,15 @@ const HeroLanding = () => {
 
                 <h1 className="mb-0 text-[46px] font-extrabold leading-none tracking-tight text-gray-900 dark:text-gray-300" data-aos="fade-down">
                     {/* Learn Python with an <span className="text-blue-600 dark:text-blue-500">AI Teacher</span>. */}
-                    Let An <span className="text-blue-600 dark:text-blue-500">AI Teach You</span> Python.
+                    {/* Let An <span className="text-blue-600 dark:text-blue-500">AI Teach You</span> Python. */}
+                    {/* Let An <AuroraText>AI Teach You</AuroraText> Python. */}
                 </h1>
 
-                <p className="mb-0 pt-6 text-[21px] font-normal tracking-normal text-gray-500 dark:text-gray-400" data-aos="fade-down">
+                <h1 className="text-4xl font-bold tracking-tighter md:text-5xl lg:text-6xl">
+                    Let An <AuroraText>AI Teach</AuroraText> You Python.
+                </h1>
+
+                <p className="mb-0 pt-6 text-[23px] font-normal tracking-normal text-gray-500 dark:text-gray-400" data-aos="fade-down">
                     Have an AI teach you Python, by designing a personalized Python course tailored to the project you have in mind.
                     {/* Let an AI teach you Python by designing a personalized Python course tailored to your goals and projects. */}
                     {/* Say goodbye to boring tutorials. Let AI design a personalized Python course tailored to your goals and projects. */}
@@ -72,7 +78,7 @@ const HeroLanding = () => {
                     {/* Let an AI generate a personalized course based on your goals. */}
                 </p>
 
-                <InteractiveHoverButton text="Start" className="mt-8 text-[17.5px]" data-aos="fade-in" onClick={_handleStartBtnClick}/>
+                <InteractiveHoverButton text="Start" className="mt-8 text-[18.5px] py-2.5" data-aos="fade-in" onClick={_handleStartBtnClick}/>
                 <span className="text-gray-400 dark:text-gray-400 pt-2 text-[11.5px] tracking-normal">
                     No Login Required. 100% Free.
                 </span>

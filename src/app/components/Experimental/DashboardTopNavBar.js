@@ -16,7 +16,8 @@ const DashboardTopNavBar = () => {
     return (
 
        <ul
-            className="flex text-sm font-medium text-center border-b-2 border-gray-300 bg-[#F3F4F6] dark:bg-gray-900 dark:text-gray-300"
+            // className="flex text-sm font-medium text-center border-b-2 border-gray-300 bg-[#F3F4F6] dark:bg-gray-900 dark:text-gray-300"
+            className="flex text-sm font-medium text-center border-b-2 border-gray-300 bg-gray-50 dark:bg-gray-900 dark:text-gray-300"
         >
 
             <li>
@@ -33,7 +34,7 @@ const DashboardTopNavBar = () => {
 
                 <li>
                     <a
-                    href="/playground"
+                    href="/learn-python/home"
                     className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 text-[13px] space-x-0 pr-0"
                     >
                         <FontAwesomeIcon icon={faHome} className="text-gray-700 pr-2 dark:text-white w-4 h-4" />

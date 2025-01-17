@@ -28,7 +28,7 @@ const NewHeroNavbar = () => {
 
     return (
 
-        <nav className="bg-white border-gray-200 dark:bg-zinc-950 pt-2 px-12">
+        <nav className="bg-white border-gray-200 dark:bg-zinc-950 pt-3 px-12">
 
             <div className="max-w-screen-xl flex flex-wrap justify-between mx-auto pt-0">
 
@@ -38,10 +38,9 @@ const NewHeroNavbar = () => {
                     ?
 
                     (
-
                         <>
                             <h1
-                                className={`${pacifico_font.className} scroll-m-20 text-[23px] font-normal tracking-widest flex items-center text-zinc-900 dark:text-gray-200`}
+                                className={`${pacifico_font.className} scroll-m-20 text-[25.5px] font-normal tracking-widest flex items-center text-zinc-900 dark:text-gray-200`}
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" className="w-8 h-8 pr-2 fill-zinc-900 dark:fill-white">
                                     <path d="M392.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6zm80.6 120.1c-12.5 12.5-12.5 32.8 0 45.3L562.7 256l-89.4 89.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-112-112c-12.5-12.5-32.8-12.5-45.3 0zm-306.7 0c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l112 112c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l89.4-89.4c12.5-12.5 12.5-32.8 0-45.3z"/>
@@ -72,7 +71,7 @@ const NewHeroNavbar = () => {
                                             {/* 🎉 <hr className="mx-2 h-4 w-px shrink-0 bg-gray-300" />{" "} */}
                                             <span
                                             className={cn(
-                                                `inline animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-[11.5px]`,
+                                                `inline animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-[13px]`,
                                             )}
                                             >
                                             100% Free and Open Source
@@ -86,7 +85,7 @@ const NewHeroNavbar = () => {
                                             href={DISCORD_CHANNEL_URL}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="flex py-3 items-center text-gray-700 hover:text-blue-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[13px] font-normal"
+                                            className="flex py-3 items-center text-gray-700 hover:text-blue-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] font-normal"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-discord mr-2" viewBox="0 0 16 16">
                                                 <path d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.037a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019m-8.198 7.307c-.789 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612m5.316 0c-.788 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612"/>
@@ -98,7 +97,7 @@ const NewHeroNavbar = () => {
                                     <li>
                                         <a
                                             href="https://github.com/duggalr/companion-frontend"
-                                            className="flex py-3 items-center text-gray-700 hover:text-blue-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[13px] hover mr-2 font-normal"
+                                            className="flex py-3 items-center text-gray-700 hover:text-blue-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[14.5px] hover mr-2 font-normal"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
@@ -109,7 +108,7 @@ const NewHeroNavbar = () => {
                                         </a>
                                     </li>
 
-                                    <li className="md:flex items-center text-[15px] sm:block hidden">
+                                    <li className="md:flex items-center text-[16px] sm:block hidden">
                                         <ThemeToggle />
                                     </li>
                                 </ul>
