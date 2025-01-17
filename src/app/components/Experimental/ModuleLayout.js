@@ -6,9 +6,10 @@ import FloatingChat from "@/app/components/Experimental/FloatingChat";
 import NoteParentLayout from "@/app/components/Experimental/NoteParentLayout";
 import SecondNoteParentLayout from "@/app/components/Experimental/SecondNoteParentLayout";
 import TypeWriter from "@/app/components/Experimental/TypeWriter";
+import { getFromLocalStorage, saveToLocalStorage, removeFromLocalStorage } from '@/lib/utils/localStorageUtils';
 
 
-// Course Module List
+// // Course Module List
 const course_syllabus_list = [
 
     {
@@ -571,7 +572,7 @@ const ModuleLayout = ({ module_id }) => {
 
     };
 
-
+    // AI Tutor Chat - Intercom Layout
     useEffect(() => {
         if (isChatOpen) {
             document.addEventListener("mousedown", handleClickOutside);
@@ -584,9 +585,34 @@ const ModuleLayout = ({ module_id }) => {
     }, [isChatOpen]);
 
 
+    const _handleCourseModuleDetails = async (module_id) => {
+
+        let anon_user_id = getFromLocalStorage('user_id');
+        const payload = {
+            'user_id': anon_user_id,
+            'course_module_object_id': module_id
+        };
+
+        const apiResponse = await fetch(`http://127.0.0.1:8000/fetch_course_module_details`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+        const response_data = await apiResponse.json();
+        console.log('Response Data:', response_data);  
+
+    };
+
+
+    // Fetch Module Details
     useEffect(() => {
 
-        console.log('MODULE ID:', module_id);
+        // console.log('MODULE ID:', module_id);
+        // _handleCourseModuleDetails(module_id);
+        
+        let module_id = 1;
 
         let module_dict = course_syllabus_list[module_id];
         console.log('module-dict:', module_dict);
@@ -618,26 +644,27 @@ const ModuleLayout = ({ module_id }) => {
         // TODO: 
         setLoading(false);
 
-        // let first_info = current_sub_module_list[0]['order'][0];
-        // console.log('first_info:', first_info);
-        // setCurrentSubModuleMaterialDict(first_info);
 
-        // // id: '509266a3-2c78-47f1-93ab-1080e8761404',
-        // // chapter_number: 2,
-        // // chapter_name: "Variables and Data Types",
-        // // chapter_description: "This chapter introduces and explains the concept of variables and common data types in Python."
-        
-        // console.log('current-sub-mod-dict:', current_sub_module_list[0]);
-        // setCurrentSubModule(current_sub_module_list[0]);
-        
-        // // set to first
-        // let first_info = current_sub_module_list[0]['order'][0];
-        // console.log('first_info:', first_info);
-        // setCurrentSubModuleMaterialDict(first_info);
+        // // let first_info = current_sub_module_list[0]['order'][0];
+        // // console.log('first_info:', first_info);
+        // // setCurrentSubModuleMaterialDict(first_info);
 
-        // let next_type = current_sub_module_list[0]['order'][1]['type'];
-        // console.log('next-type:', next_type);
-        // setNextType(next_type);
+        // // // id: '509266a3-2c78-47f1-93ab-1080e8761404',
+        // // // chapter_number: 2,
+        // // // chapter_name: "Variables and Data Types",
+        // // // chapter_description: "This chapter introduces and explains the concept of variables and common data types in Python."
+        
+        // // console.log('current-sub-mod-dict:', current_sub_module_list[0]);
+        // // setCurrentSubModule(current_sub_module_list[0]);
+        
+        // // // set to first
+        // // let first_info = current_sub_module_list[0]['order'][0];
+        // // console.log('first_info:', first_info);
+        // // setCurrentSubModuleMaterialDict(first_info);
+
+        // // let next_type = current_sub_module_list[0]['order'][1]['type'];
+        // // console.log('next-type:', next_type);
+        // // setNextType(next_type);
 
     }, [module_id]);
 

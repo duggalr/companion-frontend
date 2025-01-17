@@ -71,8 +71,6 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
             // Delay the typing effect by 20ms
             setTimeout(() => {
 
-                console.log('text_type', text_type);
-
                 // Append the next character from text
                 set_text_fn(previousText => previousText + text[current_index]);
     
@@ -229,7 +227,7 @@ const SecondNoteParentLayout = ({chapterDict, noteDict}) => {
         <div className="flex flex-col min-h-screen mt-0">
 
             <div className="flex flex-grow w-full max-w-[1020px] py-0">
-                
+
                 {/* First Half */}
                 <div 
                     // className="w-1/2 p-0 pt-2"
