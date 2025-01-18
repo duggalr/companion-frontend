@@ -6,6 +6,7 @@ import confetti from "canvas-confetti";
 import { getFromLocalStorage, saveToLocalStorage, removeFromLocalStorage } from '@/lib/utils/localStorageUtils';
 import DashboardTopNavBar from "@/app/components/Experimental/DashboardTopNavBar";
 import NoteLayout from "@/app/components/Experimental/SubModuleComponents/NoteLayout";
+import { Progress } from "@/components/ui/progress";
 
 import Monaco from "@monaco-editor/react";
 
@@ -43,6 +44,8 @@ const NewModuleLayout = ({ module_id }) => {
     const [currentSubModuleInformationListProgress, setCurrentSubModuleInformationListProgress] = useState({});
 
     const nextStudentCourseModuleObjectId = useRef(null);
+
+    const [nextSubModuleName, setNextSubModuleName] = useState('');
 
 
     const _createTypewriterEffect = (text, set_text_fn, current_index, text_type, timeout_milliseconds) => {
@@ -114,6 +117,9 @@ const NewModuleLayout = ({ module_id }) => {
             setCurrentModuleInformationDict(current_module_dict);
             setCurrentSubModuleList(current_sub_module_list);
             setCurrentSubModuleProgressDict(current_sub_module_progress_dict);
+
+            // Set next sub module name
+            setNextSubModuleName(current_sub_module_list[current_sub_module_index + 1].sub_module_name);
 
             // const [currentSubModuleProgressDict, setCurrentSubModuleProgressDict] = useState({});
             // const [currentSubModuleInformationListProgress, setCurrentSubModuleInformationListProgress] = useState({});
@@ -210,6 +216,17 @@ const NewModuleLayout = ({ module_id }) => {
                         'completed': new_sub_module_information_index + 1,
                         'total': total_new_sub_module_information_list_elements
                     }
+
+                    // Set next sub module name
+                    if ((new_sub_module_index + 1) === currentSubModuleProgressDict['total']){
+                        // TODO: don't set
+                        setNextSubModuleName(null);
+                    } else {
+                        let new_sm_name = currentSubModuleList[new_sub_module_index + 1].sub_module_name;
+                        setNextSubModuleName(new_sm_name);
+                    }
+                    // setNextSubModuleName([new_sub_module_index + 1]);
+                    // setNextSubModuleName(current_sub_module_list[current_sub_module_index + 1]);
                     
                     // Sub Module Parent
                     setCurrentSubModuleParentIndex(new_sub_module_index);
@@ -422,41 +439,64 @@ const NewModuleLayout = ({ module_id }) => {
                         <h1 className="font-semibold text-gray-900">
                             Module: {currentModuleInformationDict.course_module_name}
                         </h1>
-                        <span className="px-2">|</span>
-                        <p className="text-gray-500 text-[13.5px] pt-[2.2px]">
-                            Sub Module 1: {currentSubModuleDict.sub_module_name}
+                        <span className="px-2 pt-1 text-[13.5px]">|</span>
+                        <p className="text-gray-500 text-[12.5px] pt-[3px]">
+                            Sub Module {currentSubModuleProgressDict.completed} ({currentSubModuleProgressDict.completed}/{currentSubModuleProgressDict.total}): {currentSubModuleDict.sub_module_name}
                         </p>
+                        <span className="px-2 pt-1 text-[13.5px]">|</span>
+                        {(nextSubModuleName !== null) && (
+                            <p className="text-gray-500 text-[12.5px] pt-[3px]">
+                                Next - Sub Module {currentSubModuleProgressDict.completed + 1}: {nextSubModuleName}
+                            </p>
+                        )}
+                        {/* ( {currentSubModuleInformationListProgress.completed} / {currentSubModuleInformationListProgress.total} ) */}
                     </div>
 
-                    {/* Progress */}
-                    {/* TODO: finalize */}
-                    <div>
+                    {/* <div className="flex text-[12px]">
                         <p>
                             Current Course Module Progress: ( {currentSubModuleProgressDict.completed} /  {currentSubModuleProgressDict.total} )
                         </p>
+                        <p className='px-2'>|</p>
                         <p>
                             Current Sub Module Progress: ( {currentSubModuleInformationListProgress.completed} / {currentSubModuleInformationListProgress.total} )
                         </p>
-                    </div>
+                    </div> */}
 
                     {/* Next Chapter */}
-                    <div className="text-right flex text-[12.5px] tracking-normal pb-0 py-1">
-                        <h1 className="text-gray-400 hover:text-blue-400 cursor-pointer">
+                    <div className="text-right flex text-[12.5px] tracking-normal pb-0 py-0">
+                        {/* <h1 className="text-gray-400 hover:text-blue-400 cursor-pointer">
                             Skip and Take Final Module Quiz
-                        </h1>
+                        </h1> */}
+                            {/* <p className="text-gray-500 text-[11px] mb-1">Progress: {currentSubModuleInformationListProgress.completed} / {currentSubModuleInformationListProgress.total}</p> */}
+                            <div className='space-y-1'>
+                                <span className="text-[11px] font-medium">
+                                    Progress: {currentSubModuleInformationListProgress.completed} / {currentSubModuleInformationListProgress.total}
+                                </span>
+                                <Progress value={(currentSubModuleInformationListProgress.completed / currentSubModuleInformationListProgress.total) * 100} className="w-40" />
+                            </div>
                     </div>
 
                 </div>
-                     
+
+
+                {/* Progress Bar */}
+                {/* <div className="flex w-full justify-end mt-3 mb-0 pb-0">
+                    <div>
+                        <p className="text-gray-500 text-[11px] mb-1">Progress: {currentSubModuleInformationListProgress.completed} / {currentSubModuleInformationListProgress.total}</p>
+                        <Progress value={(currentSubModuleInformationListProgress.completed / currentSubModuleInformationListProgress.total) * 100} className="w-40" />
+                    </div>
+                </div> */}
+
                 {/* Layout - Note + Code */}
                 <div className="flex py-0">
+
 
                     {/* First Half */}
                     <div 
                         className="p-0 pt-2 w-full"
                     >
 
-                        <div className="space-y-4 mt-3 w-full">
+                        <div className="space-y-4 mt-2 w-full">
                             
                             {
                                 ((showExample === true) || (showTryChallenge === true))
