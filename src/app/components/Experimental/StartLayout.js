@@ -439,7 +439,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                 {
                     
                     (showUserCourseModule === true && showUserCourseModuleLoading === false)
-                    
+
                     ?
 
                     // Show Course Layout

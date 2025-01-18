@@ -24,20 +24,12 @@ const NewModuleLayout = ({ module_id }) => {
     const [showIntroductionNote, setShowIntroductionNote] = useState(false);
 
     const [showCodeLayout, setShowCodeLayout] = useState(false);
-    const [showExampleButton, setShowExampleButton] = useState(false);
+    const [showExampleButton, setShowExampleButton] = useState(true);
     const [showExample, setShowExample] = useState(false);
     const [exampleDict, setExampleDict] = useState({});
-    const [exampleCodeValue, setExampleCodeValue] = useState("");
-
-    const [showTryChallenge, setShowTryChallenge] = useState(false);
-    const [showTryExerciseButton, setShowTryExerciseButton] = useState(false);
-    const [currentTryExerciseText, setCurrentTryExerciseText] = useState('');
-    const [currentChallengeDict, setCurrentChallengeDict] = useState({});
-    const [showSubmitExerciseButton, setShowSubmitExerciseButton] = useState(false);
-    const [submissionFeedback, setSubmissionFeedback] = useState('');
 
 
-    const _createTypewriterEffect = (text, set_text_fn, current_index, text_type, timeout_milliseconds) => {
+    const _createTypewriterEffect = (text, set_text_fn, current_index, text_type) => {
 
         if (current_index < text.length) {
 
@@ -50,20 +42,19 @@ const NewModuleLayout = ({ module_id }) => {
                 // Recursive call with the next index
                 _createTypewriterEffect(text, set_text_fn, current_index + 1, text_type);  
                 
-            }, timeout_milliseconds);
+            }, 1);
 
         } else {
 
             if (text_type === 'show_example_button'){
                 setShowExampleButton(true);
             }
-            else if (text_type === 'show_try_exercise_button'){
-                // TODO:
-                setShowTryExerciseButton(true);
-            }
-            else if (text_type === 'show_submit_button'){
-                setShowSubmitExerciseButton(true);
-            }
+            // else if (text_type === 'show_try_exercise_button'){
+            //     // TODO:
+            //     setShowTryExerciseButton(true);
+            // } else if (text_type === 'show_submit_button'){
+            //     setShowSubmitExerciseButton(true);
+            // }
 
         }
 
@@ -117,8 +108,7 @@ const NewModuleLayout = ({ module_id }) => {
                     current_sub_module_dict.introduction_note,
                     setCurrentNoteText, 
                     0, 
-                    'show_example_button',
-                    1
+                    'show_example_button'
                 );
             }
             
@@ -150,38 +140,13 @@ const NewModuleLayout = ({ module_id }) => {
             setShowCodeLayout(true);
             setShowExample(true);
 
-            console.log('new-module-info-dictionary:', new_sub_module_information_dict);
-            console.log('new-module-info-CODE-NEW:', new_sub_module_information_dict.code);
+            // _createTypewriterEffect(
+            //     current_sub_module_dict.introduction_note,
+            //     setCurrentNoteText, 
+            //     0, 
+            //     'show_example_button'
+            // );
 
-            _createTypewriterEffect(
-                new_sub_module_information_dict.code,
-                setExampleCodeValue, 
-                0, 
-                'show_try_exercise_button',
-                100
-            );
-        }
-
-        else if (new_sub_module_information_dict['type'] === 'exercise'){
-
-            console.log('new-module-info-dictionary-EXERCISE:', new_sub_module_information_dict);
-
-            setShowExample(false);
-            setShowExampleButton(false);
-
-            setShowTryChallenge(true);
-            setShowCodeLayout(true);
-
-            setCurrentChallengeDict(new_sub_module_information_dict);
-            _createTypewriterEffect(
-                new_sub_module_information_dict.question,
-                setCurrentTryExerciseText,
-                0, 
-                'show_submit_button',
-                100
-            );
-
-            
         }
 
         // // setCurrentSubModuleInformationIndex((prev) => prev + 1);
@@ -244,12 +209,11 @@ const NewModuleLayout = ({ module_id }) => {
         
             {/* Module Layout */}
             {/* <div className="flex flex-col min-h-screen mt-12 ml-44"> */}
-            {/* <div className="flex flex-col min-h-screen mt-4"> */}
-            {/* <div className="flex flex-col items-start mt-8 mx-auto w-[80%] sm:w-[80%]"> */}
-            <div className="flex flex-col items-start mt-8 mx-auto w-[80%] sm:w-[80%]">
+
+            <div className="flex flex-col min-h-screen mt-4">
 
                 {/* Top Header */}
-                <div className="flex justify-between py-2 border-b border-gray-300 w-full mx-auto">
+                <div className="flex justify-between max-w-5xl py-2 border-b border-gray-300 w-full mx-auto">
 
                     {/* Current Chapter and Title */}
                     <div className="text-left flex text-[15.5px] tracking-normal">
@@ -270,29 +234,29 @@ const NewModuleLayout = ({ module_id }) => {
                     </div>
 
                 </div>
-                     
+
                 {/* Layout - Note + Code */}
-                <div className="flex py-0">
+
+                {/* max-w-[1020px] */}
+                <div className="flex flex-grow py-0">
 
                     {/* First Half */}
                     <div 
-                        className="p-0 pt-2 w-full"
+                        className={`p-0 pt-0 ${(showExample === true) ? "w-1/2" : "w-5/6"}`}
                     >
 
-                        <div className="space-y-4 mt-3 w-full">
+                        <div className="space-y-4 mt-3">
                             
                             {
                                 (showExample === true)
-
                                 ?
-
                                 (
-                                    
+
                                     <>
                                         <div
-                                            className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 mb-0 w-full min-w-[500px]"
+                                            className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 mb-0 w-2/3 ml-52"
                                         >
-
+                                            
                                             <ul className="flex flex-wrap -mb-px">
 
                                                 <li className="me-2">
@@ -309,7 +273,7 @@ const NewModuleLayout = ({ module_id }) => {
                                                     </a>
                                                 </li>
 
-                                                <li className="me-2">
+                                                {/* <li className="me-2">
                                                     <a
                                                         href="#"
                                                         className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg cursor-pointer ${
@@ -322,145 +286,32 @@ const NewModuleLayout = ({ module_id }) => {
                                                     >
                                                         Challenge
                                                     </a>
-                                                </li>
+                                                </li> */}
 
                                             </ul>
 
                                         </div>
 
-                                        {/* Note */}
-                                        {(currentActiveTab === 'note') && (
+                                        <p className="text-[15px] tracking-normal leading-9 pt-0 pr-0 px-[210px]">
+                                            {(showIntroductionNote === true) && (<h3 className="font-bold text-[16px] mb-2">
+                                                Introduction
+                                            </h3>)}
+                                            <Markdown>
+                                                {/* {currentSubModuleDict.introduction_note} */}
+                                                {exampleDict.description}
+                                            </Markdown>
+                                        </p>
 
-                                            <p className="text-[15px] tracking-normal leading-9 pt-0 pr-0">
-                                                <Markdown>
-                                                    {/* {currentSubModuleDict.introduction_note} */}
-                                                    {/* TODO: show this and Code in Type-writer manner */}
-                                                    {exampleDict.description}
-                                                </Markdown>
-                                            </p>
-
-                                        )}
-
-                                        {/* Challenge */}
-                                        {(currentActiveTab === 'challenge') && (
-
-                                            <div className="space-y-4 pr-2">
-                                                <div>
-
-                                                <p className="text-[16px] font-bold pt-2">
-                                                    Question
-                                                </p>
-                                                    <p className="text-[15px] tracking-normal leading-9 pt-4">
-                                                        {/* <TypeWriter text={noteDict.description} /> */}
-                                                        <Markdown>
-                                                            {currentTryExerciseText}
-                                                        </Markdown>
-                                                    </p>
-                                                </div>
-
-                                                {/* Example Input Output List */}
-                                                {/* TODO: showing example i/o list */}
-
-                                                {/* Submit Solution Button */}
-                                                {(showSubmitExerciseButton === true) && (
-                                                    <button
-                                                        type="button"
-                                                        className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                                                    >Submit</button>
-                                                )}
-
-                                                {/* <p className='text-[16px] font-bold pb-2'>Submissions</p> */}                        
-
-                                                <p className="text-[16px] font-bold pt-4">
-                                                    Current Solution Feedback
-                                                </p>
-                                                <p className="leading-9 text-[15px]">
-                                                    {(submissionFeedback.length === 0) && "Write your code and submit your solution to get feedback from the AI!"}
-                                                    {submissionFeedback}
-                                                </p>
-
-                                                <p className="text-[16px] font-bold pt-4">
-                                                    Past Submissions
-                                                </p>
-
-                                                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                                        <tr>
-                                                            <th scope="col" className="px-2 py-3">
-                                                                Date
-                                                            </th>
-                                                            <th scope="col" className="px-2 py-3">
-                                                                Passed
-                                                            </th>
-                                                            <th scope="col" className="px-2 py-3">
-                                                                Code
-                                                            </th>
-                                                            <th scope="col" className="px-2 py-3">
-                                                                AI Feedback
-                                                            </th>                            
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr
-                                                            className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                                                        >
-                                                            <td className="p-3">
-                                                                2025-01-10
-                                                            </td>
-                                                            
-                                                            <td
-                                                                className="p-3 text-green-400"
-                                                            >
-                                                                Success
-                                                            </td>
-                                                            <td 
-                                                                className="p-3"
-                                                            >
-                                                                <span 
-                                                                    className="hover:text-blue-500 hover:font-semibold cursor-pointer"
-                                                                >
-                                                                    View Code
-                                                                </span>
-                                                            </td>
-
-                                                            <td 
-                                                                className="p-3"
-                                                            >
-                                                                <span 
-                                                                    className="hover:text-blue-500 hover:font-semibold cursor-pointer"
-                                                                >
-                                                                    View Feedback
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-
-                                            </div>
-
-                                        )}
-                                      
-                                        {(showTryExerciseButton === true) && (
-                                            <button
-                                                type="button"
-                                                className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                                                onClick={_handleNextInformationModuleClick}
-                                            >
-                                                Proceed to Challenge
-                                                <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
-                                            </button>
-                                        )}
 
                                     </>
                                     
+
                                 )
-
                                 :
-
                                 (
-                                    
+                                 
                                     <div>
-                                        <p className="text-[15px] tracking-normal leading-9 pt-2 pr-0 px-2">
+                                        <p className="text-[15px] tracking-normal leading-9 pt-2 pr-0 px-[210px]">
                                             <h3 className="font-bold text-[16px] mb-2">
                                                 Introduction - {currentSubModuleDict.sub_module_name}
                                             </h3>
@@ -471,18 +322,19 @@ const NewModuleLayout = ({ module_id }) => {
                                         </p>
 
                                         {/* Buttons */}
-                                        <div className="mt-10 flex justify-center">
+                                        <div className="mt-10 flex items-center justify-center ml-52">
 
-                                            {(showExampleButton === true) && (
-                                                <button
-                                                    type="button"
-                                                    className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[14.5px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                                                    onClick={_handleNextInformationModuleClick}
-                                                >
-                                                    Show Me An Example
-                                                    <FontAwesomeIcon icon={faArrowRight} className="pl-2 pt-1" />
-                                                </button>
-                                            )}
+                                                {/* Example Button */}
+                                                {(showExampleButton === true) && (
+                                                    <button
+                                                        type="button"
+                                                        className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[14.5px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                                        onClick={_handleNextInformationModuleClick}
+                                                    >
+                                                        Show Me An Example
+                                                        <FontAwesomeIcon icon={faArrowRight} className="pl-2 pt-1" />
+                                                    </button>
+                                                )}
                                         </div>
 
                                     </div>
@@ -495,12 +347,14 @@ const NewModuleLayout = ({ module_id }) => {
                         </div>
 
                     </div>
-                    
+
+
                     {/* Second Half */}
+
                     {
                         (showExample === true) && (
 
-                            <div className="w-full min-w-[650px] mt-3 flex flex-col pt-0 border-l-2 border-gray-50">
+                            <div className="w-1/2 mt-2 flex flex-col pt-0 border-l-2 border-gray-50">
 
                                 <div className="flex-grow p-0 pt-0 pb-0 pl-4">
                                     
@@ -510,10 +364,10 @@ const NewModuleLayout = ({ module_id }) => {
                                         </h2>
                                         <button
                                             type="button"
-                                            className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-[13.5px] px-3 py-2 me-0 mb-2 mt-0.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+                                            className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-[13.5px] px-3 py-2 me-0 mb-3 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
                                             onClick={_handleRunButtonClick}
                                         >
-                                            <FontAwesomeIcon icon={faPlay} className="pl-1 pr-1 text-[14px]"/>{" "}Run
+                                            <FontAwesomeIcon icon={faPlay} className="pl-1 pr-1 text-[12px]"/>{" "}Run
                                         </button>
 
                                     </div>
@@ -522,8 +376,7 @@ const NewModuleLayout = ({ module_id }) => {
                                         <Monaco
                                             height="100%"
                                             defaultLanguage="python" // Set language to Python
-                                            // defaultValue={`# Write your Python code here\n\nprint("Hello, World!")`}
-                                            value={exampleCodeValue}
+                                            defaultValue={`# Write your Python code here\n\nprint("Hello, World!")`}
                                             onMount={handleEditorDidMount}
                                             theme="vs-dark"
                                             options={{
@@ -535,10 +388,7 @@ const NewModuleLayout = ({ module_id }) => {
                                     </div>
 
                                     <div className="flex-grow p-0 pt-4">
-                                        {/* <h2 className="text-lg font-semibold text-gray-800 mb-4">Console Output</h2> */}
-                                        <h2 className="text-[18px] font-semibold text-gray-800 mb-2">
-                                            Console Output
-                                        </h2>
+                                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Console Output</h2>
                                         <div className="h-40 overflow-auto bg-black text-green-500 p-2 rounded-md font-mono text-sm">{consoleOutput}</div>
                                     </div>
 
