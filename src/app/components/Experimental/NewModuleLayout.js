@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faPlay, faComment, faXmark, faQuestion } from "@fortawesome/free-solid-svg-icons";
 import Markdown from 'react-markdown';
+import confetti from "canvas-confetti";
 import { getFromLocalStorage, saveToLocalStorage, removeFromLocalStorage } from '@/lib/utils/localStorageUtils';
 import DashboardTopNavBar from "@/app/components/Experimental/DashboardTopNavBar";
 import NoteLayout from "@/app/components/Experimental/SubModuleComponents/NoteLayout";
@@ -16,11 +17,12 @@ const NewModuleLayout = ({ module_id }) => {
     const [currentSubModuleList, setCurrentSubModuleList] = useState([]);
     const [currentSubModuleDict, setCurrentSubModuleDict] = useState({});
     const [currentSubModuleInformationList, setCurrentSubModuleInformationList] = useState([]);
-    const [currentSubModuleInformationIndex, setCurrentSubModuleInformationIndex] = useState(0);
+    // const [currentSubModuleInformationIndex, setCurrentSubModuleInformationIndex] = useState(0);
+    const currentSubModuleInformationIndex = useRef(0);
 
     const [currentActiveTab, setCurrentActiveTab] = useState('note');
     const [currentNoteText, setCurrentNoteText] = useState("");
-    const currentNoteTyping =useRef(false);
+    const currentNoteTyping = useRef(false);
     const [showIntroductionNote, setShowIntroductionNote] = useState(false);
 
     const [showCodeLayout, setShowCodeLayout] = useState(false);
@@ -36,6 +38,11 @@ const NewModuleLayout = ({ module_id }) => {
     const [showSubmitExerciseButton, setShowSubmitExerciseButton] = useState(false);
     const [submissionFeedback, setSubmissionFeedback] = useState('');
     const [showNextModuleDictButton, setShowNextModuleDictButton] = useState(false);
+
+    const [currentSubModuleProgressDict, setCurrentSubModuleProgressDict] = useState({});
+    const [currentSubModuleInformationListProgress, setCurrentSubModuleInformationListProgress] = useState({});
+
+    const nextStudentCourseModuleObjectId = useRef(null);
 
 
     const _createTypewriterEffect = (text, set_text_fn, current_index, text_type, timeout_milliseconds) => {
@@ -93,24 +100,41 @@ const NewModuleLayout = ({ module_id }) => {
             // TODO: can modify here to start where user did not complete submission when logic implemented...
             let current_sub_module_index = 0;
             let current_module_dict = response_data.module_dict;
-            let current_sub_module_list = current_module_dict.sub_modules_list
-            let current_sub_module_dict = current_sub_module_list[current_sub_module_index];
-            let current_sub_module_information_list = current_sub_module_dict['note_information_list'];
-            let current_sub_module_information_index = 0;
+            let current_sub_module_list = current_module_dict.sub_modules_list;
+            let total_sub_modules_for_parent_module = current_sub_module_list.length;
+            let current_sub_module_progress_dict = {
+                'completed': current_sub_module_index + 1,
+                'total': total_sub_modules_for_parent_module
+            };
 
-            console.log('current_sub_module_dict', current_sub_module_dict);
+            // set next course module object id
+            nextStudentCourseModuleObjectId.current = current_module_dict.next_student_course_module_object_id;
 
             setCurrentSubModuleParentIndex(current_sub_module_index);
             setCurrentModuleInformationDict(current_module_dict);
-
             setCurrentSubModuleList(current_sub_module_list);
-            setCurrentSubModuleDict(current_sub_module_dict);
+            setCurrentSubModuleProgressDict(current_sub_module_progress_dict);
 
-            setCurrentSubModuleInformationList(current_sub_module_information_list);
-            setCurrentSubModuleInformationIndex(current_sub_module_information_index);
+            // const [currentSubModuleProgressDict, setCurrentSubModuleProgressDict] = useState({});
+            // const [currentSubModuleInformationListProgress, setCurrentSubModuleInformationListProgress] = useState({});
 
-            setShowIntroductionNote(true);
+            let current_sub_module_dict = current_sub_module_list[current_sub_module_index];
+            let current_sub_module_information_list = current_sub_module_dict['note_information_list'];
+            let current_sub_module_information_index = 0;
+            let total_sub_module_information_list_elements = current_sub_module_information_list.length;
+            let current_sub_module_information_list_progress_dict = {
+                'completed': current_sub_module_information_index + 1,
+                'total': total_sub_module_information_list_elements
+            }
+
+            console.log('current_sub_module_dict', current_sub_module_dict);
             
+            setCurrentSubModuleDict(current_sub_module_dict);
+            setCurrentSubModuleInformationList(current_sub_module_information_list);
+            currentSubModuleInformationIndex.current = current_sub_module_information_index;
+            setShowIntroductionNote(true);
+            setCurrentSubModuleInformationListProgress(current_sub_module_information_list_progress_dict);
+
             // TODO: show "see example" button and implement logic + ui from there
             if (currentNoteTyping.current === false){
                 currentNoteTyping.current = true;
@@ -122,7 +146,7 @@ const NewModuleLayout = ({ module_id }) => {
                     1
                 );
             }
-            
+
         }
 
     };
@@ -131,6 +155,7 @@ const NewModuleLayout = ({ module_id }) => {
         
         // by default, this will be false since proceeding to next information-dict in sub-module
         setShowIntroductionNote(false);
+        setShowNextModuleDictButton(false);
 
         let new_sub_module_information_index;
         let new_sub_module_information_dict;
@@ -140,10 +165,114 @@ const NewModuleLayout = ({ module_id }) => {
             new_sub_module_information_dict = currentSubModuleInformationList[new_sub_module_information_index];
         }
         else {
-            new_sub_module_information_index = currentSubModuleInformationIndex + 1;
-            new_sub_module_information_dict = currentSubModuleInformationList[new_sub_module_information_index];
-            console.log('new_sub_module_information_dict-other', new_sub_module_information_dict);
+
+            // // TODO: Check and Update Progress
+            // let current_sub_module_progress_dict = {
+            //     'completed': current_sub_module_index + 1,
+            //     'total': total_sub_modules_for_parent_module
+            // };
+
+            // First Check --> have we reach the end of this submodule?
+            if ((currentSubModuleInformationIndex.current + 1) === currentSubModuleInformationListProgress['total']) { 
+
+                // If so: check if there are more sub-modules or is this the end of the course module
+                    // if end of course module --> proceed to next course module
+                    // else --> proceed to next submodule
+                
+                if ((currentSubModuleParentIndex + 1) === currentSubModuleProgressDict['total']){
+
+                    // TODO: 
+                        // Proceed to course module quiz
+                            // currently just going directly to the next course module...
+
+                    console.log('new course module....')
+                    window.location.href = '/learn-python/module/' + nextStudentCourseModuleObjectId.current;
+
+                } 
+                else {
+
+                    // TODO: proceed to next submodule
+
+                    // Start by updated current-sub-module-index
+                    let new_sub_module_index = currentSubModuleParentIndex + 1;
+                    // currentModuleInformationDict
+                    
+                    let new_sub_module_dict = currentSubModuleList[new_sub_module_index];
+                    let new_sub_module_progress_dict = {
+                        'completed': currentSubModuleProgressDict['completed'] + 1,
+                        'total': currentSubModuleProgressDict['total']
+                    };
+
+                    let new_sub_module_information_list = new_sub_module_dict['note_information_list'];
+                    let new_sub_module_information_index = 0;
+                    let total_new_sub_module_information_list_elements = new_sub_module_information_list.length;
+                    let new_sub_module_information_list_progress_dict = {
+                        'completed': new_sub_module_information_index + 1,
+                        'total': total_new_sub_module_information_list_elements
+                    }
+                    
+                    // Sub Module Parent
+                    setCurrentSubModuleParentIndex(new_sub_module_index);
+                    setCurrentSubModuleDict(new_sub_module_dict);
+                    setCurrentSubModuleProgressDict(new_sub_module_progress_dict);
+
+                    // Sub Module Parent
+                    setCurrentSubModuleInformationList(new_sub_module_information_list);
+                    currentSubModuleInformationIndex.current = new_sub_module_information_index;
+                    setCurrentSubModuleInformationListProgress(new_sub_module_information_list_progress_dict);
+                    setShowIntroductionNote(true);
+
+                    // Reset Everything
+                    setCurrentNoteText('');
+                    setShowExample(false);
+                    setShowExampleButton(false);
+                    setShowTryChallenge(false);
+                    setShowCodeLayout(false);
+                    setCurrentActiveTab('note');
+                    setShowTryExerciseButton(false);
+                    setInitialCodeValue('');
+                    setCurrentChallengeDict({});
+                    setCurrentTryExerciseText('');
+
+                    // TODO: show "see example" button and implement logic + ui from there
+                    _createTypewriterEffect(
+                        new_sub_module_dict.introduction_note,
+                        setCurrentNoteText, 
+                        0, 
+                        'show_example_button',
+                        1
+                    );
+
+                    return;
+
+                }
+
+            } else {
+                new_sub_module_information_index = currentSubModuleInformationIndex.current + 1;
+                currentSubModuleInformationIndex.current = new_sub_module_information_index;
+
+                new_sub_module_information_dict = currentSubModuleInformationList[new_sub_module_information_index];
+                console.log('new_sub_module_information_dict-other', new_sub_module_information_dict);
+
+                // TODO: display this on the layout
+                let current_sub_module_info_list_progress_dict = {
+                    'completed': new_sub_module_information_index + 1,
+                    'total': currentSubModuleInformationListProgress['total']
+                };
+                setCurrentSubModuleInformationListProgress(current_sub_module_info_list_progress_dict);
+
+            }
+            // setCurrentSubModuleProgressDict(current_sub_module_progress_dict);
+
+            // // currentSubModuleInformationIndex.current = current_sub_module_information_index;
+            // new_sub_module_information_index = currentSubModuleInformationIndex.current + 1;
+            // currentSubModuleInformationIndex.current = new_sub_module_information_index;
+            // new_sub_module_information_dict = currentSubModuleInformationList[new_sub_module_information_index];
+            // console.log('new_sub_module_information_dict-other', new_sub_module_information_dict);
+
         }
+
+        // TODO: fix current error and proceed from there to finalizing all logic + ui + experience
 
         if (new_sub_module_information_dict['type'] === 'example'){            
             setShowExampleButton(false);
@@ -151,8 +280,12 @@ const NewModuleLayout = ({ module_id }) => {
             setShowCodeLayout(true);
             setShowExample(true);
 
+            setCurrentActiveTab('note');
+
             console.log('new-module-info-dictionary:', new_sub_module_information_dict);
             console.log('new-module-info-CODE-NEW:', new_sub_module_information_dict.code);
+
+            setInitialCodeValue('');
 
             _createTypewriterEffect(
                 new_sub_module_information_dict.code,
@@ -177,6 +310,9 @@ const NewModuleLayout = ({ module_id }) => {
             setShowTryExerciseButton(false);
 
             setCurrentChallengeDict(new_sub_module_information_dict);
+
+            setCurrentTryExerciseText('');
+
             _createTypewriterEffect(
                 new_sub_module_information_dict.question,
                 setCurrentTryExerciseText,
@@ -210,6 +346,7 @@ const NewModuleLayout = ({ module_id }) => {
 
     };
 
+
     useEffect(() => {
 
         // TODO:
@@ -237,6 +374,14 @@ const NewModuleLayout = ({ module_id }) => {
     }
 
     
+    const handleConfetti = () => {
+        // Trigger confetti with default settings
+        confetti({
+            particleCount: 100, // Number of confetti particles
+            spread: 70,         // Spread angle of confetti
+            origin: { y: 0.6 }, // Where the confetti starts (y-axis)
+        });
+    };
 
     const _handleBtnExerciseSolutionSubmitClick = async () => {
 
@@ -249,6 +394,8 @@ const NewModuleLayout = ({ module_id }) => {
 
         setShowSubmitExerciseButton(false);
         setShowNextModuleDictButton(true);
+
+        handleConfetti();
 
     }
 
@@ -278,6 +425,17 @@ const NewModuleLayout = ({ module_id }) => {
                         <span className="px-2">|</span>
                         <p className="text-gray-500 text-[13.5px] pt-[2.2px]">
                             Sub Module 1: {currentSubModuleDict.sub_module_name}
+                        </p>
+                    </div>
+
+                    {/* Progress */}
+                    {/* TODO: finalize */}
+                    <div>
+                        <p>
+                            Current Course Module Progress: ( {currentSubModuleProgressDict.completed} /  {currentSubModuleProgressDict.total} )
+                        </p>
+                        <p>
+                            Current Sub Module Progress: ( {currentSubModuleInformationListProgress.completed} / {currentSubModuleInformationListProgress.total} )
                         </p>
                     </div>
 
@@ -457,6 +615,28 @@ const NewModuleLayout = ({ module_id }) => {
                                                         </tr>
                                                     </tbody>
                                                 </table>
+                                                
+                                                <div>
+                                                    {(showSubmitExerciseButton === true) && (
+                                                        <button
+                                                            type="button"
+                                                            className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mt-4 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                                            onClick={_handleBtnExerciseSolutionSubmitClick}
+                                                        >Submit Solution</button>
+                                                    )}
+
+                                                    {(showNextModuleDictButton === true) && (
+                                                        <button
+                                                            type="button"
+                                                            className="py-2.5 px-5 me-2 mb-2 mt-4 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                                            onClick={_handleNextInformationModuleClick}
+                                                        >
+                                                            Proceed
+                                                            <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
+                                                        </button>
+                                                    )}
+
+                                                </div>
 
                                             </div>
 
@@ -464,25 +644,6 @@ const NewModuleLayout = ({ module_id }) => {
 
                                         <div >
                                             {(showTryExerciseButton === true) && (
-                                                <button
-                                                    type="button"
-                                                    className="py-2.5 px-5 me-2 mb-2 mt-4 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                                                    onClick={_handleNextInformationModuleClick}
-                                                >
-                                                    Proceed
-                                                    <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
-                                                </button>
-                                            )}
-
-                                            {(showSubmitExerciseButton === true) && (
-                                                <button
-                                                    type="button"
-                                                    className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mt-4 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                                                    onClick={_handleBtnExerciseSolutionSubmitClick}
-                                                >Submit Solution</button>
-                                            )}
-
-                                            {(showNextModuleDictButton === true) && (
                                                 <button
                                                     type="button"
                                                     className="py-2.5 px-5 me-2 mb-2 mt-4 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
