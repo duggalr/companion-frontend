@@ -27,7 +27,7 @@ const NewModuleLayout = ({ module_id }) => {
     const [showExampleButton, setShowExampleButton] = useState(false);
     const [showExample, setShowExample] = useState(false);
     const [exampleDict, setExampleDict] = useState({});
-    const [exampleCodeValue, setExampleCodeValue] = useState("");
+    const [initialCodeValue, setInitialCodeValue] = useState("");
 
     const [showTryChallenge, setShowTryChallenge] = useState(false);
     const [showTryExerciseButton, setShowTryExerciseButton] = useState(false);
@@ -35,6 +35,7 @@ const NewModuleLayout = ({ module_id }) => {
     const [currentChallengeDict, setCurrentChallengeDict] = useState({});
     const [showSubmitExerciseButton, setShowSubmitExerciseButton] = useState(false);
     const [submissionFeedback, setSubmissionFeedback] = useState('');
+    const [showNextModuleDictButton, setShowNextModuleDictButton] = useState(false);
 
 
     const _createTypewriterEffect = (text, set_text_fn, current_index, text_type, timeout_milliseconds) => {
@@ -136,12 +137,12 @@ const NewModuleLayout = ({ module_id }) => {
         if (showIntroductionNote === true) {  // starting at first example
             setShowIntroductionNote(false);
             new_sub_module_information_index = 0;
-            new_sub_module_information_dict = currentSubModuleInformationList[new_sub_module_information_index]
+            new_sub_module_information_dict = currentSubModuleInformationList[new_sub_module_information_index];
         }
         else {
             new_sub_module_information_index = currentSubModuleInformationIndex + 1;
             new_sub_module_information_dict = currentSubModuleInformationList[new_sub_module_information_index];
-            console.log('new_sub_module_information_dict', new_sub_module_information_dict);
+            console.log('new_sub_module_information_dict-other', new_sub_module_information_dict);
         }
 
         if (new_sub_module_information_dict['type'] === 'example'){            
@@ -155,7 +156,7 @@ const NewModuleLayout = ({ module_id }) => {
 
             _createTypewriterEffect(
                 new_sub_module_information_dict.code,
-                setExampleCodeValue, 
+                setInitialCodeValue, 
                 0, 
                 'show_try_exercise_button',
                 100
@@ -171,6 +172,9 @@ const NewModuleLayout = ({ module_id }) => {
 
             setShowTryChallenge(true);
             setShowCodeLayout(true);
+            setCurrentActiveTab('challenge');
+            
+            setShowTryExerciseButton(false);
 
             setCurrentChallengeDict(new_sub_module_information_dict);
             _createTypewriterEffect(
@@ -180,7 +184,6 @@ const NewModuleLayout = ({ module_id }) => {
                 'show_submit_button',
                 100
             );
-
             
         }
 
@@ -233,6 +236,22 @@ const NewModuleLayout = ({ module_id }) => {
 
     }
 
+    
+
+    const _handleBtnExerciseSolutionSubmitClick = async () => {
+
+        // TODO:
+            // implement backend / frontend logic here
+
+        console.log('exercise solution submit...');
+        setConsoleOutput('>>> solution submitted...');
+        setSubmissionFeedback('Sample Submission Feedback... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sem dui, aliquet at leo vehicula, porttitor ornare quam.');
+
+        setShowSubmitExerciseButton(false);
+        setShowNextModuleDictButton(true);
+
+    }
+
 
     return (
 
@@ -282,12 +301,12 @@ const NewModuleLayout = ({ module_id }) => {
                         <div className="space-y-4 mt-3 w-full">
                             
                             {
-                                (showExample === true)
+                                ((showExample === true) || (showTryChallenge === true))
 
                                 ?
 
                                 (
-                                    
+
                                     <>
                                         <div
                                             className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 mb-0 w-full min-w-[500px]"
@@ -308,21 +327,27 @@ const NewModuleLayout = ({ module_id }) => {
                                                         Example
                                                     </a>
                                                 </li>
+                                                
+                                                {
+                                                    (showTryChallenge === true) && (
 
-                                                <li className="me-2">
-                                                    <a
-                                                        href="#"
-                                                        className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg cursor-pointer ${
-                                                            (currentActiveTab === 'challenge')
-                                                            ? 'text-blue-600 border-blue-600 font-bold dark:text-blue-500 dark:border-blue-500'
-                                                            : 'text-gray-600 border-transparent dark:text-gray-400'
-                                                        }`}
-                                                        aria-current={currentActiveTab ? 'page' : undefined}
-                                                        onClick={() => setCurrentActiveTab('challenge')}
-                                                    >
-                                                        Challenge
-                                                    </a>
-                                                </li>
+                                                        <li className="me-2">
+                                                            <a
+                                                                href="#"
+                                                                className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg cursor-pointer ${
+                                                                    (currentActiveTab === 'challenge')
+                                                                    ? 'text-blue-600 border-blue-600 font-bold dark:text-blue-500 dark:border-blue-500'
+                                                                    : 'text-gray-600 border-transparent dark:text-gray-400'
+                                                                }`}
+                                                                aria-current={currentActiveTab ? 'page' : undefined}
+                                                                onClick={() => setCurrentActiveTab('challenge')}
+                                                            >
+                                                                Challenge
+                                                            </a>
+                                                        </li>
+                                                                
+                                                    )
+                                                }
 
                                             </ul>
 
@@ -332,6 +357,11 @@ const NewModuleLayout = ({ module_id }) => {
                                         {(currentActiveTab === 'note') && (
 
                                             <p className="text-[15px] tracking-normal leading-9 pt-0 pr-0">
+
+                                                <h3 className="font-bold text-[15px] mb-2">
+                                                    Example Title
+                                                </h3>
+
                                                 <Markdown>
                                                     {/* {currentSubModuleDict.introduction_note} */}
                                                     {/* TODO: show this and Code in Type-writer manner */}
@@ -350,7 +380,7 @@ const NewModuleLayout = ({ module_id }) => {
                                                 <p className="text-[16px] font-bold pt-2">
                                                     Question
                                                 </p>
-                                                    <p className="text-[15px] tracking-normal leading-9 pt-4">
+                                                    <p className="text-[15px] tracking-normal leading-9 pt-4 text-gray-500">
                                                         {/* <TypeWriter text={noteDict.description} /> */}
                                                         <Markdown>
                                                             {currentTryExerciseText}
@@ -361,21 +391,13 @@ const NewModuleLayout = ({ module_id }) => {
                                                 {/* Example Input Output List */}
                                                 {/* TODO: showing example i/o list */}
 
-                                                {/* Submit Solution Button */}
-                                                {(showSubmitExerciseButton === true) && (
-                                                    <button
-                                                        type="button"
-                                                        className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                                                    >Submit</button>
-                                                )}
-
                                                 {/* <p className='text-[16px] font-bold pb-2'>Submissions</p> */}                        
 
                                                 <p className="text-[16px] font-bold pt-4">
                                                     Current Solution Feedback
                                                 </p>
-                                                <p className="leading-9 text-[15px]">
-                                                    {(submissionFeedback.length === 0) && "Write your code and submit your solution to get feedback from the AI!"}
+                                                <p className="leading-9 text-[15px] text-gray-500">
+                                                    {(submissionFeedback.length === 0) && "Write your code and submit your solution to finish the exercise."}
                                                     {submissionFeedback}
                                                 </p>
 
@@ -439,18 +461,39 @@ const NewModuleLayout = ({ module_id }) => {
                                             </div>
 
                                         )}
-                                      
-                                        {(showTryExerciseButton === true) && (
-                                            <button
-                                                type="button"
-                                                className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                                                onClick={_handleNextInformationModuleClick}
-                                            >
-                                                Proceed to Challenge
-                                                <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
-                                            </button>
-                                        )}
 
+                                        <div >
+                                            {(showTryExerciseButton === true) && (
+                                                <button
+                                                    type="button"
+                                                    className="py-2.5 px-5 me-2 mb-2 mt-4 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                                    onClick={_handleNextInformationModuleClick}
+                                                >
+                                                    Proceed
+                                                    <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
+                                                </button>
+                                            )}
+
+                                            {(showSubmitExerciseButton === true) && (
+                                                <button
+                                                    type="button"
+                                                    className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mt-4 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                                    onClick={_handleBtnExerciseSolutionSubmitClick}
+                                                >Submit Solution</button>
+                                            )}
+
+                                            {(showNextModuleDictButton === true) && (
+                                                <button
+                                                    type="button"
+                                                    className="py-2.5 px-5 me-2 mb-2 mt-4 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                                    onClick={_handleNextInformationModuleClick}
+                                                >
+                                                    Proceed
+                                                    <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
+                                                </button>
+                                            )}
+
+                                        </div>
                                     </>
                                     
                                 )
@@ -479,14 +522,13 @@ const NewModuleLayout = ({ module_id }) => {
                                                     className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[14.5px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                                                     onClick={_handleNextInformationModuleClick}
                                                 >
-                                                    Show Me An Example
+                                                    Proceed
                                                     <FontAwesomeIcon icon={faArrowRight} className="pl-2 pt-1" />
                                                 </button>
                                             )}
                                         </div>
 
                                     </div>
-
                                     
                                 )
                             
@@ -495,10 +537,10 @@ const NewModuleLayout = ({ module_id }) => {
                         </div>
 
                     </div>
-                    
+
                     {/* Second Half */}
                     {
-                        (showExample === true) && (
+                        ((showExample === true) || (showTryChallenge === true)) && (
 
                             <div className="w-full min-w-[650px] mt-3 flex flex-col pt-0 border-l-2 border-gray-50">
 
@@ -508,14 +550,24 @@ const NewModuleLayout = ({ module_id }) => {
                                         <h2 className="text-[18px] font-semibold text-gray-800 mb-0 pl-1 pt-1">
                                             Code
                                         </h2>
-                                        <button
-                                            type="button"
-                                            className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-[13.5px] px-3 py-2 me-0 mb-2 mt-0.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
-                                            onClick={_handleRunButtonClick}
-                                        >
-                                            <FontAwesomeIcon icon={faPlay} className="pl-1 pr-1 text-[14px]"/>{" "}Run
-                                        </button>
+                                        <div className='flex justify-end space-x-4'>
+                                            <button
+                                                type="button"
+                                                className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-[13.5px] px-3 py-2 me-0 mb-2 mt-0.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+                                                onClick={_handleRunButtonClick}
+                                            >
+                                                <FontAwesomeIcon icon={faPlay} className="pl-1 pr-1 text-[14px]"/>{" "}Run Code
+                                            </button>
 
+                                            {/* {(showTryChallenge === true) && (
+                                                 <button
+                                                    type="button"
+                                                    className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                                >Submit Solution</button>
+                                            )} */}
+                                        
+                                        </div>
+                                     
                                     </div>
                                     
                                     <div className="h-[450px]">
@@ -523,7 +575,7 @@ const NewModuleLayout = ({ module_id }) => {
                                             height="100%"
                                             defaultLanguage="python" // Set language to Python
                                             // defaultValue={`# Write your Python code here\n\nprint("Hello, World!")`}
-                                            value={exampleCodeValue}
+                                            value={initialCodeValue}
                                             onMount={handleEditorDidMount}
                                             theme="vs-dark"
                                             options={{
@@ -543,7 +595,7 @@ const NewModuleLayout = ({ module_id }) => {
                                     </div>
 
                                 </div>
-                            
+
                             </div>
 
                         )
