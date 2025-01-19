@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faPlay, faComment, faXmark, faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faPlay, faSpinner, faComment, faXmark, faQuestion } from "@fortawesome/free-solid-svg-icons";
 import Markdown from 'react-markdown';
 import confetti from "canvas-confetti";
 import { getFromLocalStorage, saveToLocalStorage, removeFromLocalStorage } from '@/lib/utils/localStorageUtils';
@@ -9,9 +9,13 @@ import NoteLayout from "@/app/components/Experimental/SubModuleComponents/NoteLa
 import { Progress } from "@/components/ui/progress";
 
 import Monaco from "@monaco-editor/react";
+import Editor from "@monaco-editor/react";
+import axios from "axios";
 
 
 const NewModuleLayout = ({ module_id }) => {
+
+    const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_API_BACKEND_URL;
 
     const [currentSubModuleParentIndex, setCurrentSubModuleParentIndex] = useState(0);
     const [currentModuleInformationDict, setCurrentModuleInformationDict] = useState({});
@@ -42,6 +46,8 @@ const NewModuleLayout = ({ module_id }) => {
 
     const [currentSubModuleProgressDict, setCurrentSubModuleProgressDict] = useState({});
     const [currentSubModuleInformationListProgress, setCurrentSubModuleInformationListProgress] = useState({});
+    const [currentSubModuleInformationElementObjectId, setCurrentSubModuleInformationElementObjectId] = useState(null);
+
 
     const nextStudentCourseModuleObjectId = useRef(null);
 
@@ -247,6 +253,7 @@ const NewModuleLayout = ({ module_id }) => {
                     setShowCodeLayout(false);
                     setCurrentActiveTab('note');
                     setShowTryExerciseButton(false);
+                    codeRef.current = '';
                     setInitialCodeValue('');
                     setCurrentChallengeDict({});
                     setCurrentTryExerciseText('');
@@ -303,6 +310,7 @@ const NewModuleLayout = ({ module_id }) => {
             console.log('new-module-info-CODE-NEW:', new_sub_module_information_dict.code);
 
             setInitialCodeValue('');
+            codeRef.current = new_sub_module_information_dict.code;
 
             _createTypewriterEffect(
                 new_sub_module_information_dict.code,
@@ -329,6 +337,9 @@ const NewModuleLayout = ({ module_id }) => {
             setCurrentChallengeDict(new_sub_module_information_dict);
 
             setCurrentTryExerciseText('');
+
+            // Set object id
+            setCurrentSubModuleInformationElementObjectId(new_sub_module_information_dict['element_object_id']);
 
             _createTypewriterEffect(
                 new_sub_module_information_dict.question,
@@ -375,18 +386,74 @@ const NewModuleLayout = ({ module_id }) => {
 
     
     const [consoleOutput, setConsoleOutput] = useState('>>> Console Output');
-    const editorRef = useRef(null);
-    const handleEditorDidMount = (editor, monaco) => {
-        editorRef.current = editor; // Keep a reference to the editor
+    const [isRunLoading, setIsRunLoading] = useState(false);
+
+
+    const _sendCodeExecutionRequest = async function (code) {
+        try {
+            const payload = {
+                language: "python",
+                code: code,
+            };
+
+            const response = await axios.post(FASTAPI_BASE_URL + '/execute_user_code', payload);
+
+            // Get the task ID from the response
+            const { task_id } = response.data;
+
+            pollForTaskStatus(task_id);
+        } catch (error) {
+            console.log("Error:", error);
+        }
+    };
+
+    const getTaskResponse = async (task_id) => {
+        try {
+            const taskResponseURL = FASTAPI_BASE_URL + `/result/${task_id}`;
+            const resultResponse = await axios.get(taskResponseURL);
+            const { result_output_value } = resultResponse.data;
+            setConsoleOutput(result_output_value);
+
+        } catch (error) {
+            console.error("Error polling for result:", error);
+        }
+    };
+
+    const pollForTaskStatus = async (taskId) => {
+        try {
+            const taskStatusURL = FASTAPI_BASE_URL + `/task/status/${taskId}`;
+
+            const interval = setInterval(async () => {
+                const resultResponse = await axios.get(taskStatusURL);
+
+                const { status, task_id } = resultResponse.data;
+
+                if (status === "SUCCESS") {
+                    clearInterval(interval);
+                    getTaskResponse(task_id);
+                    setIsRunLoading(false); // Stop loading after result is received
+                }
+            }, 2000); // Poll every 2 seconds
+        } catch (error) {
+            console.error("Error polling for result:", error);
+            setIsRunLoading(false); // Stop loading if error occurs
+        }
     };
 
     const _handleRunButtonClick = async () => {
 
-        // TODO:
-            // add user input (input())
+        setConsoleOutput('loading...');
+        setIsRunLoading(true); // Start the loading state
 
-        console.log('run button click...');
-        setConsoleOutput('console output...');
+        let current_code = codeRef.current;
+        console.log('current-code:', current_code);
+        // TODO: start here by completing run code and proceed
+ 
+        // send request to run code
+        _sendCodeExecutionRequest(current_code);
+        
+        // // TODO:
+        //     // add user input (input())
 
     }
 
@@ -406,16 +473,114 @@ const NewModuleLayout = ({ module_id }) => {
             // implement backend / frontend logic here
 
         console.log('exercise solution submit...');
-        setConsoleOutput('>>> solution submitted...');
-        setSubmissionFeedback('Sample Submission Feedback... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sem dui, aliquet at leo vehicula, porttitor ornare quam.');
 
-        setShowSubmitExerciseButton(false);
-        setShowNextModuleDictButton(true);
+        let anon_user_id = getFromLocalStorage('user_id');
+        let current_code = codeRef.current;
 
-        handleConfetti();
+        // // Set object id
+        // setCurrentSubModuleInformationElementObjectId(new_sub_module_information_dict['element_object_id']);
+        let current_exercise_object_id = currentSubModuleInformationElementObjectId;
+
+        // TODO: get object id
+        const payload = {
+            'user_id': anon_user_id,
+            'code': current_code,
+            // 'sub_module_course_object_id': ,
+            'current_exercise_object_id': current_exercise_object_id,
+        }
+        const apiResponse = await fetch(`http://127.0.0.1:8000/handle_sub_module_exercise_solution_submit`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+        const response_data = await apiResponse.json();
+        console.log('Response Data:', response_data);
+
+        // setConsoleOutput('>>> solution submitted...');
+        // setSubmissionFeedback('Sample Submission Feedback... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sem dui, aliquet at leo vehicula, porttitor ornare quam.');
+
+        // setShowSubmitExerciseButton(false);
+        // setShowNextModuleDictButton(true);
+
+        // handleConfetti();
 
     }
 
+
+    // // Monaco Code Editor
+
+    const editorRef = useRef(null);
+    const handleEditorDidMount = (editor, monaco) => {
+        editorRef.current = editor; // Keep a reference to the editor
+    };
+    // // Monaco Code Editor
+    // const handleEditorDidMount = (editor, monaco) => {
+
+    //     // Define the light theme
+    //     monaco.editor.defineTheme('minimalistLight', {
+    //         base: 'vs-dark', // inherit from vs-dark (dark theme)
+    //         inherit: true,
+    //         rules: [
+    //             { token: 'comment', foreground: '6A737D', fontStyle: 'italic' }, 
+    //             { token: 'keyword', foreground: '007ACC' },
+    //             { token: 'identifier', foreground: 'D4D4D4' }, 
+    //             { token: 'string', foreground: 'CE9178' }, 
+    //             { token: 'number', foreground: 'B5CEA8' }, 
+    //             { token: 'delimiter', foreground: '808080' }, 
+    //             { token: 'type', foreground: '4EC9B0' }, 
+    //         ],
+    //         colors: {
+    //             'editor.background': '#252526',
+    //             'editor.foreground': '#D4D4D4', 
+    //             'editorLineNumber.foreground': '#A0A0A0',
+    //             'editorCursor.foreground': '#FFFFFF',
+    //             'editor.selectionBackground': '#A7C6ED',
+    //             'editor.inactiveSelectionBackground': '#2C2C2C',
+    //             'editor.lineHighlightBackground': '#2D2D30', 
+    //             'editorBracketMatch.background': '#515A6B', 
+    //             'editorWhitespace.foreground': '#3B3B3B', 
+    //         }
+    //     });
+
+    //     // Define the dark theme
+    //     monaco.editor.defineTheme('minimalistDark', {
+    //         base: 'vs-dark', // inherit from vs-dark (dark theme)
+    //         inherit: true,
+    //         rules: [
+    //             { token: 'comment', foreground: 'A6C4DB', fontStyle: 'italic' }, 
+    //             { token: 'keyword', foreground: 'C6C6FF' }, 
+    //             { token: 'identifier', foreground: 'D4D4D4' }, 
+    //             { token: 'string', foreground: '79C0FF' }, 
+    //             { token: 'number', foreground: 'B5CEA8' }, 
+    //             { token: 'delimiter', foreground: '808080' }, 
+    //             { token: 'type', foreground: 'A2D3E0' }, 
+    //         ],
+    //         colors: {
+    //             'editor.background': '#1C2631',
+    //             'editor.foreground': '#D4D4D4', 
+    //             'editorLineNumber.foreground': '#4E7A9A', 
+    //             'editorCursor.foreground': '#AEAFAD', 
+    //             'editor.selectionBackground': '#3D5A7F', 
+    //             'editor.inactiveSelectionBackground': '#2C2C2C', 
+    //             'editor.lineHighlightBackground': '#2D2D30', 
+    //             'editorBracketMatch.background': '#516B80', 
+    //             'editorWhitespace.foreground': '#3B3B3B', 
+    //         }
+    //     });
+
+    //     // Set the initial theme based on the localStorage value
+    //     const currentTheme = localStorage.getItem('theme') || 'light';
+    //     monaco.editor.setTheme(currentTheme === 'dark' ? 'minimalistDark' : 'minimalistLight');
+
+    // };
+
+
+    const codeRef = useRef("");
+    const _handleCodeStateChange = (value) => {
+        codeRef.current = value;
+    }
 
     return (
 
@@ -429,7 +594,7 @@ const NewModuleLayout = ({ module_id }) => {
             {/* <div className="flex flex-col min-h-screen mt-12 ml-44"> */}
             {/* <div className="flex flex-col min-h-screen mt-4"> */}
             {/* <div className="flex flex-col items-start mt-8 mx-auto w-[80%] sm:w-[80%]"> */}
-            <div className="flex flex-col items-start mt-8 mx-auto w-[80%] sm:w-[80%]">
+            <div className="flex flex-col items-start mt-6 mx-auto w-[80%] sm:w-[80%]">
 
                 {/* Top Header */}
                 <div className="flex justify-between py-2 border-b border-gray-300 w-full mx-auto">
@@ -470,7 +635,7 @@ const NewModuleLayout = ({ module_id }) => {
                             {/* <p className="text-gray-500 text-[11px] mb-1">Progress: {currentSubModuleInformationListProgress.completed} / {currentSubModuleInformationListProgress.total}</p> */}
                             <div className='space-y-1'>
                                 <span className="text-[11px] font-medium">
-                                    Progress: {currentSubModuleInformationListProgress.completed} / {currentSubModuleInformationListProgress.total}
+                                    Sub Module Progress: {currentSubModuleInformationListProgress.completed} / {currentSubModuleInformationListProgress.total}
                                 </span>
                                 <Progress value={(currentSubModuleInformationListProgress.completed / currentSubModuleInformationListProgress.total) * 100} className="w-40" />
                             </div>
@@ -507,7 +672,7 @@ const NewModuleLayout = ({ module_id }) => {
 
                                     <>
                                         <div
-                                            className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 mb-0 w-full min-w-[500px]"
+                                            className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 mb-0 w-full min-w-[520px]"
                                         >
 
                                             <ul className="flex flex-wrap -mb-px">
@@ -527,7 +692,26 @@ const NewModuleLayout = ({ module_id }) => {
                                                 </li>
                                                 
                                                 {
-                                                    (showTryChallenge === true) && (
+                                                    // (showTryChallenge === true) && (
+
+                                                    //     <li className="me-2">
+                                                    //         <a
+                                                    //             href="#"
+                                                    //             className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg cursor-pointer ${
+                                                    //                 (currentActiveTab === 'challenge')
+                                                    //                 ? 'text-blue-600 border-blue-600 font-bold dark:text-blue-500 dark:border-blue-500'
+                                                    //                 : 'text-gray-600 border-transparent dark:text-gray-400'
+                                                    //             }`}
+                                                    //             aria-current={currentActiveTab ? 'page' : undefined}
+                                                    //             onClick={() => setCurrentActiveTab('challenge')}
+                                                    //         >
+                                                    //             Challenge
+                                                    //         </a>
+                                                    //     </li>
+                                                                
+                                                    // )
+
+                                                    (showTryChallenge === true) ? (
 
                                                         <li className="me-2">
                                                             <a
@@ -544,6 +728,22 @@ const NewModuleLayout = ({ module_id }) => {
                                                             </a>
                                                         </li>
                                                                 
+                                                    ) : (
+
+                                                        <li className="me-2">
+                                                            <a
+                                                                className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg cursor-pointer ${
+                                                                        'text-gray-400 border-transparent cursor-not-allowed'
+                                                                        // : 'text-gray-600 border-transparent dark:text-gray-400'
+                                                                }`}
+                                                                aria-current={currentActiveTab ? 'page' : undefined}
+                                                                onClick={(e) => e.preventDefault()} // Prevent default behavior if disabled
+                                                            >
+                                                                Challenge
+                                                            </a>
+                                                        </li>
+
+
                                                     )
                                                 }
 
@@ -743,12 +943,13 @@ const NewModuleLayout = ({ module_id }) => {
                     {
                         ((showExample === true) || (showTryChallenge === true)) && (
 
-                            <div className="w-full min-w-[650px] mt-3 flex flex-col pt-0 border-l-2 border-gray-50">
+                            <div className="w-full min-w-[640px] mt-3 flex flex-col pt-0 border-l-2 border-gray-50">
 
                                 <div className="flex-grow p-0 pt-0 pb-0 pl-4">
                                     
                                     <div className="flex justify-between">
-                                        <h2 className="text-[18px] font-semibold text-gray-800 mb-0 pl-1 pt-1">
+                                        {/* <h2 className="text-[18px] font-semibold text-gray-800 mb-0 pl-1 pt-1"> */}
+                                        <h2 className="text-[18px] font-semibold text-gray-800 pt-2">
                                             Code
                                         </h2>
                                         <div className='flex justify-end space-x-4'>
@@ -756,8 +957,15 @@ const NewModuleLayout = ({ module_id }) => {
                                                 type="button"
                                                 className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-[13.5px] px-3 py-2 me-0 mb-2 mt-0.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
                                                 onClick={_handleRunButtonClick}
+                                                disabled={isRunLoading}
                                             >
-                                                <FontAwesomeIcon icon={faPlay} className="pl-1 pr-1 text-[14px]"/>{" "}Run Code
+                                                {/* <FontAwesomeIcon icon={faPlay} className="pl-1 pr-1 text-[14px]"/>{" "}Run Code */}
+                                                {isRunLoading ? (
+                                                    <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                                ) : (
+                                                    <FontAwesomeIcon icon={faPlay} className="text-white pr-2" />
+                                                )}
+                                                {isRunLoading ? "Running..." : "Run Code"}
                                             </button>
 
                                             {/* {(showTryChallenge === true) && (
@@ -771,7 +979,7 @@ const NewModuleLayout = ({ module_id }) => {
                                      
                                     </div>
                                     
-                                    <div className="h-[450px]">
+                                    <div className="h-[470px]">
                                         <Monaco
                                             height="100%"
                                             defaultLanguage="python" // Set language to Python
@@ -780,11 +988,27 @@ const NewModuleLayout = ({ module_id }) => {
                                             onMount={handleEditorDidMount}
                                             theme="vs-dark"
                                             options={{
-                                                fontSize: 14,
+                                                fontSize: 13,
                                                 minimap: { enabled: false },
                                                 scrollBeyondLastLine: false,
                                             }}
+                                            onChange={(value) => _handleCodeStateChange(value ?? "")}
                                         />
+
+                                        {/* <Editor
+                                            width="100%"
+                                            height="100%"
+                                            language="python"
+                                            options={{
+                                                minimap: { enabled: false },
+                                                scrollBeyondLastLine: false,
+                                                selectOnLineNumbers: true,
+                                                wordWrap: "on",
+                                            }}
+                                            // onChange={(value) => _handleCodeStateChange(value ?? "")}
+                                            onMount={handleEditorDidMount}
+                                            value={initialCodeValue}
+                                        /> */}
                                     </div>
 
                                     <div className="flex-grow p-0 pt-4">
