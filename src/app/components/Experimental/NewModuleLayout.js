@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faPlay, faSpinner, faComment, faXmark, faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { Button } from "@/components/ui/button";
 import Markdown from 'react-markdown';
 import confetti from "canvas-confetti";
 import { getFromLocalStorage, saveToLocalStorage, removeFromLocalStorage } from '@/lib/utils/localStorageUtils';
@@ -46,11 +47,9 @@ const NewModuleLayout = ({ module_id }) => {
 
     const [currentSubModuleProgressDict, setCurrentSubModuleProgressDict] = useState({});
     const [currentSubModuleInformationListProgress, setCurrentSubModuleInformationListProgress] = useState({});
-    const [currentSubModuleInformationElementObjectId, setCurrentSubModuleInformationElementObjectId] = useState(null);
-
+    // const [currentSubModuleInformationElementObjectId, setCurrentSubModuleInformationElementObjectId] = useState(null);
 
     const nextStudentCourseModuleObjectId = useRef(null);
-
     const [nextSubModuleName, setNextSubModuleName] = useState('');
 
 
@@ -151,7 +150,8 @@ const NewModuleLayout = ({ module_id }) => {
             if (currentNoteTyping.current === false){
                 currentNoteTyping.current = true;
                 _createTypewriterEffect(
-                    current_sub_module_dict.introduction_note,
+                    // current_sub_module_dict.introduction_note,
+                    current_sub_module_information_list[0]['text'],
                     setCurrentNoteText, 
                     0, 
                     'show_example_button',
@@ -163,6 +163,11 @@ const NewModuleLayout = ({ module_id }) => {
 
     };
 
+    const currentInformationModuleElementObjectId = useRef(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedModalDatatype, setSelectedModalDataType] = useState(null);
+    const [selectedModalData, setSelectedModalData] = useState(null);
+
     const _handleNextInformationModuleClick = async () => {
         
         // by default, this will be false since proceeding to next information-dict in sub-module
@@ -171,18 +176,18 @@ const NewModuleLayout = ({ module_id }) => {
 
         let new_sub_module_information_index;
         let new_sub_module_information_dict;
-        if (showIntroductionNote === true) {  // starting at first example
-            setShowIntroductionNote(false);
-            new_sub_module_information_index = 0;
-            new_sub_module_information_dict = currentSubModuleInformationList[new_sub_module_information_index];
-        }
-        else {
+        // if (showIntroductionNote === true) {  // starting at first example
+        //     setShowIntroductionNote(false);
+        //     new_sub_module_information_index = 0;
+        //     new_sub_module_information_dict = currentSubModuleInformationList[new_sub_module_information_index];
+        // }
+        // else {
 
-            // // TODO: Check and Update Progress
-            // let current_sub_module_progress_dict = {
-            //     'completed': current_sub_module_index + 1,
-            //     'total': total_sub_modules_for_parent_module
-            // };
+        //     // // TODO: Check and Update Progress
+        //     // let current_sub_module_progress_dict = {
+        //     //     'completed': current_sub_module_index + 1,
+        //     //     'total': total_sub_modules_for_parent_module
+        //     // };
 
             // First Check --> have we reach the end of this submodule?
             if ((currentSubModuleInformationIndex.current + 1) === currentSubModuleInformationListProgress['total']) { 
@@ -271,7 +276,8 @@ const NewModuleLayout = ({ module_id }) => {
 
                 }
 
-            } else {
+            }
+            else {
                 new_sub_module_information_index = currentSubModuleInformationIndex.current + 1;
                 currentSubModuleInformationIndex.current = new_sub_module_information_index;
 
@@ -294,9 +300,13 @@ const NewModuleLayout = ({ module_id }) => {
             // new_sub_module_information_dict = currentSubModuleInformationList[new_sub_module_information_index];
             // console.log('new_sub_module_information_dict-other', new_sub_module_information_dict);
 
-        }
+        // }
 
         // TODO: fix current error and proceed from there to finalizing all logic + ui + experience
+
+        setCurrentExerciseSubmissionPassed(null);
+        setSubmissionFeedback('');
+        setCurrentExerciseSubmissionLoading(false);
 
         if (new_sub_module_information_dict['type'] === 'example'){            
             setShowExampleButton(false);
@@ -311,6 +321,8 @@ const NewModuleLayout = ({ module_id }) => {
 
             setInitialCodeValue('');
             codeRef.current = new_sub_module_information_dict.code;
+
+            currentInformationModuleElementObjectId.current = new_sub_module_information_dict.element_object_id;
 
             _createTypewriterEffect(
                 new_sub_module_information_dict.code,
@@ -338,11 +350,33 @@ const NewModuleLayout = ({ module_id }) => {
 
             setCurrentTryExerciseText('');
 
-            // Set object id
-            setCurrentSubModuleInformationElementObjectId(new_sub_module_information_dict['element_object_id']);
+            // // Set object id
+            // setCurrentSubModuleInformationElementObjectId(new_sub_module_information_dict['element_object_id']);
+
+            currentInformationModuleElementObjectId.current = new_sub_module_information_dict.element_object_id;
+
+            // c8989cff-a210-494b-b4a9-feedcc8d8840
+            console.log('current-sub-history:', new_sub_module_information_dict.current_exercise_submission_history, new_sub_module_information_dict.element_object_id);
+
+            setCurrentExerciseSubmissionHistory(new_sub_module_information_dict.current_exercise_submission_history);
+
+            if (new_sub_module_information_dict.current_exercise_submission_history.length > 0){
+                let tmp_rv = {};
+                for (let idx = 0; idx <= new_sub_module_information_dict.current_exercise_submission_history.length - 1; idx++){
+                    let current_elem = new_sub_module_information_dict.current_exercise_submission_history[idx];
+                    // tmp_rv.push(})
+                    tmp_rv[current_elem.key] = {
+                        'code': current_elem.code,
+                        'feedback': current_elem.feedback
+                    };
+                }
+                // setCurrentExerciseSubmissionHistoryModalData()
+
+                currentExerciseSubmissionHistoryModalData.current = tmp_rv;
+            }
 
             _createTypewriterEffect(
-                new_sub_module_information_dict.question,
+                new_sub_module_information_dict.text,
                 setCurrentTryExerciseText,
                 0, 
                 'show_submit_button',
@@ -375,6 +409,37 @@ const NewModuleLayout = ({ module_id }) => {
     };
 
 
+    const showSubmissionHistoryModalData = async (object_id, type) => {
+
+        // TODO: show this and go from there
+        console.log('data', object_id, type)
+
+        let element_dict = currentExerciseSubmissionHistoryModalData.current[object_id];
+        console.log('element-dict:', element_dict);
+
+        if (type === 'code'){
+            
+            setSelectedModalDataType('code');
+            setSelectedModalData(element_dict['code']);
+            setIsModalOpen(true);
+            // // TODO: 
+            // tmp_rv[current_elem.key] = {
+            //     'code': current_elem.code,
+            //     'feedback': current_elem.feedback
+            // };
+
+        }
+        else {
+
+            setSelectedModalDataType('feedback');
+            setSelectedModalData(element_dict['feedback']);
+            setIsModalOpen(true);
+
+        }
+
+    }
+
+
     useEffect(() => {
 
         // TODO:
@@ -387,6 +452,11 @@ const NewModuleLayout = ({ module_id }) => {
     
     const [consoleOutput, setConsoleOutput] = useState('>>> Console Output');
     const [isRunLoading, setIsRunLoading] = useState(false);
+    const [currentExerciseSubmissionPassed, setCurrentExerciseSubmissionPassed] = useState(null);
+    const [currentExerciseSubmissionHistory, setCurrentExerciseSubmissionHistory] = useState([]);
+    // const [currentExerciseSubmissionHistoryModalData, setCurrentExerciseSubmissionHistoryModalData] = useState([]);
+    const currentExerciseSubmissionHistoryModalData = useRef([]);
+    const [currentExerciseSubmissionLoading, setCurrentExerciseSubmissionLoading] = useState(false)
 
 
     const _sendCodeExecutionRequest = async function (code) {
@@ -467,6 +537,7 @@ const NewModuleLayout = ({ module_id }) => {
         });
     };
 
+    
     const _handleBtnExerciseSolutionSubmitClick = async () => {
 
         // TODO:
@@ -479,7 +550,10 @@ const NewModuleLayout = ({ module_id }) => {
 
         // // Set object id
         // setCurrentSubModuleInformationElementObjectId(new_sub_module_information_dict['element_object_id']);
-        let current_exercise_object_id = currentSubModuleInformationElementObjectId;
+        // let current_exercise_object_id = currentSubModuleInformationElementObjectId;
+        let current_exercise_object_id = currentInformationModuleElementObjectId.current;
+
+        setCurrentExerciseSubmissionLoading(true);
 
         // TODO: get object id
         const payload = {
@@ -488,6 +562,8 @@ const NewModuleLayout = ({ module_id }) => {
             // 'sub_module_course_object_id': ,
             'current_exercise_object_id': current_exercise_object_id,
         }
+        console.log('PAYLOAD:', payload);
+        
         const apiResponse = await fetch(`http://127.0.0.1:8000/handle_sub_module_exercise_solution_submit`, {
             method: "POST",
             headers: {
@@ -498,16 +574,46 @@ const NewModuleLayout = ({ module_id }) => {
         const response_data = await apiResponse.json();
         console.log('Response Data:', response_data);
 
+        if (response_data['success'] === true){
+            setCurrentExerciseSubmissionLoading(false);
+
+            const submission_json = response_data['submission_feedback_json'];
+            const solution_passed = submission_json['solution_passed'];
+
+            setCurrentExerciseSubmissionPassed(solution_passed);
+
+            if (solution_passed === true){
+                setShowSubmitExerciseButton(false);
+                setShowNextModuleDictButton(true);
+                handleConfetti();
+            }
+            else {
+                // // TODO:
+                // // setList([...list, newItem]); // Append new item
+                // const new_item = {
+                //     'user_code': submission_json['user_code'],
+                //     'solution_passed': submission_json['solution_passed'],
+                //     'solution_feedback'
+                // }
+                setCurrentExerciseSubmissionHistory([...currentExerciseSubmissionHistory, submission_json]);
+            }
+
+            const solution_feedback = submission_json['feedback'];
+            setSubmissionFeedback(solution_feedback);
+
+            let old_exercise_submission_history_list = currentExerciseSubmissionHistoryModalData.current;
+            old_exercise_submission_history_list[submission_json['key']] = {
+                'code': submission_json['code'],
+                'feedback': submission_json['feedback']
+            };
+            currentExerciseSubmissionHistoryModalData.current = old_exercise_submission_history_list;
+            
+        }
+
         // setConsoleOutput('>>> solution submitted...');
         // setSubmissionFeedback('Sample Submission Feedback... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sem dui, aliquet at leo vehicula, porttitor ornare quam.');
 
-        // setShowSubmitExerciseButton(false);
-        // setShowNextModuleDictButton(true);
-
-        // handleConfetti();
-
     }
-
 
     // // Monaco Code Editor
 
@@ -581,6 +687,10 @@ const NewModuleLayout = ({ module_id }) => {
     const _handleCodeStateChange = (value) => {
         codeRef.current = value;
     }
+
+    const closeModal = () => {
+        setIsModalOpen(false); // Hide the modal
+    };
 
     return (
 
@@ -763,7 +873,7 @@ const NewModuleLayout = ({ module_id }) => {
                                                 <Markdown>
                                                     {/* {currentSubModuleDict.introduction_note} */}
                                                     {/* TODO: show this and Code in Type-writer manner */}
-                                                    {exampleDict.description}
+                                                    {exampleDict.text}
                                                 </Markdown>
                                             </p>
 
@@ -789,18 +899,77 @@ const NewModuleLayout = ({ module_id }) => {
                                                 {/* Example Input Output List */}
                                                 {/* TODO: showing example i/o list */}
 
-                                                {/* <p className='text-[16px] font-bold pb-2'>Submissions</p> */}                        
+                                                {/* <p className='text-[16px] font-bold pb-2'>Submissions</p> 
+                                                */}
+
+                                                <p className="text-[16px] font-bold pt-4">
+                                                    Solution Passed?
+                                                </p>
+
+                                                {(currentExerciseSubmissionLoading === true) && (
+                                                    // TODO: go from here
+                                                    <div role="status">
+                                                        <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                                                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                                                        </svg>
+                                                        <span className="sr-only">Loading...</span>
+                                                    </div>
+                                                )}
+
+                                                { (currentExerciseSubmissionPassed !== null) ? (
+
+                                                    (currentExerciseSubmissionLoading === true) ? (
+                                                        null
+                                                    ) : (
+                                                        (currentExerciseSubmissionPassed === true) ? (
+                                                            <p className="leading-9 text-[15px] text-gray-500">
+                                                                Passed! ✔️
+                                                            </p>
+                                                        ) : (
+                                                            <p className="leading-9 text-[15px] text-gray-500">
+                                                                Failed! ❌
+                                                            </p>
+                                                        )
+                                                    )
+
+                                                ) : (
+                                                    (currentExerciseSubmissionLoading === true) ? (
+                                                        null
+                                                    ) : (
+                                                        <p className="leading-9 text-[15px] text-gray-500">
+                                                            Submit solution to determine result.
+                                                        </p>
+                                                    )
+                                                )}
 
                                                 <p className="text-[16px] font-bold pt-4">
                                                     Current Solution Feedback
                                                 </p>
-                                                <p className="leading-9 text-[15px] text-gray-500">
-                                                    {(submissionFeedback.length === 0) && "Write your code and submit your solution to finish the exercise."}
-                                                    {submissionFeedback}
-                                                </p>
+                                                {/* (currentExerciseSubmissionLoading === true) ? (
+                                                    null
+                                                ) : (
+                                                    <p className="leading-9 text-[15px] text-gray-500">
+                                                        Submit solution to determine result.
+                                                    </p>
+                                                ) */}
+                                                {(currentExerciseSubmissionLoading === true) ? (
+                                                    <div role="status">
+                                                        <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                                                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                                                        </svg>
+                                                        <span className="sr-only">Loading...</span>
+                                                    </div>
+                                                ) : (
+                                                    <p className="leading-9 text-[15px] text-gray-500">
+                                                        {(submissionFeedback.length === 0) && "Write your code and submit your solution to finish the exercise."}
+                                                        {submissionFeedback}
+                                                    </p>
+                                                )}
 
                                                 <p className="text-[16px] font-bold pt-4">
-                                                    Past Submissions
+                                                    Your Submissions
                                                 </p>
 
                                                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -821,7 +990,70 @@ const NewModuleLayout = ({ module_id }) => {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr
+
+                                                        {/* {currentExerciseSubmissionHistory.map()} */}
+                                                        {currentExerciseSubmissionHistory.map((item, index) => (
+
+                                                            <tr
+                                                                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                                                                key={item.key}
+                                                            >
+
+                                                                <td className="p-3">
+                                                                    {item.date}
+                                                                </td>
+                                                                <td
+                                                                    className={`p-3 ${
+                                                                        item.solution_passed === true
+                                                                            ? "text-green-400"
+                                                                            : "text-red-400"
+                                                                    }`}
+                                                                >
+                                                                    {item.solution_passed.toString()}
+                                                                </td>
+                                                                {/* {
+                                                                    (item.solution_passed === true) ? (
+                                                                        <td
+                                                                            className="p-3 text-green-400"
+                                                                        >
+                                                                            {item.solution_passed}
+                                                                        </td>
+                                                                    ) : (
+                                                                        <td
+                                                                            className="p-3 text-red-400"
+                                                                        >
+                                                                            {item.solution_passed}
+                                                                        </td>
+                                                                    )
+                                                                } */}
+                                                                
+                                                                <td 
+                                                                    className="p-3"
+                                                                >
+                                                                    <span 
+                                                                        className="hover:text-blue-500 hover:font-semibold cursor-pointer"
+                                                                        onClick={() => showSubmissionHistoryModalData(item.key, "code")}
+                                                                    >
+                                                                        View Code
+                                                                    </span>
+                                                                </td>
+
+                                                                <td 
+                                                                    className="p-3"
+                                                                >
+                                                                    <span 
+                                                                        className="hover:text-blue-500 hover:font-semibold cursor-pointer"
+                                                                        onClick={() => showSubmissionHistoryModalData(item.key, "feedbcak")}
+                                                                    >
+                                                                        View Feedback
+                                                                    </span>
+                                                                </td>
+
+                                                            </tr>    
+
+                                                        ))}
+
+                                                        {/* <tr
                                                             className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                                                         >
                                                             <td className="p-3">
@@ -852,10 +1084,10 @@ const NewModuleLayout = ({ module_id }) => {
                                                                     View Feedback
                                                                 </span>
                                                             </td>
-                                                        </tr>
+                                                        </tr> */}
                                                     </tbody>
                                                 </table>
-                                                
+
                                                 <div>
                                                     {(showSubmitExerciseButton === true) && (
                                                         <button
@@ -936,6 +1168,29 @@ const NewModuleLayout = ({ module_id }) => {
                             }
 
                         </div>
+
+                        {/* Modal - for viewing code and submission feedback */}
+                        {isModalOpen && (
+                            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                                <div className="bg-white rounded-lg shadow-lg p-6 w-1/3 h-1/2">
+                                    <h2 className="text-lg font-semibold mb-4">
+                                        {selectedModalDatatype === 'code' ? (
+                                            "Code"
+                                        ) : (
+                                            "Feedback"
+                                        )}</h2>
+                                    <pre className="text-sm text-gray-600 bg-gray-100 p-4 rounded overflow-x-auto h-2/3 text-wrap">
+                                        {selectedModalData}
+                                    </pre>
+                                    <Button
+                                        onClick={closeModal}
+                                        className="mt-5 px-4 py-4 bg-black text-white rounded hover:bg-blue-600"
+                                    >
+                                        Close
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
 
                     </div>
 
