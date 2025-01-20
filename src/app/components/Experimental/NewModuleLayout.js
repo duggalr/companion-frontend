@@ -105,6 +105,8 @@ const NewModuleLayout = ({ module_id }) => {
 
         if (response_data['success'] === true){
 
+            console.log('current-module-dict:', response_data.module_dict);
+
             // TODO: can modify here to start where user did not complete submission when logic implemented...
             let current_sub_module_index = 0;
             let current_module_dict = response_data.module_dict;
@@ -113,6 +115,8 @@ const NewModuleLayout = ({ module_id }) => {
             let current_sub_module_progress_dict = {
                 'completed': current_sub_module_index + 1,
                 'total': total_sub_modules_for_parent_module
+                // 'completed': current_module_dict.total_sub_module_completed_exercises,
+                // 'total': current_module_dict.total_sub_module_exercises
             };
 
             // set next course module object id
@@ -131,12 +135,15 @@ const NewModuleLayout = ({ module_id }) => {
 
             let current_sub_module_dict = current_sub_module_list[current_sub_module_index];
             let current_sub_module_information_list = current_sub_module_dict['note_information_list'];
+
             let current_sub_module_information_index = 0;
             let total_sub_module_information_list_elements = current_sub_module_information_list.length;
             let current_sub_module_information_list_progress_dict = {
                 'completed': current_sub_module_information_index + 1,
                 'total': total_sub_module_information_list_elements
-            }
+                // 'completed': current_sub_module_dict.sub_module_exercise_completed_count,
+                // 'total': current_sub_module_dict.sub_module_exercise_total_count
+            };
 
             console.log('current_sub_module_dict', current_sub_module_dict);
             
@@ -223,10 +230,22 @@ const NewModuleLayout = ({ module_id }) => {
                     let new_sub_module_information_list = new_sub_module_dict['note_information_list'];
                     let new_sub_module_information_index = 0;
                     let total_new_sub_module_information_list_elements = new_sub_module_information_list.length;
+
+                    // if (currentSubModuleInformationListProgress['completed'] == currentSubModuleInformationListProgress['total']) {
+                    //     // pass 
+                    // } else {
+                    //     let new_sub_module_information_list_progress_dict = {
+                    //         'completed': new_sub_module_information_index + 1,
+                    //         'total': total_new_sub_module_information_list_elements
+                    //     };
+                    //     setCurrentSubModuleInformationListProgress(new_sub_module_information_list_progress_dict);
+                    // }
+
                     let new_sub_module_information_list_progress_dict = {
                         'completed': new_sub_module_information_index + 1,
                         'total': total_new_sub_module_information_list_elements
-                    }
+                    };
+                    setCurrentSubModuleInformationListProgress(new_sub_module_information_list_progress_dict);
 
                     // Set next sub module name
                     if ((new_sub_module_index + 1) === currentSubModuleProgressDict['total']){
@@ -247,7 +266,7 @@ const NewModuleLayout = ({ module_id }) => {
                     // Sub Module Parent
                     setCurrentSubModuleInformationList(new_sub_module_information_list);
                     currentSubModuleInformationIndex.current = new_sub_module_information_index;
-                    setCurrentSubModuleInformationListProgress(new_sub_module_information_list_progress_dict);
+                    
                     setShowIntroductionNote(true);
 
                     // Reset Everything
@@ -262,12 +281,14 @@ const NewModuleLayout = ({ module_id }) => {
                     setInitialCodeValue('');
                     setCurrentChallengeDict({});
                     setCurrentTryExerciseText('');
+                    setCurrentExerciseAlreadyPassed(false);
 
                     // TODO: show "see example" button and implement logic + ui from there
                     _createTypewriterEffect(
-                        new_sub_module_dict.introduction_note,
+                        // new_sub_module_dict.introduction_note,
+                        new_sub_module_information_list[0]['text'],
                         setCurrentNoteText, 
-                        0, 
+                        0,
                         'show_example_button',
                         1
                     );
@@ -284,7 +305,16 @@ const NewModuleLayout = ({ module_id }) => {
                 new_sub_module_information_dict = currentSubModuleInformationList[new_sub_module_information_index];
                 console.log('new_sub_module_information_dict-other', new_sub_module_information_dict);
 
-                // TODO: display this on the layout
+                // if (currentSubModuleInformationListProgress['completed'] === currentSubModuleInformationListProgress['total']) {
+                //     // pass
+                // } else {
+                //     let current_sub_module_info_list_progress_dict = {
+                //         'completed': new_sub_module_information_index + 1,
+                //         'total': currentSubModuleInformationListProgress['total']
+                //     };
+                //     setCurrentSubModuleInformationListProgress(current_sub_module_info_list_progress_dict);
+                // }
+
                 let current_sub_module_info_list_progress_dict = {
                     'completed': new_sub_module_information_index + 1,
                     'total': currentSubModuleInformationListProgress['total']
@@ -313,6 +343,7 @@ const NewModuleLayout = ({ module_id }) => {
             setExampleDict(new_sub_module_information_dict);
             setShowCodeLayout(true);
             setShowExample(true);
+            setShowTryChallenge(false);
 
             setCurrentActiveTab('note');
 
@@ -323,6 +354,8 @@ const NewModuleLayout = ({ module_id }) => {
             codeRef.current = new_sub_module_information_dict.code;
 
             currentInformationModuleElementObjectId.current = new_sub_module_information_dict.element_object_id;
+
+            setCurrentExerciseAlreadyPassed(false);
 
             _createTypewriterEffect(
                 new_sub_module_information_dict.code,
@@ -369,9 +402,15 @@ const NewModuleLayout = ({ module_id }) => {
                         'code': current_elem.code,
                         'feedback': current_elem.feedback
                     };
-                }
-                // setCurrentExerciseSubmissionHistoryModalData()
+                    
+                    if (current_elem.solution_passed === true){
+                        if (currentExerciseAlreadyPassed === false){
+                            setCurrentExerciseAlreadyPassed(true);
+                        }
+                        
+                    }
 
+                }
                 currentExerciseSubmissionHistoryModalData.current = tmp_rv;
             }
 
@@ -454,6 +493,7 @@ const NewModuleLayout = ({ module_id }) => {
     const [isRunLoading, setIsRunLoading] = useState(false);
     const [currentExerciseSubmissionPassed, setCurrentExerciseSubmissionPassed] = useState(null);
     const [currentExerciseSubmissionHistory, setCurrentExerciseSubmissionHistory] = useState([]);
+    const [currentExerciseAlreadyPassed, setCurrentExerciseAlreadyPassed] = useState(false);
     // const [currentExerciseSubmissionHistoryModalData, setCurrentExerciseSubmissionHistoryModalData] = useState([]);
     const currentExerciseSubmissionHistoryModalData = useRef([]);
     const [currentExerciseSubmissionLoading, setCurrentExerciseSubmissionLoading] = useState(false)
@@ -586,6 +626,7 @@ const NewModuleLayout = ({ module_id }) => {
                 setShowSubmitExerciseButton(false);
                 setShowNextModuleDictButton(true);
                 handleConfetti();
+                setCurrentExerciseSubmissionHistory([...currentExerciseSubmissionHistory, submission_json]);
             }
             else {
                 // // TODO:
@@ -1089,6 +1130,19 @@ const NewModuleLayout = ({ module_id }) => {
                                                 </table>
 
                                                 <div>
+
+                                                    {(currentExerciseAlreadyPassed === true) && (
+                                                        <button
+                                                            type="button"
+                                                            className="py-2.5 px-5 me-2 mb-2 mt-4 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                                            onClick={_handleNextInformationModuleClick}
+                                                        >
+                                                            Proceed
+                                                            <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
+                                                        </button>
+                                                    )}
+
+
                                                     {(showSubmitExerciseButton === true) && (
                                                         <button
                                                             type="button"
@@ -1097,7 +1151,7 @@ const NewModuleLayout = ({ module_id }) => {
                                                         >Submit Solution</button>
                                                     )}
 
-                                                    {(showNextModuleDictButton === true) && (
+                                                    {((showNextModuleDictButton === true) && (currentExerciseAlreadyPassed === false)) && (
                                                         <button
                                                             type="button"
                                                             className="py-2.5 px-5 me-2 mb-2 mt-4 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
