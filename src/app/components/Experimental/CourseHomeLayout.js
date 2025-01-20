@@ -34,6 +34,29 @@ const CourseHomeLayout = () => {
     const [courseCompletedModuleList, setCourseCompletedModuleList] = useState([]);
     const [isCourseGenerating, setIsCourseGenerating] = useState(false);
     const [courseGenerationProgress, setCourseGenerationProgress] = useState("?");
+    const [currentCourseProgressDict, setCurrentCourseProgressDict] = useState(null);
+
+    const _getCourseProgress = async (progress_dict) => {
+        return new Promise((resolve, reject) => {
+
+            let total_exercises = 0;
+            let completed_exercises = 0;
+            for (var k in progress_dict){
+
+                let current_di = progress_dict[k];
+                completed_exercises += current_di['completed_course_module_exercises'];
+                total_exercises += current_di['total_course_module_exercises'];
+
+            }
+
+            let rv = {
+                'completed_exercises': completed_exercises,
+                'total_exercises': total_exercises,
+                'ratio_percent': Math.round((completed_exercises / total_exercises) * 100)
+            }
+            resolve(rv);
+        });
+    }
 
     const _handleUserCourseModuleFetch = async () => {
 
@@ -111,6 +134,40 @@ const CourseHomeLayout = () => {
                 return () => clearInterval(interval);
 
             }
+            else {
+
+                let current_course_prog_di = user_course_rv_dict['course_progress_dictionary'];
+                console.log('current_course_prog_di:', current_course_prog_di);
+
+                // let total_exercises = 0;
+                // let completed_exercises = 0;
+                // for (var k in current_course_prog_di){
+
+                //     console.log('value:', current_course_prog_di[k]);
+                    
+                //     let current_di = current_course_prog_di[k];
+                //     total_exercises += current_di['total_course_module_exercises'];
+                //     completed_exercises = current_di['completed_course_module_exercises'];
+
+                // }
+
+                // console.log('course-progress-dict:', {
+                //     'completed_exercises': completed_exercises,
+                //     'total_exercises': total_exercises,
+                //     'ratio_percent': (completed_exercises / total_exercises) * 100
+                // });
+
+                // setCurrentCourseProgressDict({
+                //     'completed_exercises': completed_exercises,
+                //     'total_exercises': total_exercises,
+                //     'ratio_percent': (completed_exercises / total_exercises) * 100
+                // });
+
+                const prog_rv = await _getCourseProgress(current_course_prog_di);
+                console.log('prog_rv:', prog_rv);
+                setCurrentCourseProgressDict(prog_rv);
+
+            }
 
         }
 
@@ -178,12 +235,18 @@ const CourseHomeLayout = () => {
                         {/* <span className="text-blue-600 dark:text-blue-500"></span> */}
                         {/* <span className="text-gray-800 dark:text-white text-[13px] font-medium"> */}
                         {(isCourseGenerating === false) && (
-                            <>
-                                <span className="text-blue-700 dark:text-white text-[13px] font-medium">
-                                    Your Course Progress: (2%)
-                                </span>
-                                <Progress value={2} className="w-40" />
-                            </>
+                            (currentCourseProgressDict !== null) ? (
+                                <>
+                                    <span className="text-blue-700 dark:text-white text-[13px] font-medium">
+                                        {/* Your Course Progress: ({currentCourseProgressDict.ratio_percent}%) */}
+                                        Your Course Progress: ({Math.round(currentCourseProgressDict.ratio_percent)}%)
+                                    </span>
+                                    <Progress value={currentCourseProgressDict.ratio_percent} className="w-40" />
+                                </>
+
+                            ) : (
+                                null
+                            )
                         )}
 
                         {
@@ -244,7 +307,7 @@ const CourseHomeLayout = () => {
                             key={item.parent_module_object_id}
                         >
 
-                            {
+                            {/* {
                                 (index === 0) 
                                 ?
                                 (
@@ -258,9 +321,17 @@ const CourseHomeLayout = () => {
                                         className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 border dark:border-gray-900 dark:bg-gray-700"
                                     ></div>
                                 )
-                            }
+                            } */}
 
-                            
+                            {(item.cm_progress_dict.course_module_passed === true) ? (
+                                <div
+                                    className="absolute w-4 h-4 bg-green-400 rounded-full mt-1.5 -start-2 dark:border-gray-900 dark:bg-gray-700"
+                                ></div>
+                            ) : (
+                                <div
+                                    className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 dark:border-gray-900 dark:bg-gray-700"
+                                ></div>
+                            )}
 
                             <a
                                 className="cursor-pointer"

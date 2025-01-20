@@ -269,6 +269,8 @@ const NewModuleLayout = ({ module_id }) => {
                     
                     setShowIntroductionNote(true);
 
+                    // TODO: progress bar
+
                     // Reset Everything
                     setCurrentNoteText('');
                     setShowExample(false);
