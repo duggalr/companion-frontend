@@ -323,16 +323,24 @@ const CourseHomeLayout = () => {
                                 )
                             } */}
 
-                            {(item.cm_progress_dict.course_module_passed === true) ? (
-                                <div
-                                    className="absolute w-4 h-4 bg-green-400 rounded-full mt-1.5 -start-2 dark:border-gray-900 dark:bg-gray-700"
-                                ></div>
+                            {(isCourseGenerating === false) ? (
+                                
+                                (item.cm_progress_dict.course_module_passed === true) ? (
+                                    <div
+                                        className="absolute w-4 h-4 bg-green-400 rounded-full mt-1.5 -start-2 dark:border-gray-900 dark:bg-gray-700"
+                                    ></div>
+                                ) : (
+                                    <div
+                                        className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 dark:border-gray-900 dark:bg-gray-700"
+                                    ></div>
+                                )
+
                             ) : (
                                 <div
-                                    className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 dark:border-gray-900 dark:bg-gray-700"
-                                ></div>
+                                        className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 dark:border-gray-900 dark:bg-gray-700"
+                                    ></div>
                             )}
-
+                            
                             <a
                                 className="cursor-pointer"
                                 href={`/learn-python/module/${item.parent_module_object_id}`}                                
