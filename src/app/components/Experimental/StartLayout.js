@@ -10,9 +10,6 @@ import NewHeroNavbar from './NewHeroNavbar';
 // import FlipText from "@/components/ui/flip-text";
 
 
-
-// TODO: show chat and go from there to implementing UI and functionality
-
 const StartLayout = () => {
 
     const [showChatLayout, setShowChatLayout] = useState(true);
@@ -425,8 +422,16 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
     }, [initialMessageConstant]);
 
 
-    
-
+    // Messages Component State
+    const messagesContainerRef = useRef(null);
+    useEffect(() => {
+        if (messages.length > 1) {
+            messagesContainerRef.current?.scrollTo({
+                top: messagesContainerRef.current.scrollHeight,
+                behavior: "smooth",
+            });
+        }
+    }, [messages, isGeneratingMessage]);
 
     return (
 
@@ -466,7 +471,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
 
                             </div> */}
 
-                            <div className="flex flex-grow w-full max-w-[1100px] py-0">
+                            <div className="flex flex-grow w-full max-w-[1200px] py-0">
 
                                 {/* Left Column */}
                                 <div className="w-1/2 p-0 pt-0 pr-2">
@@ -531,7 +536,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                         className="mt-1 mb-6 text-[25px] font-bold leading-none tracking-tight text-gray-900 dark:text-white"
                                         data-aos="fade-down"
                                     >
-                                        Course Syllabus{" "}🎯
+                                        What we will go through together{" "}🎯
                                     </h2>
 
                                     <ol
@@ -591,7 +596,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                 <div className="w-9 h-9 border-4 border-blue-500 border-t-transparent rounded-full animate-spin "></div>
                                 {/* <p className="mt-4 text-lg font-normal text-gray-800">{showCourseLoadingText}</p> */}
                                 <p className="mt-6 text-[16px] font-normal text-gray-500 tracking-normal">
-                                    I'm generating your course syllabus... it will take about 10-20 seconds...
+                                    I'm generating a syllabus for your course... it will take about 10-20 seconds...
                                 </p>
 
                             </div>
@@ -621,6 +626,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                     <div
                                         // bg-[#F3F4F6] dark:bg-gray-800
                                         className="flex-grow overflow-y-auto p-4 space-y-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-800"
+                                        ref={messagesContainerRef}
                                     >
 
                                         {/* Message List */}
