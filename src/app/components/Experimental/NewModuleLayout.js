@@ -181,6 +181,7 @@ const NewModuleLayout = ({ module_id }) => {
     const [showCurrentQuizIntroductoryNote, setShowCurrentQuizIntroductoryNote] = useState(false);
     const [currentQuizIntroductoryText, setCurrentQuizIntroductoryText] = useState("");
     const [currentQuizQuestion, setCurrentQuizQuestion] = useState("");
+    const [showQuizQuestion, setShowQuizQuestion] = useState(false);
 
     const _handleNextInformationModuleClick = async () => {
         
@@ -529,7 +530,8 @@ const NewModuleLayout = ({ module_id }) => {
     const [currentExerciseAlreadyPassed, setCurrentExerciseAlreadyPassed] = useState(false);
     // const [currentExerciseSubmissionHistoryModalData, setCurrentExerciseSubmissionHistoryModalData] = useState([]);
     const currentExerciseSubmissionHistoryModalData = useRef([]);
-    const [currentExerciseSubmissionLoading, setCurrentExerciseSubmissionLoading] = useState(false)
+    const [currentExerciseSubmissionLoading, setCurrentExerciseSubmissionLoading] = useState(false);
+    const [showQuizSubmissionResults, setShowQuizSubmissionResults] = useState(false);
 
 
     const _sendCodeExecutionRequest = async function (code) {
@@ -772,16 +774,104 @@ const NewModuleLayout = ({ module_id }) => {
     };
 
 
+    // TODO: quiz-related
+
+    const _tmpHandleShowQuiz = () => {
+
+        const quiz_object_dict = currentModuleInformationDict.quiz_object_dict;
+        console.log('quiz-object-dict:', quiz_object_dict);
+
+        // TODO: set all existing course-module-info to false
+        setShowIntroductionNote(false);
+        setCurrentNoteText('');
+        setShowExample(false);
+        setShowExampleButton(false);
+        setShowTryChallenge(false);
+        setShowCodeLayout(false);
+        setCurrentActiveTab('note');
+        setShowTryExerciseButton(false);
+        codeRef.current = '';
+        setInitialCodeValue('');
+        setCurrentChallengeDict({});
+        setCurrentTryExerciseText('');
+        setCurrentExerciseAlreadyPassed(false);
+
+        // Quiz Info
+        setShowFinalModuleQuiz(true);
+        setCurrentQuizDict(quiz_object_dict);
+        setShowCurrentQuizIntroductoryNote(true);
+
+        // TODO: add introductory note
+        _createTypewriterEffect(
+            // new_sub_module_dict.introduction_note,
+            quiz_object_dict.quiz_introduction_text,
+            setCurrentQuizIntroductoryText, 
+            0,
+            null,
+            1
+        );
+
+    }
+
     const _handleStartQuizButtonClick = () => {
 
         setCurrentQuizDictQuestionIndex(0);
-        // setCurrentQuizQuestion()
-        
+
+        // show introducotry-quiz-note as false and show the first question (dependent on type, show different layout)
+        setShowCurrentQuizIntroductoryNote(false);
+
         let current_question = currentQuizDict.questions_list[currentQuizDictQuestionIndex];
         console.log('current_question:', current_question);
         setCurrentQuizQuestion(current_question);
 
+        // TODO:
+        setShowQuizQuestion(true);
+
     };
+
+    const _handleNextQuizQuestionClick = () => {
+
+        if ((currentQuizDictQuestionIndex + 1) === currentQuizDict.questions_list.length){
+            console.log('quiz complete!')
+            // TODO: Show quiz results
+
+            // Reset for the quiz -- all of these should be abstracted to own functions
+            setShowQuizSubmissionResults(true);
+            setCurrentQuizQuestion(null);
+            setShowQuizQuestion(false);
+            setInitialCodeValue('');
+            codeRef.current = '';
+
+        } 
+        else {
+
+            setCurrentQuizDictQuestionIndex((prev_index) => prev_index + 1);
+            let current_question = currentQuizDict.questions_list[currentQuizDictQuestionIndex];
+            console.log('next-quiz-dict:', current_question)
+    
+            console.log('current_question:', current_question);
+            setCurrentQuizQuestion(current_question);
+            setShowQuizQuestion(true);
+    
+            setInitialCodeValue('');
+            codeRef.current = '';
+            
+            if (current_question.type === 'code'){
+    
+                _createTypewriterEffect(
+                    current_question.starter_code,
+                    setInitialCodeValue, 
+                    0, 
+                    null,
+                    500
+                );
+    
+            }
+
+        }
+
+    }
+
 
     return (
 
@@ -880,27 +970,25 @@ const NewModuleLayout = ({ module_id }) => {
                                         <div>
                                             <p className="text-[15px] tracking-normal leading-9 pt-2 pr-0 px-2">
                                                 <h3 className="font-bold text-[16px] mb-2">
-                                                    Introduction - {currentSubModuleDict.sub_module_name}
+                                                    Quiz - {currentQuizDict.quiz_name}
                                                 </h3>
                                                 <Markdown>
                                                     {/* {currentSubModuleDict.introduction_note} */}
-                                                    {currentNoteText}
+                                                    {/* TODO: setting current quiz introductory text */}
+                                                    {currentQuizIntroductoryText}
                                                 </Markdown>
                                             </p>
 
                                             {/* Buttons */}
                                             <div className="mt-10 flex justify-center">
-
-                                                {(showExampleButton === true) && (
-                                                    <button
-                                                        type="button"
-                                                        className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[14.5px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                                                        onClick={_handleStartQuizButtonClick}
-                                                    >
-                                                        Start Quiz!
-                                                        <FontAwesomeIcon icon={faArrowRight} className="pl-2 pt-1" />
-                                                    </button>
-                                                )}
+                                                <button
+                                                    type="button"
+                                                    className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[14.5px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                                    onClick={_handleStartQuizButtonClick}
+                                                >
+                                                    Start Quiz!
+                                                    <FontAwesomeIcon icon={faArrowRight} className="pl-2 pt-1" />
+                                                </button>
                                             </div>
 
                                         </div>
@@ -908,30 +996,185 @@ const NewModuleLayout = ({ module_id }) => {
                                     )
                                     : 
                                     (
+
+                                        (showQuizQuestion === true) ? (
+
+                                            // (currentQuizQuestion.type === 'multiple_choice') && (
+                                            //     // {currentQuizQuestion}
+    
+                                            //     <div>
+                                            //         <p className="text-[15px] tracking-normal leading-9 pt-2 pr-0 px-2">
+                                            //             <h3 className="font-bold text-[16px] mb-2">
+                                            //                 {currentQuizQuestion.question}
+                                            //             </h3>
+                                            //         </p>
+                                            //         {/* TODO: create layout for multiple choice */}
+                                                
+                                            //     </div>
+                                            // )
+
+
+                                            // multiple choice question
+                                            (currentQuizQuestion.type === 'multiple_choice') ? (
+                                                <>
+
+                                                    {/* TODO: can't hardcode this and need to fix properly due to responsiveness and text-wrap issues */}
+                                                    <div className='pt-6'>
+                                                        <h3 className="font-bold text-lg mb-4 flex justify-center">
+                                                            {currentQuizQuestion.question}
+                                                        </h3>
+                                                        <div className='flex justify-center pt-2'>
+                                                            <div className="space-y-4 w-2/3">
+                                                                {currentQuizQuestion.multiple_choice_list.map((option, index) => (
+                                                                    <button
+                                                                        key={index}
+                                                                        className="w-full text-left bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 transition-colors hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                                    >
+                                                                        {option}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <button onClick={_handleNextQuizQuestionClick} type="button" className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Next Question</button>
+                                                    
+                                                </>
+                                            ) 
+                                            
+                                            : 
+                                            
+                                            (
+
+                                                // Code Question
+                                                <>
+                                                    <div className="flex flex-row space-x-8">
+                                                        {/* Note */}
+                                                        <div className="w-1/2">
+                                                            <p className="text-[15px] tracking-normal leading-9 pt-0 pr-0">
+                                                                <h3 className="font-bold text-[15px] mb-2">Question</h3>
+                                                                <Markdown>{currentQuizQuestion.question}</Markdown>
+                                                            </p>
+
+                                                            <button onClick={_handleNextQuizQuestionClick} type="button" className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Next Question</button>
+                                                        </div>
+
+                                                        {/* Code Layout */}
+                                                        <div className="w-2/3 flex flex-col border-l-2 border-gray-50 pl-4">
+                                                            <div className="flex justify-between">
+                                                                <h2 className="text-[18px] font-semibold text-gray-800 pt-2">Code</h2>
+                                                                <div className="flex justify-end space-x-4">
+                                                                    <button
+                                                                        type="button"
+                                                                        className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-[13.5px] px-3 py-2 me-0 mb-2 mt-0.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+                                                                        onClick={_handleRunButtonClick}
+                                                                        disabled={isRunLoading}
+                                                                    >
+                                                                        {isRunLoading ? (
+                                                                            <>
+                                                                                <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                                                                Running...
+                                                                            </>
+                                                                        ) : (
+                                                                            <>
+                                                                                <FontAwesomeIcon icon={faPlay} className="text-white pr-2" />
+                                                                                Run Code
+                                                                            </>
+                                                                        )}
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="h-[470px]">
+                                                                <Monaco
+                                                                    height="100%"
+                                                                    defaultLanguage="python"
+                                                                    value={initialCodeValue}
+                                                                    onMount={handleEditorDidMount}
+                                                                    theme="vs-dark"
+                                                                    options={{
+                                                                        fontSize: 13,
+                                                                        minimap: { enabled: false },
+                                                                        scrollBeyondLastLine: false,
+                                                                    }}
+                                                                    onChange={(value) => _handleCodeStateChange(value ?? "")}
+                                                                />
+                                                            </div>
+
+                                                            <div className="flex-grow pt-4">
+                                                                <h2 className="text-[18px] font-semibold text-gray-800 mb-2">Console Output</h2>
+                                                                <div className="h-40 overflow-auto bg-black text-green-500 p-2 rounded-md font-mono text-sm">
+                                                                    {consoleOutput.split("\n").map((line, index) => (
+                                                                        <span key={index}>
+                                                                            {line}
+                                                                            <br />
+                                                                        </span>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </>
+
+                                            )
+                                          
+                                            
+                                        ) : (
+                                            
+                                            (showQuizSubmissionResults === true) ? (
+
+                                                <div className="flex justify-center items-center p-6 rounded-lg ">
+                                                    <div className="w-full max-w-3xl p-6">
+                                                        {/* Header */}
+                                                        <div className="text-center">
+                                                            <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                                                                🎉 Congratulations! You completed the quiz!
+                                                            </h3>
+                                                            <p className="text-gray-600 dark:text-gray-300 text-sm">
+                                                                Here are your results and feedback:
+                                                            </p>
+                                                        </div>
+
+                                                        {/* Feedback Card */}
+                                                        <div className="mt-6 p-5 bg-blue-50 dark:bg-gray-700 rounded-lg shadow-inner">
+                                                            <h4 className="text-lg font-semibold text-blue-800 dark:text-white mb-3">
+                                                                Your Score: 85%
+                                                            </h4>
+                                                            <p className="text-gray-700 dark:text-gray-200 text-sm">
+                                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum vestibulum. Cras venenatis euismod malesuada.
+                                                            </p>
+                                                        </div>
+                                                
+                                                        {/* Buttons */}
+                                                        <div className="mt-8 flex justify-center space-x-4">
+                                                            <button
+                                                                type="button"
+                                                                className="py-3 px-6 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[14.5px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                                            >
+                                                                Retake Quiz
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                className="py-3 px-6 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[14.5px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                                            >
+                                                                Next
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            )  : (
+                                                null
+                                            )
+
+                                        )
                                         // // TODO: determine if MC question or Code question
                                         // {(currentQuizQuestion.type === 'multiple_choice') ? (
                                         //     null
                                         // ) : (
 
                                         // )}
-                                        (currentQuizQuestion.type === 'multiple_choice') && (
-                                            // {currentQuizQuestion}
-
-                                            <div>
-                                                <p className="text-[15px] tracking-normal leading-9 pt-2 pr-0 px-2">
-                                                    <h3 className="font-bold text-[16px] mb-2">
-                                                        Introduction - {currentSubModuleDict.sub_module_name}
-                                                    </h3>
-                                                    <Markdown>
-                                                        {/* {currentSubModuleDict.introduction_note} */}
-                                                        {currentQuizQuestion.question}
-                                                    </Markdown>
-                                                </p>
-                                                {/* TODO: create layout for multiple choice */}
-                                            
-                                            </div>
-                                        )
-
+                                        
                                         // TODO: add code question here + create layout
                                         // Add backend functionality of submitting each of these types of questions, running code, etc.
 
@@ -1036,9 +1279,9 @@ const NewModuleLayout = ({ module_id }) => {
                                                     <div className="space-y-4 pr-2">
                                                         <div>
         
-                                                        <p className="text-[16px] font-bold pt-2">
-                                                            Question
-                                                        </p>
+                                                            <p className="text-[16px] font-bold pt-2">
+                                                                Question
+                                                            </p>
                                                             <p className="text-[15px] tracking-normal leading-9 pt-4 text-gray-500">
                                                                 {/* <TypeWriter text={noteDict.description} /> */}
                                                                 <Markdown>
@@ -1125,7 +1368,7 @@ const NewModuleLayout = ({ module_id }) => {
                                                                     </th>
                                                                     <th scope="col" className="px-2 py-3">
                                                                         AI Feedback
-                                                                    </th>                            
+                                                                    </th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -1263,6 +1506,17 @@ const NewModuleLayout = ({ module_id }) => {
                                                             <FontAwesomeIcon icon={faArrowRight} className="pl-2 pt-1" />
                                                         </button>
                                                     )}
+
+                                                    {/* TODO: temp button */}
+                                                    <button
+                                                        type="button"
+                                                        className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[14.5px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                                        onClick={_tmpHandleShowQuiz}
+                                                    >
+                                                        Show Quiz
+                                                        <FontAwesomeIcon icon={faArrowRight} className="pl-2 pt-1" />
+                                                    </button>
+
                                                 </div>
         
                                             </div>

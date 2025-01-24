@@ -87,6 +87,8 @@ const CourseHomeLayout = () => {
 
             setCourseCompletedModuleList(user_course_rv_dict['current_course_module_list']);
 
+            
+
             if (is_course_generating === true){
 
                 setIsCourseGenerating(true);
@@ -134,6 +136,7 @@ const CourseHomeLayout = () => {
                 return () => clearInterval(interval);
 
             }
+            
             else {
 
                 let current_course_prog_di = user_course_rv_dict['course_progress_dictionary'];
