@@ -175,6 +175,13 @@ const NewModuleLayout = ({ module_id }) => {
     const [selectedModalDatatype, setSelectedModalDataType] = useState(null);
     const [selectedModalData, setSelectedModalData] = useState(null);
 
+    const [showFinalModuleQuiz, setShowFinalModuleQuiz] = useState(false);
+    const [currentQuizDict, setCurrentQuizDict] = useState({});
+    const [currentQuizDictQuestionIndex, setCurrentQuizDictQuestionIndex] = useState(0);
+    const [showCurrentQuizIntroductoryNote, setShowCurrentQuizIntroductoryNote] = useState(false);
+    const [currentQuizIntroductoryText, setCurrentQuizIntroductoryText] = useState("");
+    const [currentQuizQuestion, setCurrentQuizQuestion] = useState("");
+
     const _handleNextInformationModuleClick = async () => {
         
         // by default, this will be false since proceeding to next information-dict in sub-module
@@ -209,8 +216,25 @@ const NewModuleLayout = ({ module_id }) => {
                         // Proceed to course module quiz
                             // currently just going directly to the next course module...
 
-                    console.log('new course module....')
-                    window.location.href = '/learn-python/module/' + nextStudentCourseModuleObjectId.current;
+                    const quiz_object_dict = currentModuleInformationDict.quiz_object_dict;
+                    console.log('quiz-object-dict:', quiz_object_dict);
+                    
+                    setShowFinalModuleQuiz(true);
+                    setCurrentQuizDict(quiz_object_dict);
+                    setShowCurrentQuizIntroductoryNote(true);
+
+                    _createTypewriterEffect(
+                        // new_sub_module_dict.introduction_note,
+                        currentModuleInformationDict.quiz_introductory_text,
+                        setCurrentQuizIntroductoryText, 
+                        0,
+                        null,
+                        1
+                    );
+
+                    // TODO: proceeding to course module quiz instead..
+                    // console.log('new course module....')
+                    // window.location.href = '/learn-python/module/' + nextStudentCourseModuleObjectId.current;
 
                 } 
                 else {
@@ -459,7 +483,6 @@ const NewModuleLayout = ({ module_id }) => {
 
     };
 
-
     const showSubmissionHistoryModalData = async (object_id, type) => {
 
         // TODO: show this and go from there
@@ -490,7 +513,6 @@ const NewModuleLayout = ({ module_id }) => {
 
     }
 
-
     useEffect(() => {
 
         // TODO:
@@ -499,7 +521,6 @@ const NewModuleLayout = ({ module_id }) => {
         // setShowCodeLayout(true);
 
     }, []);
-
     
     const [consoleOutput, setConsoleOutput] = useState('>>> Console Output');
     const [isRunLoading, setIsRunLoading] = useState(false);
@@ -750,6 +771,18 @@ const NewModuleLayout = ({ module_id }) => {
         setIsModalOpen(false); // Hide the modal
     };
 
+
+    const _handleStartQuizButtonClick = () => {
+
+        setCurrentQuizDictQuestionIndex(0);
+        // setCurrentQuizQuestion()
+        
+        let current_question = currentQuizDict.questions_list[currentQuizDictQuestionIndex];
+        console.log('current_question:', current_question);
+        setCurrentQuizQuestion(current_question);
+
+    };
+
     return (
 
         // TODO: fix layout / proceed from there
@@ -832,6 +865,421 @@ const NewModuleLayout = ({ module_id }) => {
                         <div className="space-y-4 mt-2 w-full">
                             
                             {
+
+                                // Show quiz layout
+                                (showFinalModuleQuiz === true)
+
+                                ?
+
+                                (
+                                    // show quiz
+                                    (showCurrentQuizIntroductoryNote === true) 
+                                    ? 
+                                    (
+
+                                        <div>
+                                            <p className="text-[15px] tracking-normal leading-9 pt-2 pr-0 px-2">
+                                                <h3 className="font-bold text-[16px] mb-2">
+                                                    Introduction - {currentSubModuleDict.sub_module_name}
+                                                </h3>
+                                                <Markdown>
+                                                    {/* {currentSubModuleDict.introduction_note} */}
+                                                    {currentNoteText}
+                                                </Markdown>
+                                            </p>
+
+                                            {/* Buttons */}
+                                            <div className="mt-10 flex justify-center">
+
+                                                {(showExampleButton === true) && (
+                                                    <button
+                                                        type="button"
+                                                        className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[14.5px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                                        onClick={_handleStartQuizButtonClick}
+                                                    >
+                                                        Start Quiz!
+                                                        <FontAwesomeIcon icon={faArrowRight} className="pl-2 pt-1" />
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                        </div>
+
+                                    )
+                                    : 
+                                    (
+                                        // // TODO: determine if MC question or Code question
+                                        // {(currentQuizQuestion.type === 'multiple_choice') ? (
+                                        //     null
+                                        // ) : (
+
+                                        // )}
+                                        (currentQuizQuestion.type === 'multiple_choice') && (
+                                            // {currentQuizQuestion}
+
+                                            <div>
+                                                <p className="text-[15px] tracking-normal leading-9 pt-2 pr-0 px-2">
+                                                    <h3 className="font-bold text-[16px] mb-2">
+                                                        Introduction - {currentSubModuleDict.sub_module_name}
+                                                    </h3>
+                                                    <Markdown>
+                                                        {/* {currentSubModuleDict.introduction_note} */}
+                                                        {currentQuizQuestion.question}
+                                                    </Markdown>
+                                                </p>
+                                                {/* TODO: create layout for multiple choice */}
+                                            
+                                            </div>
+                                        )
+
+                                        // TODO: add code question here + create layout
+                                        // Add backend functionality of submitting each of these types of questions, running code, etc.
+
+                                    )
+
+
+                                )
+                                 
+                                :
+
+                                (
+                                                                    
+                                    (
+                                        
+                                        ((showExample === true) || (showTryChallenge === true))
+
+                                        ?
+        
+                                        (
+        
+                                            <>
+                                                <div
+                                                    className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 mb-0 w-full min-w-[520px]"
+                                                >
+        
+                                                    <ul className="flex flex-wrap -mb-px">
+        
+                                                        <li className="me-2">
+                                                            <a
+                                                                className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg cursor-pointer ${
+                                                                    (currentActiveTab === 'note')
+                                                                    ? 'text-blue-600 border-blue-600 font-bold dark:text-blue-500 dark:border-blue-500'
+                                                                    : 'text-gray-600 border-transparent dark:text-gray-400'
+                                                                }`}
+                                                                aria-current={currentActiveTab ? 'page' : undefined}
+                                                                onClick={() => setCurrentActiveTab('note')}
+                                                            >
+                                                                Example
+                                                            </a>
+                                                        </li>
+                                                        
+                                                        {
+        
+                                                            (showTryChallenge === true) ? (
+        
+                                                                <li className="me-2">
+                                                                    <a
+                                                                        href="#"
+                                                                        className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg cursor-pointer ${
+                                                                            (currentActiveTab === 'challenge')
+                                                                            ? 'text-blue-600 border-blue-600 font-bold dark:text-blue-500 dark:border-blue-500'
+                                                                            : 'text-gray-600 border-transparent dark:text-gray-400'
+                                                                        }`}
+                                                                        aria-current={currentActiveTab ? 'page' : undefined}
+                                                                        onClick={() => setCurrentActiveTab('challenge')}
+                                                                    >
+                                                                        Challenge
+                                                                    </a>
+                                                                </li>
+                                                                        
+                                                            ) : (
+        
+                                                                <li className="me-2">
+                                                                    <a
+                                                                        className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg cursor-pointer ${
+                                                                                'text-gray-400 border-transparent cursor-not-allowed'
+                                                                                // : 'text-gray-600 border-transparent dark:text-gray-400'
+                                                                        }`}
+                                                                        aria-current={currentActiveTab ? 'page' : undefined}
+                                                                        onClick={(e) => e.preventDefault()} // Prevent default behavior if disabled
+                                                                    >
+                                                                        Challenge
+                                                                    </a>
+                                                                </li>
+        
+        
+                                                            )
+                                                        }
+        
+                                                    </ul>
+        
+                                                </div>
+        
+                                                {/* Note */}
+                                                {(currentActiveTab === 'note') && (
+        
+                                                    <p className="text-[15px] tracking-normal leading-9 pt-0 pr-0">
+        
+                                                        <h3 className="font-bold text-[15px] mb-2">
+                                                            {exampleDict.title}
+                                                        </h3>
+        
+                                                        <Markdown>
+                                                            {exampleDict.text}
+                                                        </Markdown>
+                                                    </p>
+        
+                                                )}
+        
+                                                {(currentActiveTab === 'challenge') && (
+        
+                                                    <div className="space-y-4 pr-2">
+                                                        <div>
+        
+                                                        <p className="text-[16px] font-bold pt-2">
+                                                            Question
+                                                        </p>
+                                                            <p className="text-[15px] tracking-normal leading-9 pt-4 text-gray-500">
+                                                                {/* <TypeWriter text={noteDict.description} /> */}
+                                                                <Markdown>
+                                                                    {currentTryExerciseText}
+                                                                </Markdown>
+                                                            </p>
+                                                        </div>
+        
+                                                        <p className="text-[16px] font-bold pt-4">
+                                                            Solution Passed?
+                                                        </p>
+        
+                                                        {(currentExerciseSubmissionLoading === true) && (
+                                                            // TODO: go from here
+                                                            <div role="status">
+                                                                <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                                                                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                                                                </svg>
+                                                                <span className="sr-only">Loading...</span>
+                                                            </div>
+                                                        )}
+        
+                                                        { (currentExerciseSubmissionPassed !== null) ? (
+        
+                                                            (currentExerciseSubmissionLoading === true) ? (
+                                                                null
+                                                            ) : (
+                                                                (currentExerciseSubmissionPassed === true) ? (
+                                                                    <p className="leading-9 text-[15px] text-gray-500">
+                                                                        Passed! ✔️
+                                                                    </p>
+                                                                ) : (
+                                                                    <p className="leading-9 text-[15px] text-gray-500">
+                                                                        Failed! ❌
+                                                                    </p>
+                                                                )
+                                                            )
+        
+                                                        ) : (
+                                                            (currentExerciseSubmissionLoading === true) ? (
+                                                                null
+                                                            ) : (
+                                                                <p className="leading-9 text-[15px] text-gray-500">
+                                                                    Submit solution to determine result.
+                                                                </p>
+                                                            )
+                                                        )}
+        
+                                                        <p className="text-[16px] font-bold pt-4">
+                                                            Current Solution Feedback
+                                                        </p>
+
+                                                        {(currentExerciseSubmissionLoading === true) ? (
+                                                            <div role="status">
+                                                                <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                                                                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                                                                </svg>
+                                                                <span className="sr-only">Loading...</span>
+                                                            </div>
+                                                        ) : (
+                                                            <p className="leading-9 text-[15px] text-gray-500">
+                                                                {(submissionFeedback.length === 0) && "Write your code and submit your solution to finish the exercise."}
+                                                                {submissionFeedback}
+                                                            </p>
+                                                        )}
+        
+                                                        <p className="text-[16px] font-bold pt-4">
+                                                            Your Submissions
+                                                        </p>
+        
+                                                        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                                            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                                                <tr>
+                                                                    <th scope="col" className="px-2 py-3">
+                                                                        Date
+                                                                    </th>
+                                                                    <th scope="col" className="px-2 py-3">
+                                                                        Passed
+                                                                    </th>
+                                                                    <th scope="col" className="px-2 py-3">
+                                                                        Code
+                                                                    </th>
+                                                                    <th scope="col" className="px-2 py-3">
+                                                                        AI Feedback
+                                                                    </th>                            
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+        
+                                                                {currentExerciseSubmissionHistory.map((item, index) => (
+        
+                                                                    <tr
+                                                                        className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                                                                        key={item.key}
+                                                                    >
+        
+                                                                        <td className="p-3">
+                                                                            {item.date}
+                                                                        </td>
+                                                                        <td
+                                                                            className={`p-3 ${
+                                                                                item.solution_passed === true
+                                                                                    ? "text-green-400"
+                                                                                    : "text-red-400"
+                                                                            }`}
+                                                                        >
+                                                                            {item.solution_passed.toString()}
+                                                                        </td>
+                                                                        
+                                                                        <td 
+                                                                            className="p-3"
+                                                                        >
+                                                                            <span 
+                                                                                className="hover:text-blue-500 hover:font-semibold cursor-pointer"
+                                                                                onClick={() => showSubmissionHistoryModalData(item.key, "code")}
+                                                                            >
+                                                                                View Code
+                                                                            </span>
+                                                                        </td>
+        
+                                                                        <td 
+                                                                            className="p-3"
+                                                                        >
+                                                                            <span 
+                                                                                className="hover:text-blue-500 hover:font-semibold cursor-pointer"
+                                                                                onClick={() => showSubmissionHistoryModalData(item.key, "feedbcak")}
+                                                                            >
+                                                                                View Feedback
+                                                                            </span>
+                                                                        </td>
+        
+                                                                    </tr>    
+        
+                                                                ))}
+                                                                
+                                                            </tbody>
+                                                        </table>
+        
+                                                        <div>
+        
+                                                            {(currentExerciseAlreadyPassed === true) && (
+                                                                <button
+                                                                    type="button"
+                                                                    className="py-2.5 px-5 me-2 mb-2 mt-4 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                                                    onClick={_handleNextInformationModuleClick}
+                                                                >
+                                                                    Proceed
+                                                                    <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
+                                                                </button>
+                                                            )}
+        
+        
+                                                            {(showSubmitExerciseButton === true) && (
+                                                                <button
+                                                                    type="button"
+                                                                    className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mt-4 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                                                    onClick={_handleBtnExerciseSolutionSubmitClick}
+                                                                >Submit Solution</button>
+                                                            )}
+        
+                                                            {((showNextModuleDictButton === true) && (currentExerciseAlreadyPassed === false)) && (
+                                                                <button
+                                                                    type="button"
+                                                                    className="py-2.5 px-5 me-2 mb-2 mt-4 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                                                    onClick={_handleNextInformationModuleClick}
+                                                                >
+                                                                    Proceed
+                                                                    <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
+                                                                </button>
+                                                            )}
+        
+                                                        </div>
+        
+                                                    </div>
+        
+                                                )}
+        
+                                                <div >
+                                                    {(showTryExerciseButton === true) && (
+                                                        <button
+                                                            type="button"
+                                                            className="py-2.5 px-5 me-2 mb-2 mt-4 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                                            onClick={_handleNextInformationModuleClick}
+                                                        >
+                                                            Proceed
+                                                            <FontAwesomeIcon icon={faArrowRight} className="pl-1" />
+                                                        </button>
+                                                    )}
+        
+                                                </div>
+                                            </>
+                                            
+                                        )
+        
+                                        :
+        
+                                        (
+                                            
+                                            <div>
+                                                <p className="text-[15px] tracking-normal leading-9 pt-2 pr-0 px-2">
+                                                    <h3 className="font-bold text-[16px] mb-2">
+                                                        Introduction - {currentSubModuleDict.sub_module_name}
+                                                    </h3>
+                                                    <Markdown>
+                                                        {/* {currentSubModuleDict.introduction_note} */}
+                                                        {currentNoteText}
+                                                    </Markdown>
+                                                </p>
+        
+                                                {/* Buttons */}
+                                                <div className="mt-10 flex justify-center">
+        
+                                                    {(showExampleButton === true) && (
+                                                        <button
+                                                            type="button"
+                                                            className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[14.5px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                                            onClick={_handleNextInformationModuleClick}
+                                                        >
+                                                            Proceed
+                                                            <FontAwesomeIcon icon={faArrowRight} className="pl-2 pt-1" />
+                                                        </button>
+                                                    )}
+                                                </div>
+        
+                                            </div>
+                                            
+                                        )
+
+                                    )
+
+                                    
+                                )
+
+  
+
+                            }
+
+
+                            {/* {
                                 ((showExample === true) || (showTryChallenge === true))
 
                                 ?
@@ -860,24 +1308,6 @@ const NewModuleLayout = ({ module_id }) => {
                                                 </li>
                                                 
                                                 {
-                                                    // (showTryChallenge === true) && (
-
-                                                    //     <li className="me-2">
-                                                    //         <a
-                                                    //             href="#"
-                                                    //             className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg cursor-pointer ${
-                                                    //                 (currentActiveTab === 'challenge')
-                                                    //                 ? 'text-blue-600 border-blue-600 font-bold dark:text-blue-500 dark:border-blue-500'
-                                                    //                 : 'text-gray-600 border-transparent dark:text-gray-400'
-                                                    //             }`}
-                                                    //             aria-current={currentActiveTab ? 'page' : undefined}
-                                                    //             onClick={() => setCurrentActiveTab('challenge')}
-                                                    //         >
-                                                    //             Challenge
-                                                    //         </a>
-                                                    //     </li>
-                                                                
-                                                    // )
 
                                                     (showTryChallenge === true) ? (
 
@@ -902,7 +1332,6 @@ const NewModuleLayout = ({ module_id }) => {
                                                             <a
                                                                 className={`inline-block p-0 px-4 pb-1 border-b-2 rounded-t-lg cursor-pointer ${
                                                                         'text-gray-400 border-transparent cursor-not-allowed'
-                                                                        // : 'text-gray-600 border-transparent dark:text-gray-400'
                                                                 }`}
                                                                 aria-current={currentActiveTab ? 'page' : undefined}
                                                                 onClick={(e) => e.preventDefault()} // Prevent default behavior if disabled
@@ -919,7 +1348,6 @@ const NewModuleLayout = ({ module_id }) => {
 
                                         </div>
 
-                                        {/* Note */}
                                         {(currentActiveTab === 'note') && (
 
                                             <p className="text-[15px] tracking-normal leading-9 pt-0 pr-0">
@@ -929,15 +1357,12 @@ const NewModuleLayout = ({ module_id }) => {
                                                 </h3>
 
                                                 <Markdown>
-                                                    {/* {currentSubModuleDict.introduction_note} */}
-                                                    {/* TODO: show this and Code in Type-writer manner */}
                                                     {exampleDict.text}
                                                 </Markdown>
                                             </p>
 
                                         )}
 
-                                        {/* Challenge */}
                                         {(currentActiveTab === 'challenge') && (
 
                                             <div className="space-y-4 pr-2">
@@ -947,25 +1372,17 @@ const NewModuleLayout = ({ module_id }) => {
                                                     Question
                                                 </p>
                                                     <p className="text-[15px] tracking-normal leading-9 pt-4 text-gray-500">
-                                                        {/* <TypeWriter text={noteDict.description} /> */}
                                                         <Markdown>
                                                             {currentTryExerciseText}
                                                         </Markdown>
                                                     </p>
                                                 </div>
 
-                                                {/* Example Input Output List */}
-                                                {/* TODO: showing example i/o list */}
-
-                                                {/* <p className='text-[16px] font-bold pb-2'>Submissions</p> 
-                                                */}
-
                                                 <p className="text-[16px] font-bold pt-4">
                                                     Solution Passed?
                                                 </p>
 
                                                 {(currentExerciseSubmissionLoading === true) && (
-                                                    // TODO: go from here
                                                     <div role="status">
                                                         <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                             <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
@@ -1004,13 +1421,7 @@ const NewModuleLayout = ({ module_id }) => {
                                                 <p className="text-[16px] font-bold pt-4">
                                                     Current Solution Feedback
                                                 </p>
-                                                {/* (currentExerciseSubmissionLoading === true) ? (
-                                                    null
-                                                ) : (
-                                                    <p className="leading-9 text-[15px] text-gray-500">
-                                                        Submit solution to determine result.
-                                                    </p>
-                                                ) */}
+
                                                 {(currentExerciseSubmissionLoading === true) ? (
                                                     <div role="status">
                                                         <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1049,7 +1460,6 @@ const NewModuleLayout = ({ module_id }) => {
                                                     </thead>
                                                     <tbody>
 
-                                                        {/* {currentExerciseSubmissionHistory.map()} */}
                                                         {currentExerciseSubmissionHistory.map((item, index) => (
 
                                                             <tr
@@ -1069,21 +1479,6 @@ const NewModuleLayout = ({ module_id }) => {
                                                                 >
                                                                     {item.solution_passed.toString()}
                                                                 </td>
-                                                                {/* {
-                                                                    (item.solution_passed === true) ? (
-                                                                        <td
-                                                                            className="p-3 text-green-400"
-                                                                        >
-                                                                            {item.solution_passed}
-                                                                        </td>
-                                                                    ) : (
-                                                                        <td
-                                                                            className="p-3 text-red-400"
-                                                                        >
-                                                                            {item.solution_passed}
-                                                                        </td>
-                                                                    )
-                                                                } */}
                                                                 
                                                                 <td 
                                                                     className="p-3"
@@ -1110,39 +1505,6 @@ const NewModuleLayout = ({ module_id }) => {
                                                             </tr>    
 
                                                         ))}
-
-                                                        {/* <tr
-                                                            className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                                                        >
-                                                            <td className="p-3">
-                                                                2025-01-10
-                                                            </td>
-                                                            
-                                                            <td
-                                                                className="p-3 text-green-400"
-                                                            >
-                                                                Success
-                                                            </td>
-                                                            <td 
-                                                                className="p-3"
-                                                            >
-                                                                <span 
-                                                                    className="hover:text-blue-500 hover:font-semibold cursor-pointer"
-                                                                >
-                                                                    View Code
-                                                                </span>
-                                                            </td>
-
-                                                            <td 
-                                                                className="p-3"
-                                                            >
-                                                                <span 
-                                                                    className="hover:text-blue-500 hover:font-semibold cursor-pointer"
-                                                                >
-                                                                    View Feedback
-                                                                </span>
-                                                            </td>
-                                                        </tr> */}
                                                     </tbody>
                                                 </table>
 
@@ -1212,12 +1574,10 @@ const NewModuleLayout = ({ module_id }) => {
                                                 Introduction - {currentSubModuleDict.sub_module_name}
                                             </h3>
                                             <Markdown>
-                                                {/* {currentSubModuleDict.introduction_note} */}
                                                 {currentNoteText}
                                             </Markdown>
                                         </p>
 
-                                        {/* Buttons */}
                                         <div className="mt-10 flex justify-center">
 
                                             {(showExampleButton === true) && (
@@ -1236,7 +1596,7 @@ const NewModuleLayout = ({ module_id }) => {
                                     
                                 )
                             
-                            }
+                            } */}
 
                         </div>
 
@@ -1264,6 +1624,7 @@ const NewModuleLayout = ({ module_id }) => {
                         )}
 
                     </div>
+
 
                     {/* Second Half */}
                     {
