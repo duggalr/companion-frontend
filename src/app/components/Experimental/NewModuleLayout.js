@@ -532,6 +532,7 @@ const NewModuleLayout = ({ module_id }) => {
     const currentExerciseSubmissionHistoryModalData = useRef([]);
     const [currentExerciseSubmissionLoading, setCurrentExerciseSubmissionLoading] = useState(false);
     const [showQuizSubmissionResults, setShowQuizSubmissionResults] = useState(false);
+    const quizQuestionMultipleChoiceSelection = useRef(null);
 
 
     const _sendCodeExecutionRequest = async function (code) {
@@ -829,49 +830,159 @@ const NewModuleLayout = ({ module_id }) => {
 
     };
 
-    const _handleNextQuizQuestionClick = () => {
+    // const _handleNextQuizQuestionClick = () => {
 
-        if ((currentQuizDictQuestionIndex + 1) === currentQuizDict.questions_list.length){
-            console.log('quiz complete!')
-            // TODO: Show quiz results
+    //     if ((currentQuizDictQuestionIndex + 1) === currentQuizDict.questions_list.length){
+    //         console.log('quiz complete!')
+    //         // TODO: Show quiz results
 
-            // Reset for the quiz -- all of these should be abstracted to own functions
-            setShowQuizSubmissionResults(true);
-            setCurrentQuizQuestion(null);
-            setShowQuizQuestion(false);
-            setInitialCodeValue('');
-            codeRef.current = '';
+    //         // Reset for the quiz -- all of these should be abstracted to own functions
+    //         setShowQuizSubmissionResults(true);
+    //         setCurrentQuizQuestion(null);
+    //         setShowQuizQuestion(false);
+    //         setInitialCodeValue('');
+    //         codeRef.current = '';
 
-        } 
-        else {
+    //     } 
+    //     else {
 
-            setCurrentQuizDictQuestionIndex((prev_index) => prev_index + 1);
-            let current_question = currentQuizDict.questions_list[currentQuizDictQuestionIndex];
-            console.log('next-quiz-dict:', current_question)
+    //         setCurrentQuizDictQuestionIndex((prev_index) => prev_index + 1);
+    //         let current_question = currentQuizDict.questions_list[currentQuizDictQuestionIndex];
+    //         console.log('next-quiz-dict:', current_question)
     
-            console.log('current_question:', current_question);
-            setCurrentQuizQuestion(current_question);
-            setShowQuizQuestion(true);
+    //         console.log('current_question:', current_question);
+    //         setCurrentQuizQuestion(current_question);
+    //         setShowQuizQuestion(true);
     
-            setInitialCodeValue('');
-            codeRef.current = '';
+    //         setInitialCodeValue('');
+    //         codeRef.current = '';
             
-            if (current_question.type === 'code'){
+    //         if (current_question.type === 'code'){
     
-                _createTypewriterEffect(
-                    current_question.starter_code,
-                    setInitialCodeValue, 
-                    0, 
-                    null,
-                    500
-                );
+    //             _createTypewriterEffect(
+    //                 current_question.starter_code,
+    //                 setInitialCodeValue, 
+    //                 0, 
+    //                 null,
+    //                 500
+    //             );
     
+    //         }
+
+    //     }
+
+    // }
+
+    const [finalQuizFeedbackDict, setFinalQuizFeedbackDict] = useState("");
+
+    const _handleQuizQuestionSubmit = async () => {
+
+        if (currentQuizQuestion.type === 'multiple_choice') {
+
+            const anon_user_id = getFromLocalStorage('user_id');
+
+            const current_mc_solution_choice = quizQuestionMultipleChoiceSelection.current;
+            console.log('current-mc-solution-choice:', current_mc_solution_choice);
+
+            const payload = {
+                'user_id': anon_user_id,
+                'quiz_question_object_id': currentQuizQuestion.id,
+                'question_type': currentQuizQuestion.type,
+                'answer': current_mc_solution_choice
+            };
+
+            const apiResponse = await fetch(`http://127.0.0.1:8000/handle_quiz_question_submission`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+            const response_data = await apiResponse.json();
+            console.log('Response Data:', response_data);
+
+            if (response_data['success'] === true){
+                // setShowQuizQuestionSubmitButton(true);
+                // TODO: proceed to the next question
+
+                if ((currentQuizDictQuestionIndex + 1) === currentQuizDict.questions_list.length){
+                    
+                    // TODO:
+                        // Reset for the quiz -- all of these should be abstracted to own functions
+                    setShowQuizSubmissionResults(true);
+                    setCurrentQuizQuestion(null);
+                    setShowQuizQuestion(false);
+                    setInitialCodeValue('');
+                    codeRef.current = '';
+
+                    // Fetch final results
+                    const payload = {
+                        'user_id': anon_user_id,
+                        'course_module_quiz_object_id': currentQuizDict.course_module_quiz_object_id
+                    };
+                    const apiResponse = await fetch(`http://127.0.0.1:8000/fetch_final_course_module_quiz_result`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    const response_data = await apiResponse.json();
+                    console.log('Response Data:', response_data);
+
+                    if (response_data['success'] === true){
+                        setFinalQuizFeedbackDict({
+                            'ai_feedback_for_quiz': response_data['ai_feedback_for_quiz'],
+                            'correct_answers': response_data['correct_answers'],
+                            'incorrect_answers': response_data['incorrect_answers'],
+                            'total_quiz_length': response_data['total_quiz_length'],
+                            'result_score': response_data['result_score'],
+                            'user_passed_quiz': response_data['user_passed_quiz']
+                        });
+                    }
+
+                } else {
+
+                    setCurrentQuizDictQuestionIndex((prev_index) => prev_index + 1);
+                    let current_question = currentQuizDict.questions_list[currentQuizDictQuestionIndex];
+                    console.log('next-quiz-dict:', current_question)
+    
+                    console.log('current_question:', current_question);
+                    setCurrentQuizQuestion(current_question);
+                    setShowQuizQuestion(true);
+    
+                    setInitialCodeValue('');
+                    codeRef.current = '';
+                    
+                    if (current_question.type === 'code'){
+    
+                        _createTypewriterEffect(
+                            current_question.starter_code,
+                            setInitialCodeValue, 
+                            0, 
+                            null,
+                            500
+                        );
+    
+                    }
+
+                }
+
             }
 
         }
 
     }
 
+
+    // const [quizQuestionMultipleChoiceSelection, setQuizQuestionMultipleChoiceSelection] = useState(null);
+
+    const _handleMultipleChoiceSelect = async (mc_choice_index) => {
+
+        // setQuizQuestionMultipleChoiceSelection(mc_choice_index);
+        quizQuestionMultipleChoiceSelection.current = mc_choice_index;
+
+    }
 
     return (
 
@@ -1029,6 +1140,7 @@ const NewModuleLayout = ({ module_id }) => {
                                                                     <button
                                                                         key={index}
                                                                         className="w-full text-left bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 transition-colors hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                                        onClick={() => _handleMultipleChoiceSelect(index)}
                                                                     >
                                                                         {option}
                                                                     </button>
@@ -1036,8 +1148,18 @@ const NewModuleLayout = ({ module_id }) => {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    
+                                                    <button
+                                                        // onClick={_handleNextQuizQuestionClick}
+                                                        onClick={_handleQuizQuestionSubmit}
+                                                        type="button"
+                                                        className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+                                                    >
+                                                        Submit
+                                                    </button>
 
-                                                    <button onClick={_handleNextQuizQuestionClick} type="button" className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Next Question</button>
+                                                    
+                                                    {/* <button onClick={_handleNextQuizQuestionClick} type="button" className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Next Question</button> */}
                                                     
                                                 </>
                                             ) 
@@ -1127,8 +1249,14 @@ const NewModuleLayout = ({ module_id }) => {
                                                     <div className="w-full max-w-3xl p-6">
                                                         {/* Header */}
                                                         <div className="text-center">
+                                                        {/* setFinalQuizFeedbackDict({
+                            'ai_feedback_for_quiz': response_data['ai_feedback_for_quiz'],
+                            'correct_answers': response_data['correct_answers'],
+                            'incorrect_answers': response_data['incorrect_answers'],
+                            'total_quiz_length': response_data['total_quiz_length']
+                        }) */}
                                                             <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
-                                                                🎉 Congratulations! You completed the quiz!
+                                                                You are have completed the quiz!
                                                             </h3>
                                                             <p className="text-gray-600 dark:text-gray-300 text-sm">
                                                                 Here are your results and feedback:
@@ -1138,28 +1266,38 @@ const NewModuleLayout = ({ module_id }) => {
                                                         {/* Feedback Card */}
                                                         <div className="mt-6 p-5 bg-blue-50 dark:bg-gray-700 rounded-lg shadow-inner">
                                                             <h4 className="text-lg font-semibold text-blue-800 dark:text-white mb-3">
-                                                                Your Score: 85%
+                                                                Your Score: {finalQuizFeedbackDict['result_score']}
                                                             </h4>
                                                             <p className="text-gray-700 dark:text-gray-200 text-sm">
-                                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum vestibulum. Cras venenatis euismod malesuada.
+                                                                {finalQuizFeedbackDict['ai_feedback_for_quiz']}
                                                             </p>
                                                         </div>
                                                 
                                                         {/* Buttons */}
-                                                        <div className="mt-8 flex justify-center space-x-4">
-                                                            <button
-                                                                type="button"
-                                                                className="py-3 px-6 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[14.5px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                                                            >
-                                                                Retake Quiz
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                className="py-3 px-6 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[14.5px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                                                            >
-                                                                Next
-                                                            </button>
-                                                        </div>
+                                                        {
+                                                            (finalQuizFeedbackDict['user_passed_quiz'] === false) ? (
+
+                                                                // TODO: implement what to do when user does not pass quiz
+
+                                                                <button
+                                                                    type="button"
+                                                                    className="py-3 px-6 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[14.5px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                                                >
+                                                                    Home
+                                                                </button>
+                                                                
+                                                            ) : (
+
+                                                                <button
+                                                                    type="button"
+                                                                    className="py-3 px-6 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[14.5px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                                                >
+                                                                    Proceed to next course module
+                                                                </button>
+
+                                                            )
+                                                        }
+                                              
                                                     </div>
                                                 </div>
 
