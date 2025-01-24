@@ -364,7 +364,7 @@ const NewModuleLayout = ({ module_id }) => {
                 setInitialCodeValue, 
                 0, 
                 'show_try_exercise_button',
-                100
+                500
             );
         }
 
@@ -424,6 +424,16 @@ const NewModuleLayout = ({ module_id }) => {
                 100
             );
             
+            setInitialCodeValue('');
+            codeRef.current = new_sub_module_information_dict.starter_code;
+            _createTypewriterEffect(
+                new_sub_module_information_dict.starter_code,
+                setInitialCodeValue, 
+                0, 
+                null,
+                500
+            );
+
         }
 
         // // setCurrentSubModuleInformationIndex((prev) => prev + 1);
@@ -519,11 +529,16 @@ const NewModuleLayout = ({ module_id }) => {
         }
     };
 
+    // TODO: start here by getting run code working
+        // proceed from there to testing and finalizing everything for this module
+        // implement quiz (make it as similar to current)
+
     const getTaskResponse = async (task_id) => {
         try {
             const taskResponseURL = FASTAPI_BASE_URL + `/result/${task_id}`;
             const resultResponse = await axios.get(taskResponseURL);
             const { result_output_value } = resultResponse.data;
+            console.log('result-output-value:', result_output_value);
             setConsoleOutput(result_output_value);
 
         } catch (error) {
@@ -910,7 +925,7 @@ const NewModuleLayout = ({ module_id }) => {
                                             <p className="text-[15px] tracking-normal leading-9 pt-0 pr-0">
 
                                                 <h3 className="font-bold text-[15px] mb-2">
-                                                    Example Title
+                                                    {exampleDict.title}
                                                 </h3>
 
                                                 <Markdown>
@@ -1264,20 +1279,36 @@ const NewModuleLayout = ({ module_id }) => {
                                             Code
                                         </h2>
                                         <div className='flex justify-end space-x-4'>
-                                            <button
-                                                type="button"
-                                                className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-[13.5px] px-3 py-2 me-0 mb-2 mt-0.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
-                                                onClick={_handleRunButtonClick}
-                                                disabled={isRunLoading}
-                                            >
-                                                {/* <FontAwesomeIcon icon={faPlay} className="pl-1 pr-1 text-[14px]"/>{" "}Run Code */}
-                                                {isRunLoading ? (
-                                                    <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                            
+                                            {/* <FontAwesomeIcon icon={faPlay} className="pl-1 pr-1 text-[14px]"/>{" "}Run Code */}
+                                            {
+                                                exampleDict.is_runnable === true ? (
+                                                    <>
+                                                        <button
+                                                            type="button"
+                                                            className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-[13.5px] px-3 py-2 me-0 mb-2 mt-0.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+                                                            onClick={_handleRunButtonClick}
+                                                            disabled={isRunLoading}
+                                                        >
+                                                            {isRunLoading ? (
+                                                                <>
+                                                                    <FontAwesomeIcon icon={faSpinner} spin className="text-white pr-2" />
+                                                                    Running...
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <FontAwesomeIcon icon={faPlay} className="text-white pr-2" />
+                                                                    Run Code
+                                                                </>
+                                                            )}
+                                                        </button>
+                                                    </>
                                                 ) : (
-                                                    <FontAwesomeIcon icon={faPlay} className="text-white pr-2" />
-                                                )}
-                                                {isRunLoading ? "Running..." : "Run Code"}
-                                            </button>
+                                                    <span className="text-[11px] pt-3.5 text-gray-500">
+                                                        Run code in <a target="_blank" rel="noopener noreferrer" href="https://code.visualstudio.com/" className="font-normal hover:font-medium text-blue-600 dark:text-blue-500 hover:underline">VSCode</a> (copy/paste your code below if you would like feedback or ask questions)
+                                                    </span>
+                                                )
+                                            }
 
                                             {/* {(showTryChallenge === true) && (
                                                  <button
@@ -1327,7 +1358,15 @@ const NewModuleLayout = ({ module_id }) => {
                                         <h2 className="text-[18px] font-semibold text-gray-800 mb-2">
                                             Console Output
                                         </h2>
-                                        <div className="h-40 overflow-auto bg-black text-green-500 p-2 rounded-md font-mono text-sm">{consoleOutput}</div>
+                                        {/* <div className="h-40 overflow-auto bg-black text-green-500 p-2 rounded-md font-mono text-sm">{consoleOutput}</div> */}
+                                        <div className="h-40 overflow-auto bg-black text-green-500 p-2 rounded-md font-mono text-sm">
+                                            {consoleOutput.split('\n').map((line, index) => (
+                                                <span key={index}>
+                                                    {line}
+                                                    <br />
+                                                </span>
+                                            ))}
+                                        </div>
                                     </div>
 
                                 </div>
