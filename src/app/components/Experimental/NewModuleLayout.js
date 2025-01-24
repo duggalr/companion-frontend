@@ -824,9 +824,26 @@ const NewModuleLayout = ({ module_id }) => {
         let current_question = currentQuizDict.questions_list[currentQuizDictQuestionIndex];
         console.log('current_question:', current_question);
         setCurrentQuizQuestion(current_question);
+        // TODO: 
 
         // TODO:
         setShowQuizQuestion(true);
+        setInitialCodeValue('');
+        codeRef.current = '';
+        
+        if (current_question.type === 'code'){
+
+            codeRef.current = current_question.starter_code;
+
+            _createTypewriterEffect(
+                current_question.starter_code,
+                setInitialCodeValue, 
+                0, 
+                null,
+                500
+            );
+
+        }
 
     };
 
@@ -874,97 +891,118 @@ const NewModuleLayout = ({ module_id }) => {
     // }
 
     const [finalQuizFeedbackDict, setFinalQuizFeedbackDict] = useState("");
+    const [quizSubmitButtonLoading, setQuizSubmitButtonLoading] = useState(false);
 
     const _handleQuizQuestionSubmit = async () => {
 
-        if (currentQuizQuestion.type === 'multiple_choice') {
+        setQuizSubmitButtonLoading(true);
 
-            const anon_user_id = getFromLocalStorage('user_id');
+        const anon_user_id = getFromLocalStorage('user_id');
+
+        let payload = {};
+        if (currentQuizQuestion.type === 'multiple_choice') {
 
             const current_mc_solution_choice = quizQuestionMultipleChoiceSelection.current;
             console.log('current-mc-solution-choice:', current_mc_solution_choice);
 
-            const payload = {
+            payload = {
                 'user_id': anon_user_id,
-                'quiz_question_object_id': currentQuizQuestion.id,
+                'quiz_question_object_id': currentQuizQuestion.question_object_id,
                 'question_type': currentQuizQuestion.type,
-                'answer': current_mc_solution_choice
+                'answer': current_mc_solution_choice.toString()
             };
 
-            const apiResponse = await fetch(`http://127.0.0.1:8000/handle_quiz_question_submission`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
-            const response_data = await apiResponse.json();
-            console.log('Response Data:', response_data);
+        }
+        else {
 
-            if (response_data['success'] === true){
-                // setShowQuizQuestionSubmitButton(true);
-                // TODO: proceed to the next question
+            const current_code_solution = codeRef.current;
+            payload = {
+                'user_id': anon_user_id,
+                'quiz_question_object_id': currentQuizQuestion.question_object_id,
+                'question_type': currentQuizQuestion.type,
+                'answer': current_code_solution
+            };
 
-                if ((currentQuizDictQuestionIndex + 1) === currentQuizDict.questions_list.length){
-                    
-                    // TODO:
-                        // Reset for the quiz -- all of these should be abstracted to own functions
-                    setShowQuizSubmissionResults(true);
-                    setCurrentQuizQuestion(null);
-                    setShowQuizQuestion(false);
-                    setInitialCodeValue('');
-                    codeRef.current = '';
+        }
 
-                    // Fetch final results
-                    const payload = {
-                        'user_id': anon_user_id,
-                        'course_module_quiz_object_id': currentQuizDict.course_module_quiz_object_id
-                    };
-                    const apiResponse = await fetch(`http://127.0.0.1:8000/fetch_final_course_module_quiz_result`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(payload)
+        console.log('CURRENT PAYLOAD:', payload);
+
+        const apiResponse = await fetch(`http://127.0.0.1:8000/handle_quiz_question_submission`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+        const response_data = await apiResponse.json();
+        console.log('Response Data:', response_data);
+
+        if (response_data['success'] === true){
+            // setShowQuizQuestionSubmitButton(true);
+            // TODO: proceed to the next question
+
+            setQuizSubmitButtonLoading(false);
+
+            if ((currentQuizDictQuestionIndex + 1) === currentQuizDict.questions_list.length){
+                
+                // TODO:
+                    // Reset for the quiz -- all of these should be abstracted to own functions
+                setShowQuizSubmissionResults(true);
+                setCurrentQuizQuestion(null);
+                setShowQuizQuestion(false);
+                setInitialCodeValue('');
+                codeRef.current = '';
+
+                // Fetch final results
+                const payload = {
+                    'user_id': anon_user_id,
+                    'course_module_quiz_object_id': currentQuizDict.course_module_quiz_object_id
+                };
+                const apiResponse = await fetch(`http://127.0.0.1:8000/fetch_final_course_module_quiz_result`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const response_data = await apiResponse.json();
+                console.log('Response Data:', response_data);
+
+                if (response_data['success'] === true){
+                    setFinalQuizFeedbackDict({
+                        'ai_feedback_for_quiz': response_data['ai_feedback_for_quiz'],
+                        'correct_answers': response_data['correct_answers'],
+                        'incorrect_answers': response_data['incorrect_answers'],
+                        'total_quiz_length': response_data['total_quiz_length'],
+                        'result_score': response_data['result_score'],
+                        'user_passed_quiz': response_data['user_passed_quiz']
                     });
-                    const response_data = await apiResponse.json();
-                    console.log('Response Data:', response_data);
+                }
 
-                    if (response_data['success'] === true){
-                        setFinalQuizFeedbackDict({
-                            'ai_feedback_for_quiz': response_data['ai_feedback_for_quiz'],
-                            'correct_answers': response_data['correct_answers'],
-                            'incorrect_answers': response_data['incorrect_answers'],
-                            'total_quiz_length': response_data['total_quiz_length'],
-                            'result_score': response_data['result_score'],
-                            'user_passed_quiz': response_data['user_passed_quiz']
-                        });
-                    }
+            } else {
 
-                } else {
+                setCurrentQuizDictQuestionIndex((prev_index) => prev_index + 1);
+                let current_question = currentQuizDict.questions_list[currentQuizDictQuestionIndex];
+                console.log('next-quiz-dict:', current_question)
 
-                    setCurrentQuizDictQuestionIndex((prev_index) => prev_index + 1);
-                    let current_question = currentQuizDict.questions_list[currentQuizDictQuestionIndex];
-                    console.log('next-quiz-dict:', current_question)
-    
-                    console.log('current_question:', current_question);
-                    setCurrentQuizQuestion(current_question);
-                    setShowQuizQuestion(true);
-    
-                    setInitialCodeValue('');
-                    codeRef.current = '';
-                    
-                    if (current_question.type === 'code'){
-    
-                        _createTypewriterEffect(
-                            current_question.starter_code,
-                            setInitialCodeValue, 
-                            0, 
-                            null,
-                            500
-                        );
-    
-                    }
+                console.log('current_question:', current_question);
+                setCurrentQuizQuestion(current_question);
+                setShowQuizQuestion(true);
+
+                setInitialCodeValue('');
+                codeRef.current = '';
+                
+                if (current_question.type === 'code'){
+
+                     codeRef.current = current_question.starter_code;
+
+                    _createTypewriterEffect(
+                        current_question.starter_code,
+                        setInitialCodeValue, 
+                        0, 
+                        null,
+                        500
+                    );
 
                 }
 
@@ -1136,7 +1174,7 @@ const NewModuleLayout = ({ module_id }) => {
                                                         </h3>
                                                         <div className='flex justify-center pt-2'>
                                                             <div className="space-y-4 w-2/3">
-                                                                {currentQuizQuestion.multiple_choice_list.map((option, index) => (
+                                                                {(currentQuizQuestion.multiple_choice_list).map((option, index) => (
                                                                     <button
                                                                         key={index}
                                                                         className="w-full text-left bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 transition-colors hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1150,12 +1188,33 @@ const NewModuleLayout = ({ module_id }) => {
                                                     </div>
                                                     
                                                     <button
-                                                        // onClick={_handleNextQuizQuestionClick}
-                                                        onClick={_handleQuizQuestionSubmit}
-                                                        type="button"
-                                                        className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+                                                    onClick={_handleQuizQuestionSubmit}
+                                                    type="button"
+                                                    className={`text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 ${
+                                                        quizSubmitButtonLoading && "opacity-50 cursor-not-allowed"
+                                                    }`}
+                                                    disabled={quizSubmitButtonLoading}
                                                     >
-                                                        Submit
+                                                    {quizSubmitButtonLoading ? (
+                                                        <svg
+                                                        aria-hidden="true"
+                                                        className="w-5 h-5 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-white"
+                                                        viewBox="0 0 100 101"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        >
+                                                        <path
+                                                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08154 50.5908C9.08154 74.1846 25.8062 91.3181 50 91.3181C74.1938 91.3181 90.9185 74.1846 90.9185 50.5908C90.9185 26.9969 74.1938 9.86328 50 9.86328C25.8062 9.86328 9.08154 26.9969 9.08154 50.5908Z"
+                                                            fill="currentColor"
+                                                        />
+                                                        <path
+                                                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5536C95.2932 28.8227 92.871 24.3694 89.8167 20.348C85.8452 15.1192 80.8826 10.723 75.2124 7.41289C69.5422 4.1028 63.2754 1.94025 56.7221 1.05111C51.7666 0.367572 46.7395 0.446529 41.8371 1.27873C39.3185 1.69975 37.855 4.19778 38.4921 6.62326C39.1292 9.04874 41.6021 10.4813 44.0772 10.1023C47.9246 9.49341 51.8292 9.52694 55.6552 10.1957C60.864 11.0906 65.845 13.1964 70.2982 16.3935C74.7515 19.5905 78.5764 23.8106 81.5061 28.818C83.8827 32.8672 85.606 37.2767 86.6314 41.8771C87.2324 44.3075 89.5422 45.6781 91.9676 45.0409Z"
+                                                            fill="currentFill"
+                                                        />
+                                                        </svg>
+                                                    ) : (
+                                                        "Submit"
+                                                    )}
                                                     </button>
 
                                                     
@@ -1174,11 +1233,48 @@ const NewModuleLayout = ({ module_id }) => {
                                                         {/* Note */}
                                                         <div className="w-1/2">
                                                             <p className="text-[15px] tracking-normal leading-9 pt-0 pr-0">
-                                                                <h3 className="font-bold text-[15px] mb-2">Question</h3>
+                                                                <h3 className="font-bold text-[15px] mb-2">Question {currentQuizDictQuestionIndex + 1}</h3>
                                                                 <Markdown>{currentQuizQuestion.question}</Markdown>
                                                             </p>
 
-                                                            <button onClick={_handleNextQuizQuestionClick} type="button" className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Next Question</button>
+                                                            {/* <button
+                                                                onClick={_handleQuizQuestionSubmit}
+                                                                type="button"
+                                                                className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+                                                            >
+                                                                Submit
+                                                            </button> */}
+
+                                                            <button
+                                                            onClick={_handleQuizQuestionSubmit}
+                                                            type="button"
+                                                            className={`text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 ${
+                                                                quizSubmitButtonLoading && "opacity-50 cursor-not-allowed"
+                                                            }`}
+                                                            disabled={quizSubmitButtonLoading}
+                                                            >
+                                                            {quizSubmitButtonLoading ? (
+                                                                <svg
+                                                                aria-hidden="true"
+                                                                className="w-5 h-5 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-white"
+                                                                viewBox="0 0 100 101"
+                                                                fill="none"
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                <path
+                                                                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08154 50.5908C9.08154 74.1846 25.8062 91.3181 50 91.3181C74.1938 91.3181 90.9185 74.1846 90.9185 50.5908C90.9185 26.9969 74.1938 9.86328 50 9.86328C25.8062 9.86328 9.08154 26.9969 9.08154 50.5908Z"
+                                                                    fill="currentColor"
+                                                                />
+                                                                <path
+                                                                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5536C95.2932 28.8227 92.871 24.3694 89.8167 20.348C85.8452 15.1192 80.8826 10.723 75.2124 7.41289C69.5422 4.1028 63.2754 1.94025 56.7221 1.05111C51.7666 0.367572 46.7395 0.446529 41.8371 1.27873C39.3185 1.69975 37.855 4.19778 38.4921 6.62326C39.1292 9.04874 41.6021 10.4813 44.0772 10.1023C47.9246 9.49341 51.8292 9.52694 55.6552 10.1957C60.864 11.0906 65.845 13.1964 70.2982 16.3935C74.7515 19.5905 78.5764 23.8106 81.5061 28.818C83.8827 32.8672 85.606 37.2767 86.6314 41.8771C87.2324 44.3075 89.5422 45.6781 91.9676 45.0409Z"
+                                                                    fill="currentFill"
+                                                                />
+                                                                </svg>
+                                                            ) : (
+                                                                "Submit"
+                                                            )}
+                                                            </button>
+
                                                         </div>
 
                                                         {/* Code Layout */}
