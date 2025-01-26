@@ -943,8 +943,10 @@ const NewModuleLayout = ({ module_id }) => {
 
             setQuizSubmitButtonLoading(false);
 
-            if ((currentQuizDictQuestionIndex + 1) === currentQuizDict.questions_list.length){
-                
+            // console.log('current-index-information:', currentQuizDictQuestionIndex);
+
+            if ((currentQuizDictQuestionIndex) === currentQuizDict.questions_list.length){
+
                 // TODO:
                     // Reset for the quiz -- all of these should be abstracted to own functions
                 setShowQuizSubmissionResults(true);
@@ -983,7 +985,7 @@ const NewModuleLayout = ({ module_id }) => {
 
                 setCurrentQuizDictQuestionIndex((prev_index) => prev_index + 1);
                 let current_question = currentQuizDict.questions_list[currentQuizDictQuestionIndex];
-                console.log('next-quiz-dict:', current_question)
+                console.log('next-quiz-dict:', current_question);
 
                 console.log('current_question:', current_question);
                 setCurrentQuizQuestion(current_question);
@@ -1102,7 +1104,7 @@ const NewModuleLayout = ({ module_id }) => {
                     >
 
                         <div className="space-y-4 mt-2 w-full">
-                            
+
                             {
 
                                 // Show quiz layout
@@ -1174,7 +1176,7 @@ const NewModuleLayout = ({ module_id }) => {
                                                         </h3>
                                                         <div className='flex justify-center pt-2'>
                                                             <div className="space-y-4 w-2/3">
-                                                                {(currentQuizQuestion.multiple_choice_list).map((option, index) => (
+                                                                {JSON.parse(currentQuizQuestion.multiple_choice_list).map((option, index) => (
                                                                     <button
                                                                         key={index}
                                                                         className="w-full text-left bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 transition-colors hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
