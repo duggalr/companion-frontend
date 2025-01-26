@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faPlay, faSpinner, faComment, faXmark, faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faPlay, faSpinner, faHome, faComment, faXmark, faQuestion } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import Markdown from 'react-markdown';
 import confetti from "canvas-confetti";
@@ -25,7 +25,7 @@ const ModuleProjectLayout = ({ module_id }) => {
     const [projectPartDict, setProjectPartDict] = useState({});
 
     const [projectTaskPassed, setProjectTaskPassed] = useState(null);
-    const [projectTaskSubmissionFeedback, setProjectTaskSubmissionFeedback] = useState(null);
+    const [projectTaskSubmissionFeedback, setProjectTaskSubmissionFeedback] = useState("");
     
     // Code Related
     const [consoleOutput, setConsoleOutput] = useState('>>> Console Output');
@@ -33,9 +33,13 @@ const ModuleProjectLayout = ({ module_id }) => {
 
     const [currentExerciseSubmissionHistory, setCurrentExerciseSubmissionHistory] = useState([]);
     const currentExerciseSubmissionHistoryModalData = useRef([]);
+    const userProjectPartSubmissionDict = useRef({});
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedModalDatatype, setSelectedModalDataType] = useState(null);
     const [selectedModalData, setSelectedModalData] = useState(null);
+
+    const [parentModuleCourseName, setParentModuleCourseName] = useState("");
 
 
     const _handleProjectDetailsFetch = async (module_id) => {
@@ -57,12 +61,16 @@ const ModuleProjectLayout = ({ module_id }) => {
         console.log('Response Data:', response_data);
 
         if (response_data['success'] === true){
-            
+
             let project_detail_dict = response_data['project_detail_dict'];
             setProjectDetailsDict(project_detail_dict);
             setProjectDetailPartList(project_detail_dict['project_parts_list']);
             setShowProjectIntroductoryNote(true);
-            setCurrentExerciseSubmissionHistory(response_data['user_project_submission_history_rv']);
+            // setCurrentExerciseSubmissionHistory(response_data['user_project_submission_history_rv']);
+
+            setParentModuleCourseName(project_detail_dict['parent_course_object_name']);
+            
+            userProjectPartSubmissionDict.current = response_data['user_project_submission_history_rv'];            
 
         }
 
@@ -70,19 +78,63 @@ const ModuleProjectLayout = ({ module_id }) => {
 
     useEffect(() => {
 
-        console.log('module-id:', module_id);
+        console.log('MODULE ID NEW:', module_id);
         _handleProjectDetailsFetch(module_id);
 
-    });
+    }, []);
 
 
     const _handleStartProjectButtonClick = async () => {
 
-        console.log('start project');
+        console.log('start project', projectDetailPartList[0]);
+
+        console.log('part-submission-dict:', userProjectPartSubmissionDict.current);
+
+        const current_project_part_dict = projectDetailPartList[0];
+        const current_project_part_submission_list = userProjectPartSubmissionDict.current[current_project_part_dict['id']];
 
         setProjectPartIndex(0);
         setProjectPartDict(projectDetailPartList[0]);
         setShowProjectIntroductoryNote(false);
+        setCurrentExerciseSubmissionHistory(current_project_part_submission_list);
+
+        // projectTaskPassed
+        let project_task_already_passed = false;
+        for (let idx = 0; idx < current_project_part_submission_list.length; idx ++){
+            if (current_project_part_submission_list[idx]['solution_passed'] === true){
+                project_task_already_passed = true;
+                break;
+            }
+        }
+        if (project_task_already_passed === true){
+            setProjectTaskPassed(true);    
+        }
+
+        codeRef.current = projectDetailPartList[0].starter_code;
+        _createTypewriterEffect(
+            projectDetailPartList[0].starter_code,
+            setInitialCodeValue,
+            0,
+            null,
+            100
+        );
+
+        // let new_current_project_dict = projectDetailPartList[current_index + 1];
+        // console.log('NEW-CURRENT-PROJECT-DICT:', new_current_project_dict);
+        // console.log('Current-project-dict-CODE:', new_current_project_dict.starter_code);
+        
+        // codeRef.current = '';
+        // _createTypewriterEffect(
+        //     new_current_project_dict.starter_code,
+        //     setInitialCodeValue,
+        //     0,
+        //     null,
+        //     100
+        // );
+
+        // setProjectPartIndex((prevIndex) => (prevIndex + 1));
+        // setProjectPartDict(projectDetailPartList[current_index + 1]);
+
     };
 
 
@@ -92,66 +144,115 @@ const ModuleProjectLayout = ({ module_id }) => {
 
         setSubmitButtonLoading(true);
         setTaskSubmissionLoading(true);
-
-        let new_index = projectPartIndex + 1;
-        if (new_index < projectDetailPartList.length) {
-            let anon_user_id = getFromLocalStorage('user_id');
-
-            // Pass to backend
-            const current_code_solution = codeRef.current;
-            const payload = {
-                'user_id': anon_user_id,
-                'project_task_object_id': projectPartDict.id,
-                'code_solution': current_code_solution
-            };
-            const apiResponse = await fetch(`http://127.0.0.1:8000/handle_project_task_submission`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
-            const response_data = await apiResponse.json();
-            console.log('Response Data:', response_data);
-
-            if (response_data['success'] === true){
-
-                setSubmitButtonLoading(false);
-                setTaskSubmissionLoading(false);
         
-                setProjectTaskPassed(response_data['submission_result_dict']['solution_passed']);
-                setProjectTaskSubmissionFeedback(response_data['submission_result_dict']['ai_solution_feedback']);
-                setCurrentExerciseSubmissionHistory([...currentExerciseSubmissionHistory, response_data['submission_result_dict']]);
+        let anon_user_id = getFromLocalStorage('user_id');
 
-                // if (response_data['solution_passed'] === true){
+        // Pass to backend
+        const current_code_solution = codeRef.current;
+        const payload = {
+            'user_id': anon_user_id,
+            'project_task_object_id': projectPartDict.id,
+            'code_solution': current_code_solution
+        };
+        const apiResponse = await fetch(`http://127.0.0.1:8000/handle_project_task_submission`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+        const response_data = await apiResponse.json();
+        console.log('Response Data:', response_data);
+        
+        if (response_data['success'] === true){
 
-                // }
+            setSubmitButtonLoading(false);
+            setTaskSubmissionLoading(false);
 
-                // if (response_data['solution_passed'] === true){
+            setProjectTaskPassed(response_data['submission_result_dict']['solution_passed']);
+            setProjectTaskSubmissionFeedback(response_data['submission_result_dict']['ai_solution_feedback']);
+            setCurrentExerciseSubmissionHistory([...currentExerciseSubmissionHistory, response_data['submission_result_dict']]);
 
-                //     setProjectTaskPassed(true);
-                //     setProjectTaskSubmissionFeedback(response_data['ai_solution_feedback']);
-                    
-                //     codeRef.current = '';
-                //     setInitialCodeValue('');
-                //     setProjectPartIndex((prevIndex) => (prevIndex + 1));
-                //     setProjectPartDict(projectDetailPartList[new_index]);
-
-                // } else {
-                //     // TODO: pass
-                // }
-
-    //             const [projectTaskPassed, setProjectTaskPassed] = useState(false);
-    // const [projectTaskSubmissionFeedback, setProjectTaskSubmissionFeedback] = useState("");
-                
-                // TODO: If successful-passed submission, move on to the next question
-                
-
-            }
-
-        } else {
-            console.log('project module complete...');
         }
+        // if (response_data['solution_passed'] === true){
+
+        // }
+
+        // if (response_data['solution_passed'] === true){
+
+        //     setProjectTaskPassed(true);
+        //     setProjectTaskSubmissionFeedback(response_data['ai_solution_feedback']);
+            
+        //     codeRef.current = '';
+        //     setInitialCodeValue('');
+        //     setProjectPartIndex((prevIndex) => (prevIndex + 1));
+        //     setProjectPartDict(projectDetailPartList[new_index]);
+
+        // } else {
+        //     // TODO: pass
+        // }
+
+
+
+    //     let new_index = projectPartIndex + 1;
+    //     if (new_index < projectDetailPartList.length) {
+    //         let anon_user_id = getFromLocalStorage('user_id');
+
+    //         // Pass to backend
+    //         const current_code_solution = codeRef.current;
+    //         const payload = {
+    //             'user_id': anon_user_id,
+    //             'project_task_object_id': projectPartDict.id,
+    //             'code_solution': current_code_solution
+    //         };
+    //         const apiResponse = await fetch(`http://127.0.0.1:8000/handle_project_task_submission`, {
+    //             method: "POST",
+    //             headers: {
+    //                 "Content-Type": "application/json"
+    //             },
+    //             body: JSON.stringify(payload)
+    //         });
+    //         const response_data = await apiResponse.json();
+    //         console.log('Response Data:', response_data);
+
+    //         if (response_data['success'] === true){
+
+    //             setSubmitButtonLoading(false);
+    //             setTaskSubmissionLoading(false);
+        
+    //             setProjectTaskPassed(response_data['submission_result_dict']['solution_passed']);
+    //             setProjectTaskSubmissionFeedback(response_data['submission_result_dict']['ai_solution_feedback']);
+    //             setCurrentExerciseSubmissionHistory([...currentExerciseSubmissionHistory, response_data['submission_result_dict']]);
+
+    //             // if (response_data['solution_passed'] === true){
+
+    //             // }
+
+    //             // if (response_data['solution_passed'] === true){
+
+    //             //     setProjectTaskPassed(true);
+    //             //     setProjectTaskSubmissionFeedback(response_data['ai_solution_feedback']);
+                    
+    //             //     codeRef.current = '';
+    //             //     setInitialCodeValue('');
+    //             //     setProjectPartIndex((prevIndex) => (prevIndex + 1));
+    //             //     setProjectPartDict(projectDetailPartList[new_index]);
+
+    //             // } else {
+    //             //     // TODO: pass
+    //             // }
+
+    // //             const [projectTaskPassed, setProjectTaskPassed] = useState(false);
+    // // const [projectTaskSubmissionFeedback, setProjectTaskSubmissionFeedback] = useState("");
+                
+    //             // TODO: If successful-passed submission, move on to the next question
+                
+
+    //         }
+
+    //     } else {
+    //         console.log('project module complete...');
+    //     }
 
     };
 
@@ -231,35 +332,114 @@ const ModuleProjectLayout = ({ module_id }) => {
         editorRef.current = editor; // Keep a reference to the editor
     };
 
-    const _handleNextProjectTaskClick = async () => {
-        
-        let current_index = projectPartIndex;
-        if ((current_index + 1) < projectDetailPartList.length) {
 
-            codeRef.current = '';
-            setInitialCodeValue('');
-            setProjectPartIndex((prevIndex) => (prevIndex + 1));
-            setProjectPartDict(projectDetailPartList[current_index + 1]);
+    const _createTypewriterEffect = (text, set_text_fn, current_index, text_type, timeout_milliseconds) => {
+
+        if (current_index < text.length) {
+
+            // Delay the typing effect by 20ms
+            setTimeout(() => {
+
+                // Append the next character from text
+                set_text_fn(previousText => previousText + text[current_index]);
+    
+                // Recursive call with the next index
+                _createTypewriterEffect(text, set_text_fn, current_index + 1, text_type);  
+                
+            }, timeout_milliseconds);
+
+        } else {
+
+            // TODO: 
+            // if (text_type === 'show_example_button'){
+            //     setShowExampleButton(true);
+            // }
+            // else if (text_type === 'show_try_exercise_button'){
+            //     // TODO:
+            //     setShowTryExerciseButton(true);
+            // }
+            // else if (text_type === 'show_submit_button'){
+            //     setShowSubmitExerciseButton(true);
+            // }
 
         }
 
     };
 
 
-    const showSubmissionHistoryModalData = async (object_id, type) => {
+    const [showCourseModuleFinish, setShowCourseModuleFinish] = useState(false);
+
+    const _handleNextProjectTaskClick = async () => {
+        
+        let current_index = projectPartIndex;
+        if ((current_index + 1) < projectDetailPartList.length) {
+
+            const new_current_project_dict = projectDetailPartList[current_index + 1];
+            console.log('NEW-CURRENT-PROJECT-DICT:', new_current_project_dict);
+            console.log('Current-project-dict-CODE:', new_current_project_dict.starter_code);
+
+            setProjectTaskSubmissionFeedback('');
+            setProjectTaskPassed('');
+            setProjectTaskPassed(null);
+
+            // const current_project_part_submission_list = userProjectPartSubmissionDict[new_current_project_dict['id']];
+            // setCurrentExerciseSubmissionHistory(current_project_part_submission_list);
+
+            // const current_project_part_dict = projectDetailPartList[0];
+            const current_project_part_submission_list = userProjectPartSubmissionDict.current[new_current_project_dict['id']];
+            console.log('CURRENT-PROJECT-PART-SUBMISSION-LIST:', current_project_part_submission_list);
+            setCurrentExerciseSubmissionHistory(current_project_part_submission_list);
+
+            let project_task_already_passed = false;
+            for (let idx = 0; idx < current_project_part_submission_list.length; idx ++){
+                if (current_project_part_submission_list[idx]['solution_passed'] === true){
+                    project_task_already_passed = true;
+                    break;
+                }
+            }
+            if (project_task_already_passed === true){
+                setProjectTaskPassed(true);    
+            }
+
+            codeRef.current = new_current_project_dict.starter_code;
+            setInitialCodeValue('');
+            _createTypewriterEffect(
+                new_current_project_dict.starter_code,
+                setInitialCodeValue,
+                0,
+                null,
+                100
+            );
+
+            setProjectPartIndex((prevIndex) => (prevIndex + 1));
+            setProjectPartDict(projectDetailPartList[current_index + 1]);
+
+        } else {
+
+            showProjectIntroductoryNote(true);
+            setShowCourseModuleFinish(true);
+
+        }
+
+    };
+
+
+    const showSubmissionHistoryModalData = async (object_index, type) => {
 
         // TODO: show this and go from there
-        console.log('data', object_id, type)
+        console.log('data', object_index, type);
+        console.log('tmp-data-two:', currentExerciseSubmissionHistoryModalData);
 
-        let element_dict = currentExerciseSubmissionHistoryModalData.current[object_id];
+        // let element_dict = currentExerciseSubmissionHistoryModalData.current[object_id];
+        let element_dict = currentExerciseSubmissionHistory[object_index];
         console.log('element-dict:', element_dict);
 
         if (type === 'code'){
             
             setSelectedModalDataType('code');
-            setSelectedModalData(element_dict['code']);
+            setSelectedModalData(element_dict['user_solution']);
             setIsModalOpen(true);
-            // // TODO: 
+            // // TODO:
             // tmp_rv[current_elem.key] = {
             //     'code': current_elem.code,
             //     'feedback': current_elem.feedback
@@ -269,7 +449,7 @@ const ModuleProjectLayout = ({ module_id }) => {
         else {
 
             setSelectedModalDataType('feedback');
-            setSelectedModalData(element_dict['feedback']);
+            setSelectedModalData(element_dict['ai_solution_feedback']);
             setIsModalOpen(true);
 
         }
@@ -296,26 +476,11 @@ const ModuleProjectLayout = ({ module_id }) => {
                     {/* Current Chapter and Title */}
                     <div className="text-left flex text-[15.5px] tracking-normal">
                         <h1 className="font-semibold text-gray-900">
-                            Module: TODO
+                            Module:
                         </h1>
-                        <span className="px-2 pt-1 text-[13.5px]">|</span>
-                        <p className="text-gray-500 text-[12.5px] pt-[3px]">
-                            Sub Module TODO
-                        </p>
-                        <span className="px-2 pt-1 text-[13.5px]">|</span>
-                        <p className="text-gray-500 text-[12.5px] pt-[3px]">
-                            Next - TODO
-                        </p>
-                    </div>
-
-                    {/* Next Chapter */}
-                    <div className="text-right flex text-[12.5px] tracking-normal pb-0 py-0">
-                        <div className='space-y-1'>
-                            <span className="text-[11px] font-medium">
-                                Sub Module Progress: TODO
-                            </span>
-                            <Progress value={10} className="w-40" />
-                        </div>
+                        <span className='pl-2 text-[13.5px] pt-[1.8px] text-gray-500'>
+                            {parentModuleCourseName}
+                        </span>
                     </div>
 
                 </div>
@@ -325,52 +490,86 @@ const ModuleProjectLayout = ({ module_id }) => {
                     {
                         (showProjectIntroductoryNote === true) ? (
 
-                            <div>
-                                <p className="text-[15px] tracking-normal leading-9 pt-2 pr-0 px-2">
-                                    <h3 className="font-bold text-[16px] mb-2">
-                                        Project: {projectDetailsDict.project_name}
-                                    </h3>
-                                    <Markdown>
-                                        {projectDetailsDict.description}
-                                    </Markdown>
+                            // setShowCourseModuleFinish
+                            (showCourseModuleFinish === true) ? (
+                                
+                                <div>
+                                    <p className="text-[15px] tracking-normal leading-9 pt-2 pr-0 px-2">
+                                        
+                                        <h3 className="font-bold text-[16px] mb-2">
+                                            Congrats! You have completed the course! 🎉
+                                        </h3>
 
-                                    <ul className="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
-                                        {(projectDetailPartList).map((project_part_dict, index) => (
-                                            <li
-                                                key={index}
-                                            >
-                                                Part {project_part_dict.part}: {project_part_dict.part_name}
-                                            </li>
-                                        ))}
-                                    </ul>
+                                    </p>
 
-                                </p>
+                                    {/* Buttons */}
+                                    <div className="mt-10 flex justify-center">
+                                        <button
+                                            type="button"
+                                            className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-normal rounded-lg text-[14.5px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                        >
+                                            Go Home
+                                            {/* <FontAwesomeIcon icon={faHome} className="pl-2 pt-1" /> */}
+                                        </button>
+                                    </div>
 
-                                {/* Buttons */}
-                                <div className="mt-10 flex justify-center">
-                                    <button
-                                        type="button"
-                                        className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[14.5px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                                        onClick={_handleStartProjectButtonClick}
-                                    >
-                                        Start Project
-                                        <FontAwesomeIcon icon={faArrowRight} className="pl-2 pt-1" />
-                                    </button>
                                 </div>
 
-                            </div>
 
-                        ) 
+                            ) : (
+
+                                <div>
+                                    <p className="text-[15px] tracking-normal leading-9 pt-2 pr-0 px-2">
+                                        <h3 className="font-bold text-[16px] mb-2">
+                                            Project: {projectDetailsDict.project_name}
+                                        </h3>
+                                        <Markdown>
+                                            {projectDetailsDict.description}
+                                        </Markdown>
+
+                                        <ul className="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                                            {(projectDetailPartList).map((project_part_dict, index) => (
+                                                <li
+                                                    key={index}
+                                                >
+                                                    Part {project_part_dict.part}: {project_part_dict.part_name}
+                                                </li>
+                                            ))}
+                                        </ul>
+
+                                    </p>
+
+                                    {/* Buttons */}
+                                    <div className="mt-10 flex justify-center">
+                                        <button
+                                            type="button"
+                                            className="py-3 px-5 me-2 mb-2 text-white bg-blue-700 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[14.5px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                            onClick={_handleStartProjectButtonClick}
+                                        >
+                                            Start Project
+                                            <FontAwesomeIcon icon={faArrowRight} className="pl-2 pt-1" />
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                            )
+
+                        )
                         :
                         (
                             
                             // Task with code layout + submit
                             <>
                                 <div className="flex flex-row space-x-8">
+
                                     {/* Note */}
-                                    <div className="w-1/2">
-                                        <p className="text-[15px] tracking-normal leading-9 pt-0 pr-0">
-                                            <h3 className="font-bold text-[15px] mb-2">Task {projectPartDict.part_name}</h3>
+                                    <div className="w-1/2 space-y-4 pt-2">
+                                        <p className="text-[15px] tracking-normal leading-9 pt-0.5 pr-0">
+                                            {/* <h3 className="font-semibold text-[18px] mb-2">Task {projectPartDict.part_name}</h3> */}
+                                            <h2 className="text-[18px] font-semibold text-gray-800 mb-1">
+                                                Task {projectPartDict.part_name}
+                                            </h2>
                                             <Markdown>{projectPartDict.task}</Markdown>
                                         </p>
 
@@ -465,7 +664,7 @@ const ModuleProjectLayout = ({ module_id }) => {
                                             </thead>
                                             <tbody>
 
-                                                {currentExerciseSubmissionHistory.map((item) => (
+                                                {currentExerciseSubmissionHistory.map((item, index) => (
 
                                                     <tr
                                                         className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
@@ -490,7 +689,7 @@ const ModuleProjectLayout = ({ module_id }) => {
                                                         >
                                                             <span 
                                                                 className="hover:text-blue-500 hover:font-semibold cursor-pointer"
-                                                                onClick={() => showSubmissionHistoryModalData(item.key, "code")}
+                                                                onClick={() => showSubmissionHistoryModalData(index, "code")}
                                                             >
                                                                 View Code
                                                             </span>
@@ -501,7 +700,7 @@ const ModuleProjectLayout = ({ module_id }) => {
                                                         >
                                                             <span 
                                                                 className="hover:text-blue-500 hover:font-semibold cursor-pointer"
-                                                                onClick={() => showSubmissionHistoryModalData(item.key, "feedback")}
+                                                                onClick={() => showSubmissionHistoryModalData(index, "feedback")}
                                                             >
                                                                 View Feedback
                                                             </span>
@@ -529,38 +728,45 @@ const ModuleProjectLayout = ({ module_id }) => {
 
                                         )}
 
-                                        <button
-                                            onClick={_handleProjectTaskSubmit}
-                                            type="button"
-                                            className={`text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 ${
-                                                submitButtonLoading && "opacity-50 cursor-not-allowed"
-                                            }`}
-                                            disabled={submitButtonLoading}
-                                        >
-                                            {submitButtonLoading ? (
-                                                <svg
-                                                aria-hidden="true"
-                                                className="w-5 h-5 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-white"
-                                                viewBox="0 0 100 101"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
+                                        {(projectTaskPassed !== true) && (
+
+                                            <div className='pt-2'>
+
+                                                <button
+                                                    onClick={_handleProjectTaskSubmit}
+                                                    type="button"
+                                                    className={`text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 ${
+                                                        submitButtonLoading && "opacity-50 cursor-not-allowed"
+                                                    }`}
+                                                    disabled={submitButtonLoading}
                                                 >
-                                                <path
-                                                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08154 50.5908C9.08154 74.1846 25.8062 91.3181 50 91.3181C74.1938 91.3181 90.9185 74.1846 90.9185 50.5908C90.9185 26.9969 74.1938 9.86328 50 9.86328C25.8062 9.86328 9.08154 26.9969 9.08154 50.5908Z"
-                                                    fill="currentColor"
-                                                />
-                                                <path
-                                                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5536C95.2932 28.8227 92.871 24.3694 89.8167 20.348C85.8452 15.1192 80.8826 10.723 75.2124 7.41289C69.5422 4.1028 63.2754 1.94025 56.7221 1.05111C51.7666 0.367572 46.7395 0.446529 41.8371 1.27873C39.3185 1.69975 37.855 4.19778 38.4921 6.62326C39.1292 9.04874 41.6021 10.4813 44.0772 10.1023C47.9246 9.49341 51.8292 9.52694 55.6552 10.1957C60.864 11.0906 65.845 13.1964 70.2982 16.3935C74.7515 19.5905 78.5764 23.8106 81.5061 28.818C83.8827 32.8672 85.606 37.2767 86.6314 41.8771C87.2324 44.3075 89.5422 45.6781 91.9676 45.0409Z"
-                                                    fill="currentFill"
-                                                />
-                                                </svg>
-                                            ) : (
-                                                "Submit"
-                                            )}
-                                        </button>
+                                                    {submitButtonLoading ? (
+                                                        <svg
+                                                        aria-hidden="true"
+                                                        className="w-5 h-5 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-white"
+                                                        viewBox="0 0 100 101"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        >
+                                                        <path
+                                                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08154 50.5908C9.08154 74.1846 25.8062 91.3181 50 91.3181C74.1938 91.3181 90.9185 74.1846 90.9185 50.5908C90.9185 26.9969 74.1938 9.86328 50 9.86328C25.8062 9.86328 9.08154 26.9969 9.08154 50.5908Z"
+                                                            fill="currentColor"
+                                                        />
+                                                        <path
+                                                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5536C95.2932 28.8227 92.871 24.3694 89.8167 20.348C85.8452 15.1192 80.8826 10.723 75.2124 7.41289C69.5422 4.1028 63.2754 1.94025 56.7221 1.05111C51.7666 0.367572 46.7395 0.446529 41.8371 1.27873C39.3185 1.69975 37.855 4.19778 38.4921 6.62326C39.1292 9.04874 41.6021 10.4813 44.0772 10.1023C47.9246 9.49341 51.8292 9.52694 55.6552 10.1957C60.864 11.0906 65.845 13.1964 70.2982 16.3935C74.7515 19.5905 78.5764 23.8106 81.5061 28.818C83.8827 32.8672 85.606 37.2767 86.6314 41.8771C87.2324 44.3075 89.5422 45.6781 91.9676 45.0409Z"
+                                                            fill="currentFill"
+                                                        />
+                                                        </svg>
+                                                    ) : (
+                                                        "Submit"
+                                                    )}
+                                                </button>
 
+                                            </div>
+
+                                        )}
+                                        
                                     </div>
-
 
                                     {/* Modal - for viewing code and submission feedback */}
                                     {isModalOpen && (
@@ -586,10 +792,10 @@ const ModuleProjectLayout = ({ module_id }) => {
                                     )}
 
                                     {/* Code Layout */}
-                                    <div className="w-2/3 flex flex-col border-l-2 border-gray-50 pl-4">
+                                    <div className="w-2/3 flex flex-col border-l-2 border-gray-50 pl-4 pt-1">
                                         <div className="flex justify-between">
                                             <h2 className="text-[18px] font-semibold text-gray-800 pt-2">Code</h2>
-                                            <div className="flex justify-end space-x-4">
+                                            <div className="flex justify-end space-x-4 mt-1">
                                                 <button
                                                     type="button"
                                                     className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-[13.5px] px-3 py-2 me-0 mb-2 mt-0.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"

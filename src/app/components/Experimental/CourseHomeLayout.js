@@ -58,6 +58,9 @@ const CourseHomeLayout = () => {
         });
     }
 
+
+    const [courseModuleProjectDict, setCourseModuleProjectDict] = useState({});
+
     const _handleUserCourseModuleFetch = async () => {
 
         let anon_user_id = getFromLocalStorage('user_id');
@@ -79,6 +82,8 @@ const CourseHomeLayout = () => {
 
             // TODO: first update the course module state and then update the is-generating stuff
 
+            console.log('user-course-rv-dict:', user_course_rv_dict);
+
             setCourseMetaData({
                 "course_name": user_course_rv_dict['course_name'],
                 "course_description": user_course_rv_dict['course_description'],
@@ -86,8 +91,8 @@ const CourseHomeLayout = () => {
             });
 
             setCourseCompletedModuleList(user_course_rv_dict['current_course_module_list']);
+            setCourseModuleProjectDict(user_course_rv_dict['project_dict']);
 
-            
 
             if (is_course_generating === true){
 
@@ -340,8 +345,8 @@ const CourseHomeLayout = () => {
 
                             ) : (
                                 <div
-                                        className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 dark:border-gray-900 dark:bg-gray-700"
-                                    ></div>
+                                    className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 dark:border-gray-900 dark:bg-gray-700"
+                                ></div>
                             )}
                             
                             <a
@@ -417,6 +422,35 @@ const CourseHomeLayout = () => {
 
                         </li>
                     ))}
+
+
+                    <li
+                        className="mb-8 ms-4"
+                    >
+
+                        <div
+                            className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 dark:border-gray-900 dark:bg-gray-700"
+                        ></div>
+
+                        <a
+                            className="cursor-pointer"
+                            href={`/learn-python/module/project/${courseModuleProjectDict.project_object_id}`}                                
+                        >
+                            <h3 
+                                className="inline text-[18px] font-semibold text-blue-500 hover:text-blue-600"
+                            >
+                                {courseModuleProjectDict.project_name}
+                            </h3>
+                        </a>
+
+                        <div>
+                            <p className="mb-2 pt-2 text-[15.5px] font-normal text-gray-500 dark:text-gray-400 tracking-normal">
+                                {courseModuleProjectDict.project_description}
+                            </p>
+                        </div>
+
+                    </li>
+
                 </ol>
 
             </div>
