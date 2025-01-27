@@ -464,6 +464,10 @@ const ModuleProjectLayout = ({ module_id }) => {
     return (
         
         <>
+
+        {/* TODO:
+            - start here by fixing project-page issue and proceed from there
+         */}
             
             {/* Dashboard Top NavBar */}
             <DashboardTopNavBar />
@@ -476,11 +480,16 @@ const ModuleProjectLayout = ({ module_id }) => {
                     {/* Current Chapter and Title */}
                     <div className="text-left flex text-[15.5px] tracking-normal">
                         <h1 className="font-semibold text-gray-900">
-                            Module:
+                            <a
+                                href="/learn-python/home"
+                                className="hover:text-blue-600"
+                            >
+                                Module:
+                                <span className='pl-2 text-[13.5px] pt-[1.8px] text-gray-500 font-normal hover:text-blue-600'>
+                                    {parentModuleCourseName}
+                                </span>
+                            </a>
                         </h1>
-                        <span className='pl-2 text-[13.5px] pt-[1.8px] text-gray-500'>
-                            {parentModuleCourseName}
-                        </span>
                     </div>
 
                 </div>

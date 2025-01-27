@@ -1,16 +1,10 @@
-// "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Pacifico } from 'next/font/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCode, faUserPlus, faArrowRightFromBracket, faSquareCaretRight, faSchool, faArrowRight, faHome } from "@fortawesome/free-solid-svg-icons";
-import InteractiveHoverButton from "@/components/ui/interactive-hover-button";
-import AnimatedShinyText from '@/components/ui/animated-shiny-text';
-import { ChevronRight } from "lucide-react";
+import { faHome } from "@fortawesome/free-solid-svg-icons";
 import { cn } from "@/lib/utils";
 import AnimatedGradientText from "@/components/ui/animated-gradient-text";
-import HeroVideoDialog from "@/components/ui/hero-video-dialog";
 import ThemeToggle from "@/app/components/Utils/ThemeToggle";
-// import { useRouter } from 'next/router';
 
 
 const pacifico_font = Pacifico({
@@ -19,9 +13,6 @@ const pacifico_font = Pacifico({
 });
 
 const NewHeroNavbar = () => {
-
-    // const router = useRouter();
-    // console.log('path:', router.pathname);
 
     const DISCORD_CHANNEL_URL = process.env.NEXT_PUBLIC_DISCORD_CHAT_URL;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -33,7 +24,7 @@ const NewHeroNavbar = () => {
             <div className="max-w-screen-xl flex flex-wrap justify-between mx-auto pt-0">
 
                 {
-                    (window.location.pathname === '/learn-python/introduction')
+                    (window.location.pathname === '/')
                     
                     ?
 
@@ -116,7 +107,6 @@ const NewHeroNavbar = () => {
 
                         </>
 
-
                     )
                     :
                     (
@@ -138,7 +128,7 @@ const NewHeroNavbar = () => {
 
                                     <li>
                                         <a
-                                            href="/learn-python/introduction"
+                                            href="/"
                                             className="flex py-3 hover:text-blue-600 dark:text-gray-300 hover:dark:text-gray-400 rounded text-[15px] font-normal"
                                         >
                                             <FontAwesomeIcon icon={faHome} />
@@ -154,16 +144,12 @@ const NewHeroNavbar = () => {
 
                         </>
 
-
                     )
                 }
-
-                
 
             </div>
 
         </nav>
-
 
     );
     

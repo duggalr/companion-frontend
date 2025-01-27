@@ -596,7 +596,7 @@ Let’s start with something simple: What’s your name, my friend? 🤔`;
                                 <div className="w-9 h-9 border-4 border-blue-500 border-t-transparent rounded-full animate-spin "></div>
                                 {/* <p className="mt-4 text-lg font-normal text-gray-800">{showCourseLoadingText}</p> */}
                                 <p className="mt-6 text-[16px] font-normal text-gray-500 tracking-normal">
-                                    I'm generating a syllabus for your course... it will take about 10-20 seconds...
+                                    Thank you! I'm generating a syllabus for your course... it will take me about 10-20 seconds... 😅
                                 </p>
 
                             </div>

@@ -519,7 +519,7 @@ const NewModuleLayout = ({ module_id }) => {
         // TODO:
         console.log('MODULE ID:', module_id);
         _handleCourseModuleDetails(module_id);
-        // setShowCodeLayout(true);
+        // // setShowCodeLayout(true);
 
     }, []);
     
@@ -830,7 +830,7 @@ const NewModuleLayout = ({ module_id }) => {
         setShowQuizQuestion(true);
         setInitialCodeValue('');
         codeRef.current = '';
-        
+
         if (current_question.type === 'code'){
 
             codeRef.current = current_question.starter_code;
@@ -892,6 +892,7 @@ const NewModuleLayout = ({ module_id }) => {
 
     const [finalQuizFeedbackDict, setFinalQuizFeedbackDict] = useState("");
     const [quizSubmitButtonLoading, setQuizSubmitButtonLoading] = useState(false);
+    const [quizResultLoading, setQuizResultLoading] = useState(true);
 
     const _handleQuizQuestionSubmit = async () => {
 
@@ -945,7 +946,7 @@ const NewModuleLayout = ({ module_id }) => {
 
             // console.log('current-index-information:', currentQuizDictQuestionIndex);
 
-            if ((currentQuizDictQuestionIndex) === currentQuizDict.questions_list.length){
+            if ((currentQuizDictQuestionIndex + 1) === currentQuizDict.questions_list.length){
 
                 // TODO:
                     // Reset for the quiz -- all of these should be abstracted to own functions
@@ -956,6 +957,7 @@ const NewModuleLayout = ({ module_id }) => {
                 codeRef.current = '';
 
                 // Fetch final results
+                setQuizResultLoading(true);
                 const payload = {
                     'user_id': anon_user_id,
                     'course_module_quiz_object_id': currentQuizDict.course_module_quiz_object_id
@@ -979,12 +981,14 @@ const NewModuleLayout = ({ module_id }) => {
                         'result_score': response_data['result_score'],
                         'user_passed_quiz': response_data['user_passed_quiz']
                     });
+                    setQuizResultLoading(false);
                 }
 
             } else {
 
+                let new_qt_index = currentQuizDictQuestionIndex + 1;
                 setCurrentQuizDictQuestionIndex((prev_index) => prev_index + 1);
-                let current_question = currentQuizDict.questions_list[currentQuizDictQuestionIndex];
+                let current_question = currentQuizDict.questions_list[new_qt_index];
                 console.log('next-quiz-dict:', current_question);
 
                 console.log('current_question:', current_question);
@@ -1044,7 +1048,12 @@ const NewModuleLayout = ({ module_id }) => {
                     {/* Current Chapter and Title */}
                     <div className="text-left flex text-[15.5px] tracking-normal">
                         <h1 className="font-semibold text-gray-900">
-                            Module: {currentModuleInformationDict.course_module_name}
+                            <a
+                                href="/learn-python/home"
+                                className="hover:text-blue-600"
+                            >
+                                Module: {currentModuleInformationDict.course_module_name}
+                            </a>
                         </h1>
                         <span className="px-2 pt-1 text-[13.5px]">|</span>
                         <p className="text-gray-500 text-[12.5px] pt-[3px]">
@@ -1176,7 +1185,7 @@ const NewModuleLayout = ({ module_id }) => {
                                                         </h3>
                                                         <div className='flex justify-center pt-2'>
                                                             <div className="space-y-4 w-2/3">
-                                                                {JSON.parse(currentQuizQuestion.multiple_choice_list).map((option, index) => (
+                                                                {(currentQuizQuestion.multiple_choice_list).map((option, index) => (
                                                                     <button
                                                                         key={index}
                                                                         className="w-full text-left bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 transition-colors hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1347,14 +1356,8 @@ const NewModuleLayout = ({ module_id }) => {
                                                     <div className="w-full max-w-3xl p-6">
                                                         {/* Header */}
                                                         <div className="text-center">
-                                                        {/* setFinalQuizFeedbackDict({
-                            'ai_feedback_for_quiz': response_data['ai_feedback_for_quiz'],
-                            'correct_answers': response_data['correct_answers'],
-                            'incorrect_answers': response_data['incorrect_answers'],
-                            'total_quiz_length': response_data['total_quiz_length']
-                        }) */}
                                                             <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
-                                                                You are have completed the quiz!
+                                                                You have completed the quiz!
                                                             </h3>
                                                             <p className="text-gray-600 dark:text-gray-300 text-sm">
                                                                 Here are your results and feedback:
@@ -1362,15 +1365,31 @@ const NewModuleLayout = ({ module_id }) => {
                                                         </div>
 
                                                         {/* Feedback Card */}
-                                                        <div className="mt-6 p-5 bg-blue-50 dark:bg-gray-700 rounded-lg shadow-inner">
-                                                            <h4 className="text-lg font-semibold text-blue-800 dark:text-white mb-3">
-                                                                Your Score: {finalQuizFeedbackDict['result_score']}
-                                                            </h4>
-                                                            <p className="text-gray-700 dark:text-gray-200 text-sm">
-                                                                {finalQuizFeedbackDict['ai_feedback_for_quiz']}
-                                                            </p>
-                                                        </div>
-                                                
+                                                        {(quizResultLoading === true) ? (
+
+                                                            <div className="text-center">
+                                                                <div role="status">
+                                                                    <svg aria-hidden="true" className="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                                                                        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                                                                    </svg>
+                                                                    <span className="sr-only">Loading...</span>
+                                                                </div>
+                                                            </div>
+
+                                                        ) : (
+
+                                                            <div className="mt-6 p-5 bg-blue-50 dark:bg-gray-700 rounded-lg shadow-inner">
+                                                                <h4 className="text-lg font-semibold text-blue-800 dark:text-white mb-3">
+                                                                    Your Score: {finalQuizFeedbackDict['result_score']}
+                                                                </h4>
+                                                                <p className="text-gray-700 dark:text-gray-200 text-sm">
+                                                                    {finalQuizFeedbackDict['ai_feedback_for_quiz']}
+                                                                </p>
+                                                            </div>
+
+                                                        )}
+
                                                         {/* Buttons */}
                                                         {
                                                             (finalQuizFeedbackDict['user_passed_quiz'] === false) ? (

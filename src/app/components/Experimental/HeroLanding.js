@@ -1,32 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { Pacifico } from 'next/font/google';
+import React, { useEffect, useState } from "react";
 import 'aos/dist/aos.css'; // Import AOS styles
 import AOS from 'aos';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCode, faUserPlus, faArrowRightFromBracket, faSquareCaretRight, faSchool, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import InteractiveHoverButton from "@/components/ui/interactive-hover-button";
-import AnimatedShinyText from '@/components/ui/animated-shiny-text';
-import { ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
-import AnimatedGradientText from "@/components/ui/animated-gradient-text";
 import HeroVideoDialog from "@/components/ui/hero-video-dialog";
-import ThemeToggle from "@/app/components/Utils/ThemeToggle";
 import NewHeroNavbar from "./NewHeroNavbar";
 import { AuroraText } from "@/components/ui/aurora-text";
+import {  getFromLocalStorage } from '@/lib/utils/localStorageUtils';
 
-
-const pacifico_font = Pacifico({
-    subsets: ['latin'],
-    weight: ['400']
-});
 
 const HeroLanding = () => {
 
-    const DISCORD_CHANNEL_URL = process.env.NEXT_PUBLIC_DISCORD_CHAT_URL;
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [showStartButton, setShowStartButton] = useState(true);
 
     const _handleStartBtnClick = () => {
         window.location.href = '/learn-python/start';
+    }
+
+    const _handleHomeBtnClick = () => {
+        window.location.href = '/learn-python/home';
     }
 
     useEffect(() => {
@@ -35,6 +26,16 @@ const HeroLanding = () => {
             once: true,     // Trigger animation only once
         });
     }, []);
+
+    useEffect(() => {
+
+        let user_course_state_dict = getFromLocalStorage('user_course_state_dict');
+        if (user_course_state_dict){
+            setShowStartButton(false);
+        }
+
+    }, []);
+
 
     return (
 
@@ -70,20 +71,25 @@ const HeroLanding = () => {
                     Let An <AuroraText>AI Teach</AuroraText> You Python.
                 </h1>
 
-                <p className="mb-0 pt-6 text-[23px] font-normal tracking-normal text-gray-500 dark:text-gray-400" data-aos="fade-down">
-                    Have an AI teach you Python, by designing a personalized Python course tailored to the project you have in mind.
+                <p className="mb-0 pt-6 text-[21px] font-normal tracking-normal text-gray-500 dark:text-gray-400" data-aos="fade-down">
+                    Have an AI teach you Python, by designing a personalized Python course and exercises tailored to the project you have in mind.
                     {/* Let an AI teach you Python by designing a personalized Python course tailored to your goals and projects. */}
                     {/* Say goodbye to boring tutorials. Let AI design a personalized Python course tailored to your goals and projects. */}
                     {/* Let an AI teach you Python, by generating a personalized course based on a project you want to create. */}
                     {/* Let an AI generate a personalized course based on your goals. */}
                 </p>
 
-                <InteractiveHoverButton text="Start" className="mt-8 text-[18.5px] py-2.5" data-aos="fade-in" onClick={_handleStartBtnClick}/>
-                <span className="text-gray-400 dark:text-gray-400 pt-2 text-[11.5px] tracking-normal">
+                { (showStartButton === true) ? (
+                    <InteractiveHoverButton text="Start" className="mt-8 text-[18.5px] py-2.5" data-aos="fade-up" onClick={_handleStartBtnClick}/>
+                ) : (
+                    <InteractiveHoverButton text="Home" className="mt-8 text-[18.5px] py-2.5" data-aos="fade-up" onClick={_handleHomeBtnClick}/>
+                )}
+                
+                <span className="text-gray-400 dark:text-gray-400 pt-2 text-[11.5px] tracking-normal" data-aos="fade-up">
                     No Login Required. 100% Free.
                 </span>
 
-                <div className="relative mt-10 w-3/4" data-aos="fade-in">
+                <div className="relative mt-10 w-3/4" data-aos="fade-up">
                     <HeroVideoDialog
                         className="dark:hidden block"
                         animationStyle="from-center"
@@ -100,8 +106,13 @@ const HeroLanding = () => {
                     />
                 </div>
 
-
             </div>
+
+            {/* Footer */}
+            {/* TODO: start here */}
+            <footer className="w-full py-4 text-center text-[14px] text-gray-400 pt-12">
+                <p>Contact: <a href="mailto:duggalr42@gmail.com" className="text-blue-400">duggalr42@gmail.com</a></p>
+            </footer>
 
         </main>
 

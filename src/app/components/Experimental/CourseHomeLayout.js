@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import 'aos/dist/aos.css'; // Import AOS styles
 import AOS from 'aos';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faXmark, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { getFromLocalStorage, saveToLocalStorage, removeFromLocalStorage } from '@/lib/utils/localStorageUtils';
 import DashboardTopNavBar from "@/app/components/Experimental/DashboardTopNavBar";
 import { Progress } from "@/components/ui/progress";
@@ -41,18 +41,29 @@ const CourseHomeLayout = () => {
 
             let total_exercises = 0;
             let completed_exercises = 0;
+            let total_quiz_count = 0;
+            let total_completed_quiz = 0;
             for (var k in progress_dict){
-
                 let current_di = progress_dict[k];
                 completed_exercises += current_di['completed_course_module_exercises'];
                 total_exercises += current_di['total_course_module_exercises'];
-
+                
+                let tmp_quiz_passed = current_di['current_course_module_quiz_passed'];
+                if (tmp_quiz_passed === true){
+                    total_completed_quiz += 1
+                }
+                total_quiz_count += 1
             }
 
+            console.log('tc-quiz:', total_completed_quiz, total_quiz_count, Math.round((total_completed_quiz / total_quiz_count) * 100))
             let rv = {
                 'completed_exercises': completed_exercises,
                 'total_exercises': total_exercises,
-                'ratio_percent': Math.round((completed_exercises / total_exercises) * 100)
+                'ratio_percent': Math.round((completed_exercises / total_exercises) * 100),
+
+                'total_completed_quiz': total_completed_quiz,
+                'total_quiz_count': total_quiz_count,
+                'quiz_ratio_percent': Math.round((total_completed_quiz / total_quiz_count) * 100)
             }
             resolve(rv);
         });
@@ -175,6 +186,13 @@ const CourseHomeLayout = () => {
                 console.log('prog_rv:', prog_rv);
                 setCurrentCourseProgressDict(prog_rv);
 
+                // 'completed_exercises': completed_exercises,
+                // 'total_exercises': total_exercises,
+                // 'ratio_percent': Math.round((completed_exercises / total_exercises) * 100),
+                // 'total_completed_quiz': total_completed_quiz,
+                // 'total_quiz_count': total_quiz_count,
+                // 'quiz_ratio_percent': Math.round((total_completed_quiz / total_quiz_count) * 100)
+
             }
 
         }
@@ -246,10 +264,14 @@ const CourseHomeLayout = () => {
                             (currentCourseProgressDict !== null) ? (
                                 <>
                                     <span className="text-blue-700 dark:text-white text-[13px] font-medium">
-                                        {/* Your Course Progress: ({currentCourseProgressDict.ratio_percent}%) */}
-                                        Your Course Progress: ({Math.round(currentCourseProgressDict.ratio_percent)}%)
+                                        Course Exercises Progress: ({Math.round(currentCourseProgressDict.ratio_percent)}%)
                                     </span>
                                     <Progress value={currentCourseProgressDict.ratio_percent} className="w-40" />
+                                    <span className='px-2'></span>
+                                    <span className="text-blue-700 dark:text-white text-[13px] font-medium">
+                                        Quiz Completion Progress: ({Math.round(currentCourseProgressDict.quiz_ratio_percent)}%)
+                                    </span>
+                                    <Progress value={currentCourseProgressDict.quiz_ratio_percent} className="w-40" />
                                 </>
 
                             ) : (
@@ -331,7 +353,8 @@ const CourseHomeLayout = () => {
                                 )
                             } */}
 
-                            {(isCourseGenerating === false) ? (
+                            {/* Submission/Progress-Related */}
+                            {/* {(isCourseGenerating === false) ? (
                                 
                                 (item.cm_progress_dict.course_module_passed === true) ? (
                                     <div
@@ -347,7 +370,7 @@ const CourseHomeLayout = () => {
                                 <div
                                     className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 dark:border-gray-900 dark:bg-gray-700"
                                 ></div>
-                            )}
+                            )} */}
                             
                             <a
                                 className="cursor-pointer"
@@ -380,17 +403,18 @@ const CourseHomeLayout = () => {
                                         {item['sub_modules'].map((module_item) => (
 
                                             <li
-                                                className="mb-2 ms-4"
+                                                className="mb-2 ms-2"
                                                 key={module_item.sub_module_object_id}
                                             >
                                                 <h3
                                                     className="inline text-[14px] font-normal text-blue-400 hover:font-semibold"
                                                 >
                                                     {/* <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 pr-2 dark:text-white w-4 h-4" /> */}
-                                                    <FontAwesomeIcon icon={faCheckCircle} className="text-gray-400 pr-2 dark:text-white w-4 h-4" />
+                                                    <FontAwesomeIcon icon={faArrowRight} className="text-gray-400 pr-2 dark:text-white w-4 h-4" />
                                                     Module: {module_item.sub_module_name}
                                                 </h3>
                                             </li>
+                                            // TODO: complete a few exercises + quiz to test submission / progress functionality <-- finalize and go from there (see paper todo)
 
                                         ))}
                                     </ol>
@@ -425,12 +449,12 @@ const CourseHomeLayout = () => {
 
 
                     <li
-                        className="mb-8 ms-4"
+                        className="mb-8 ms-4 mt-12"
                     >
 
-                        <div
+                        {/* <div
                             className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 dark:border-gray-900 dark:bg-gray-700"
-                        ></div>
+                        ></div> */}
 
                         <a
                             className="cursor-pointer"
@@ -456,89 +480,6 @@ const CourseHomeLayout = () => {
             </div>
 
         </>
-
-        // <div className="flex flex-col min-h-screen mt-12 ml-0 items-center">
-
-        //     <h1 className="mb-4 text-[24px] font-extrabold leading-none tracking-tight text-gray-900 dark:text-white">
-        //         Modules - Introduction to Python
-        //     </h1>
-
-            // <ol className="relative border-s border-gray-200 dark:border-gray-700 mt-6">
-            //     {course_syllabus_list.map((item, index) => (
-            //         <li
-            //             className="mb-8 ms-4"
-            //             key={item.id}
-            //         >
-
-            //             <div className="absolute w-4 h-4 bg-gray-200 rounded-full mt-1.5 -start-2 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-
-            //             <a
-            //                 className="cursor-pointer"
-            //                 href={`/learn-python/module/${index}`}
-            //             >
-            //                 <h3 
-            //                     className="inline text-lg font-semibold text-blue-600 hover:text-blue-400"
-            //                 >
-            //                     {item.chapter_name}
-            //                 </h3>
-            //             </a>
-
-            //             {(showSubModulesIDList.includes(index)) ? (
-
-            //                 <div>
-            //                     <p className="mb-1 pt-2 text-[15px] font-normal text-gray-500 dark:text-gray-400">
-            //                         {item.chapter_description}
-            //                     </p>
-
-            //                     <span
-            //                         className="text-red-500 text-[14px] cursor-pointer hover:text-red-300"
-            //                         onClick={() => removeFromModuleIdList(index)}
-            //                     >
-            //                     Hide Modules
-            //                     </span>
-
-            //                     <ol className="relative mt-4">
-            //                         {item['module_list'].map((module_item) => (
-                                        
-            //                             <li
-            //                                 className="mb-4 ms-4"
-            //                                 key={module_item.module_number}
-            //                             >
-            //                                 <h3
-            //                                     className="inline text-base font-normal text-blue-400"
-            //                                 >
-            //                                     Module: {module_item.module_name}
-            //                                 </h3>
-            //                             </li>
-
-            //                         ))}
-            //                     </ol>
-            //                 </div>
-
-            //             ) : (
-
-            //                 <div>
-
-            //                     <p className="mb-1 pt-2 text-[15px] font-normal text-gray-500 dark:text-gray-400">
-            //                         {item.chapter_description}
-            //                     </p>
-
-            //                     <span
-            //                         className="text-blue-400 text-[14px] cursor-pointer hover:text-blue-600"
-            //                         onClick={() => addToModuleIdList(index)}
-            //                     >
-            //                         Show Modules
-            //                     </span>
-
-            //                 </div>
-
-            //             )}
-
-            //         </li>
-            //     ))}
-            // </ol>
-
-        // </div>
 
     );
 
