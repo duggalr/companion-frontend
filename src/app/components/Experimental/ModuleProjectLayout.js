@@ -607,7 +607,8 @@ const ModuleProjectLayout = ({ module_id }) => {
                                             <p className="text-[15px] tracking-normal leading-9 pt-0.5 pr-0">
                                                 {/* <h3 className="font-semibold text-[18px] mb-2">Task {projectPartDict.part_name}</h3> */}
                                                 <h2 className="text-[18px] font-semibold text-gray-800 mb-1">
-                                                    Task {projectPartDict.part_name}
+                                                    {/* Task {projectPartDict.part_name} */}
+                                                    Task {projectPartDict.part}
                                                 </h2>
                                                 <Markdown>{projectPartDict.task}</Markdown>
                                             </p>
