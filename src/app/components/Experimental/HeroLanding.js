@@ -85,9 +85,9 @@ const HeroLanding = () => {
                     <InteractiveHoverButton text="Home" className="mt-8 text-[18.5px] py-2.5" data-aos="fade-up" onClick={_handleHomeBtnClick}/>
                 )}
                 
-                <span className="text-gray-400 dark:text-gray-400 pt-2 text-[11.5px] tracking-normal" data-aos="fade-up">
+                {/* <span className="text-gray-400 dark:text-gray-400 pt-2 text-[11.5px] tracking-normal" data-aos="fade-up">
                     No Login Required. 100% Free.
-                </span>
+                </span> */}
 
                 <div className="relative mt-10 w-3/4" data-aos="fade-up">
                     <HeroVideoDialog
